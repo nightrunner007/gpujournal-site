@@ -148,6 +148,13 @@ h3{font-size:17px;margin:24px 0 8px;font-weight:600}
 .critic b.g{color:var(--green)} .critic b.n{color:var(--red)}
 .spark{margin-left:auto;text-align:right}
 .spark svg{display:block}
+.gcrit{order:1;flex:1 1 100%}
+.glaunch{margin-left:auto;display:inline-flex;align-items:center;gap:9px;background:var(--amber-fill);color:var(--btn-ink);font-weight:700;font-size:15px;line-height:1.25;padding:10px 18px;min-height:44px;border:1px solid var(--amber-fill);border-radius:9px;white-space:nowrap}
+.glaunch:hover{background:var(--btn-hover);border-color:var(--btn-hover);text-decoration:none}
+.spark + .glaunch{margin-left:0}
+.glaunch .glp{font-family:var(--mono);font-weight:600;white-space:nowrap}
+.glaunch .glp small{font-size:11.5px;font-weight:400;opacity:.78}
+.glaunch.rec{font-size:16px;padding:12px 22px}
 /* cards / grids */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
 .card{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
@@ -320,7 +327,9 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
   h1{font-size:26px}
   .price{margin-left:0}
   .launch{margin-left:0}
-  .spark{margin-left:0;text-align:left}
+  .spark{margin-left:0;text-align:left;order:4}
+  .glaunch{order:2;flex:1 1 100%;margin-left:0;justify-content:center}
+  .gcrit{order:3}
   nav.doors{margin-left:0}
   .theme-toggle{margin-left:auto}
   .hbar{gap:12px}
@@ -1780,10 +1789,20 @@ function offerRowHTML(g, o, showGpu){
   h += "</div></div>";
   return h;
 }
+/* Header Launch: the group's Best offer made actionable in the group
+   header itself, with the same destination as that offer's row Launch.
+   Price follows the rows' rule — node totals first, per-GPU otherwise.
+   Groups with no priced on-demand offer (unpriced or spot-only) get none. */
+function headerLaunchHTML(g, opts){
+  var b = bestOffer(g); if (!b) return "";
+  var ni = nodeInfo(b);
+  var priceTxt = ni ? money(ni.total) + (ni.label.indexOf("minimum") >= 0 ? " <small>/ hr total</small>" : " <small>/ node / hr</small>") : money(b.price) + " <small>/ GPU / hr</small>";
+  return '<a class="glaunch' + (opts && opts.rec ? " rec" : "") + '" href="' + PROVIDER_URL[b.prov] + '" target="_blank" rel="noopener">Launch ' + esc(b.prov) + ' ↗ <span class="glp">' + priceTxt + "</span></a>";
+}
 function groupHTML(g, opts){
   opts = opts || {};
   var h = '<section class="ggroup" data-gpu="' + esc(g.name.toLowerCase()) + '"' + (opts.nofit ? ' data-nofit="1"' : "") + (opts.rack ? ' data-rack="1"' : "") + '">';
-  h += '<div class="ghead"><div><div class="gname"><a href="#/gpu/' + g.id + '">' + esc(g.name) + '</a></div>';
+  h += '<div class="ghead"><div class="gmain"><div class="gname"><a href="#/gpu/' + g.id + '">' + esc(g.name) + '</a></div>';
   h += '<div class="chips"><span class="chip">' + esc(g.vram) + '</span><span class="chip">' + esc(g.arch) + '</span><span class="chip">' + esc(g.year) + "</span></div>";
   h += '<p class="specsline"><b>Key specs:</b> ' + esc(keySpecs(g)) + "</p>";
   if (opts.fit){
@@ -1793,8 +1812,10 @@ function groupHTML(g, opts){
   if (opts.shortBy) h += '<div style="margin-top:9px"><span class="tag type">' + esc(opts.shortBy) + '</span></div>';
   else if (opts.rack) h += '<div style="margin-top:9px"><span class="tag type">Rack system · 72 GPUs</span></div>';
   else if (opts.nofit) h += '<div style="margin-top:9px"><span class="tag type">Needs more than one GPU</span></div>';
-  h += '<p class="critic" style="margin-bottom:2px"><b class="g">Good for:</b> ' + esc(g.good) + '</p><p class="critic" style="margin-top:2px"><b class="n">Not good for:</b> ' + esc(g.notgood) + "</p></div>";
+  h += "</div>";
   if (g.hist) h += '<div class="spark">' + sparkSVG(g.hist, 132, 40) + "</div>";
+  h += headerLaunchHTML(g, opts);
+  h += '<div class="gcrit"><p class="critic" style="margin-bottom:2px"><b class="g">Good for:</b> ' + esc(g.good) + '</p><p class="critic" style="margin-top:2px"><b class="n">Not good for:</b> ' + esc(g.notgood) + "</p></div>";
   h += "</div>";
   var pr = priced(g), un = offersOf(g).filter(function(o){ return o.price == null; });
   pr.forEach(function(o){ h += offerRowHTML(g, o, false); });
