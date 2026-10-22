@@ -6,6 +6,8 @@
 <meta name="color-scheme" content="dark light" />
 <link rel="icon" href="data:," />
 <title>GPUJournal — GPU prices, checked</title>
+<meta name="description" id="seo-desc" content="Every GPU price we can check, in one place — 155 verified prices from 12 providers, the best offer tagged on every card, checked Oct 22, 2026." />
+<meta name="robots" content="index, follow" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -2542,36 +2544,315 @@ function viewWatch(){
   wirePicker("pw-prov", function(v){ wProv = v; filt(); });
 }
 
-/* ---------- ROUTER ---------- */
-function route(){
-  var raw = location.hash.replace(/^#\/?/, "");
-  var parts = raw.split("?");
+/* ---------- SEO HEAD — set on every route ----------
+   Unique title + description per page, built from the page's own data;
+   self-referencing canonical; OpenGraph/Twitter mirroring; JSON-LD with
+   honest facts only (an Offer appears only where a verified best offer
+   exists, and availability is never asserted). No og:image — the site
+   has no hosted share image yet, and a fake one is worse than none. */
+var STAMP_DATE = CHECKED.replace(/^Checked\s+/, ""); /* "Oct 22, 2026" */
+function trimDesc(s, n){
+  s = String(s == null ? "" : s).replace(/\s+/g, " ").trim();
+  n = n || 160;
+  if (s.length <= n) return s;
+  var cut = s.slice(0, n - 1), sp = cut.lastIndexOf(" ");
+  if (sp > 60) cut = cut.slice(0, sp);
+  return cut.replace(/[\s,;:.—-]+$/, "") + "…";
+}
+function setMeta(attr, key, val){
+  var el = document.head.querySelector("meta[" + attr + '="' + key + '"]');
+  if (!el){ el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+  el.setAttribute("content", val);
+}
+function setCanonical(url){
+  var el = document.head.querySelector('link[rel="canonical"]');
+  if (!el){ el = document.createElement("link"); el.setAttribute("rel", "canonical"); document.head.appendChild(el); }
+  el.setAttribute("href", url);
+}
+var MONTHS = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
+function isoDate(str){
+  var m = /^([A-Z][a-z]{2}) (\d{1,2}), (\d{4})$/.exec(String(str || "").trim());
+  if (!m || !MONTHS[m[1]]) return null;
+  return m[3] + "-" + ("0" + MONTHS[m[1]]).slice(-2) + "-" + ("0" + m[2]).slice(-2);
+}
+function crumb(items){
+  return { "@type":"BreadcrumbList", "itemListElement": items.map(function(it, i){
+    return { "@type":"ListItem", "position":i + 1, "name":it[0], "item":location.origin + it[1] };
+  })};
+}
+function gpuBrand(g){
+  var hay = (g.name + " " + (g.arch || "")).toLowerCase();
+  return /(radeon|instinct|\bmi[0-9]|amd)/.test(hay) ? "AMD" : "NVIDIA";
+}
+function applySEO(o){
+  document.title = o.title;
+  setMeta("name", "description", o.desc);
+  var canon = location.origin + o.path;
+  setCanonical(canon);
+  setMeta("property", "og:title", o.title);
+  setMeta("property", "og:description", o.desc);
+  setMeta("property", "og:type", o.type || "website");
+  setMeta("property", "og:url", canon);
+  setMeta("property", "og:site_name", "GPUJournal");
+  setMeta("name", "twitter:card", "summary");
+  setMeta("name", "twitter:title", o.title);
+  setMeta("name", "twitter:description", o.desc);
+  var old = document.getElementById("seo-jsonld");
+  if (old) old.parentNode.removeChild(old);
+  if (o.ld && o.ld.length){
+    var sc = document.createElement("script");
+    sc.type = "application/ld+json"; sc.id = "seo-jsonld";
+    var payload;
+    if (o.ld.length === 1){ payload = { "@context":"https://schema.org" }; for (var k in o.ld[0]) payload[k] = o.ld[0][k]; }
+    else payload = { "@context":"https://schema.org", "@graph":o.ld };
+    sc.textContent = JSON.stringify(payload);
+    document.head.appendChild(sc);
+  }
+}
+function modelsDesc(){ var labs = {}; MODELS.forEach(function(m){ labs[m.family] = 1; }); return MODELS.length + " open-weight models from " + Object.keys(labs).length + " labs — what each one needs, and the GPUs that can run it, ranked from the model, not the card."; }
+function newsDesc(){ return "Headline stories in the GPU world, curated by the Journal — what happened, the sources named, and what it means if you rent GPUs."; }
+function guidesDesc(){ return "Guides that teach the decisions behind the prices — choosing a GPU, deploying a model, and working out what a job really costs."; }
+function seoSection(title, path, desc, crumbName){
+  return { title:title, path:path, desc:trimDesc(desc), ld: crumbName ? [crumb([["Home", "/"], [crumbName, path]])] : [] };
+}
+function seoHome(){
+  return { title:"GPUJournal — GPU prices, checked", path:"/",
+    desc:trimDesc(TOTAL_PRICES + " verified GPU prices from " + TOTAL_PROVIDERS + " providers, checked " + STAMP_DATE + " — every price read from the provider's own pages, the best offer tagged, one click to launch."),
+    ld:[{ "@type":"WebSite", "name":"GPUJournal", "url":location.origin + "/",
+      "potentialAction":{ "@type":"SearchAction", "target":location.origin + "/search?q={search_term_string}", "query-input":"required name=search_term_string" } }] };
+}
+function seoBoard(modelId){
+  var mm = modelId ? modelById(modelId) : null;
+  if (mm && mm.status) mm = null; /* mirrors viewBoard: unverified models never sort the board */
+  if (mm){
+    var rows = modelRanked(mm);
+    var verdict = rows.length ? rows.length + (rows.length === 1 ? " GPU can run " : " GPUs can run ") + mm.name + ". Best fit first."
+      : "No single GPU can run " + mm.name + " alone — " + minSetupSentence(mm);
+    return { title:"GPUs for " + mm.name + " — compare prices | GPUJournal", path:"/compare-prices?model=" + encodeURIComponent(mm.id),
+      desc:trimDesc(verdict + " Prices checked " + STAMP_DATE + "."),
+      ld:[crumb([["Home", "/"], ["Compare prices", "/compare-prices"], ["Models", "/models"], [mm.name, "/model/" + mm.id]])] };
+  }
+  return { title:"Compare GPU prices | GPUJournal", path:"/compare-prices",
+    desc:trimDesc(TOTAL_PRICES + " verified prices for " + TOTAL_VARIANTS + " GPU variants from " + TOTAL_PROVIDERS + " providers — checked " + STAMP_DATE + ". The same GPU on every provider, side by side, best offer tagged."),
+    ld:[crumb([["Home", "/"], ["Compare prices", "/compare-prices"]])] };
+}
+function seoGPU(g){
+  var b = bestOffer(g);
+  var title = g.name + " price" + (b ? " — from " + money(b.price) + "/hr · checked " + STAMP_DATE : "") + " | GPUJournal";
+  var desc = (b ? g.name + " from " + money(b.price) + "/hr at " + b.prov + ", " + CHECKED.toLowerCase() + ". "
+               : g.name + " — listed, quote only; no published price. ") + g.good;
+  var prod = { "@type":"Product", "name":g.name, "brand":{ "@type":"Brand", "name":gpuBrand(g) },
+    "description":trimDesc(g.good + " " + g.fits),
+    "additionalProperty":[
+      { "@type":"PropertyValue", "name":"Memory", "value":g.vram },
+      { "@type":"PropertyValue", "name":"Architecture", "value":g.arch },
+      { "@type":"PropertyValue", "name":"Year", "value":g.year } ] };
+  if (b) prod.offers = { "@type":"Offer", "price":b.price, "priceCurrency":"USD", "url":location.origin + "/compare-prices" };
+  return { title:title, path:"/gpu/" + g.id, desc:trimDesc(desc),
+    ld:[crumb([["Home", "/"], ["Compare prices", "/compare-prices"], [g.name, "/gpu/" + g.id]]), prod] };
+}
+function seoModel(m){
+  var desc;
+  if (m.status === "u") desc = m.name + " by " + m.family + " — its published size is still being verified from the lab's own model card, so GPUJournal shows no memory figures and recommends no GPU for it yet.";
+  else if (m.status === "s") desc = m.name + " by " + m.family + " — the API is live and the downloadable weights land Oct 23, 2026. The memory maths is done; the GPU ranking goes live the day the weights land.";
+  else {
+    var rows = modelRanked(m);
+    if (!rows.length) desc = minSetupSentence(m) + " " + m.name + " (" + m.sizeStr + ", " + m.family + ") needs " + fmtGB(m.fp16) + "GB at full precision — no single card we track runs it alone.";
+    else {
+      var top = rows[0], tb = bestOffer(top.g);
+      desc = rows.length + (rows.length === 1 ? " GPU can run " : " GPUs can run ") + m.name + ", ranked by how well it runs. Most recommended: " + top.g.name + (tb ? " from " + money(tb.price) + "/hr at " + tb.prov : "") + " — prices " + CHECKED.toLowerCase() + ".";
+    }
+  }
+  return { title:m.name + " — GPUs that run it, ranked | GPUJournal", path:"/model/" + m.id, desc:trimDesc(desc),
+    ld:[crumb([["Home", "/"], ["Models", "/models"], [m.name, "/model/" + m.id]]),
+        { "@type":"WebPage", "name":m.name + " — GPUs that run it, ranked", "url":location.origin + "/model/" + m.id }] };
+}
+function seoProvider(name){
+  var c = COMPANY[name];
+  return { title:name + " GPU prices | GPUJournal", path:"/provider/" + c.slug,
+    desc:trimDesc(c.blurb + " Prices checked " + STAMP_DATE + "."),
+    ld:[crumb([["Home", "/"], [name, "/provider/" + c.slug]])] };
+}
+function seoGuide(a){
+  return { title:a.title + " | GPUJournal", path:"/guide/" + a.slug, desc:trimDesc(a.excerpt), type:"article",
+    ld:[crumb([["Home", "/"], ["Guides", "/guides"], [hubName(a.hubSlug), "/hub/" + a.hubSlug], [a.title, "/guide/" + a.slug]]),
+        { "@type":"Article", "headline":a.title, "description":trimDesc(a.excerpt), "datePublished":a.publishedDate,
+          "author":{ "@type":"Organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "name":"GPUJournal" },
+          "mainEntityOfPage":location.origin + "/guide/" + a.slug }] };
+}
+function seoStory(n){
+  var art = { "@type":"Article", "headline":n.title, "description":trimDesc(n.standfirst),
+    "author":{ "@type":"Organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "name":"GPUJournal" },
+    "mainEntityOfPage":location.origin + "/story/" + n.slug };
+  var iso = isoDate(n.date); if (iso) art.datePublished = iso;
+  return { title:n.title + " | GPUJournal", path:"/story/" + n.slug, desc:trimDesc(n.standfirst), type:"article",
+    ld:[crumb([["Home", "/"], ["News", "/news"], [n.title, "/story/" + n.slug]]), art] };
+}
+function setSEO(r){
+  var o;
+  switch (r.name){
+    case "gpu": { var g = gpuById(r.arg); o = g ? seoGPU(g) : seoBoard(null); break; }
+    case "model": { var m = modelById(r.arg); o = m ? seoModel(m) : seoSection("Models | GPUJournal", "/models", modelsDesc(), "Models"); break; }
+    case "provider": { var nm = null; for (var k in COMPANY) if (COMPANY[k].slug === r.arg) nm = k; o = nm ? seoProvider(nm) : seoHome(); break; }
+    case "guide": { var a = null; ARTICLES.forEach(function(x){ if (x.slug === r.arg) a = x; }); o = a ? seoGuide(a) : seoSection("Guides | GPUJournal", "/guides", guidesDesc(), "Guides"); break; }
+    case "story": { var n = newsBySlug(r.arg); o = n ? seoStory(n) : seoSection("News | GPUJournal", "/news", newsDesc(), "News"); break; }
+    case "hub": { var hn = hubName(r.arg); o = seoSection(hn + " guides | GPUJournal", "/hub/" + r.arg, hubDesc(r.arg) + " Guides on GPUJournal, with the board's checked prices behind every verdict.", hn); break; }
+    case "board": o = seoBoard(r.model); break;
+    case "models": o = seoSection("Models | GPUJournal", "/models", modelsDesc(), "Models"); break;
+    case "news": o = seoSection("News | GPUJournal", "/news", newsDesc(), "News"); break;
+    case "guides": o = seoSection("Guides | GPUJournal", "/guides", guidesDesc(), "Guides"); break;
+    case "price-watch": o = seoSection("Price Watch | GPUJournal", "/price-watch", "Every price change we catch, checked against the provider's own pages — both observation dates and the source named on every entry.", "Price Watch"); break;
+    case "find": o = seoSection("Find a GPU | GPUJournal", "/find", "Tell us your task — run a model, teach one, train one, generate images, learn — and we rank every GPU we track for that job, best fit first.", "Find a GPU"); break;
+    case "calculator": o = seoSection("Work out the real cost | GPUJournal", "/calculator", "The whole bill, not the sticker price: hours, idle time, failed runs, storage and downloads worked out for any GPU offer on the board.", "Work out the real cost"); break;
+    case "for-providers": o = seoSection("For providers | GPUJournal", "/for-providers", "How a GPU marketplace or host gets listed on the board: prices publicly checkable, independently verified — and a listing never buys rank.", "For providers"); break;
+    case "how-we-price": o = seoSection("How we price | GPUJournal", "/how-we-price", "Where every number on GPUJournal comes from — providers' own published pages only, re-checked daily — and what “verified” means.", "How we price"); break;
+    case "search": o = { title:(r.q ? "Search: " + r.q : "Search") + " | GPUJournal", path:r.path, ld:[crumb([["Home", "/"], ["Search", "/search"]])],
+      desc:trimDesc(r.q ? "Search results for “" + r.q + "” across GPUs, providers, guides and news on GPUJournal." : "One search over GPUs, providers, guides and news.") }; break;
+    default: o = seoHome();
+  }
+  applySEO(o);
+}
+
+/* ---------- ROUTER — real paths are canonical ----------
+   Every page has a real path ("/gpu/h100-sxm", "/model/qwen3-32b", …);
+   in-app navigation goes through history.pushState, never a reload.
+   Legacy hash links ("#/board", "#/gpu/<id>", …) keep working forever:
+   on boot or on a hash change they are translated to the clean path
+   with replaceState. An unknown deep path falls back to Home. */
+var ROUTE_HEADS = { "compare-prices":1, "board":1, "find":1, "models":1, "news":1, "price-watch":1, "moves":1,
+  "calculator":1, "guides":1, "for-providers":1, "how-we-price":1, "search":1,
+  "gpu":1, "model":1, "provider":1, "guide":1, "hub":1, "story":1 };
+function isRouteHead(seg){ return !!ROUTE_HEADS[seg]; }
+/* The app may be mounted under a host path (the preview host serves it
+   from a sub-path; production serves it at the root). APP_BASE is that
+   mount prefix; canonical paths never include it. */
+var APP_BASE = (function(){
+  var pn = location.pathname || "/";
+  var segs = pn.split("/").filter(Boolean);
+  var hadIndex = segs.length && segs[segs.length - 1] === "index.html";
+  if (hadIndex) segs.pop();
+  for (var i = 0; i < segs.length; i++) if (isRouteHead(segs[i])) return i === 0 ? "/" : "/" + segs.slice(0, i).join("/") + "/";
+  if (hadIndex) return segs.length ? "/" + segs.join("/") + "/" : "/";
+  if (pn.charAt(pn.length - 1) === "/") return pn;
+  return segs.length ? pn + "/" : "/";
+})();
+function parseRouteString(str){
+  var parts = String(str == null ? "" : str).split("?");
   var path = parts[0].split("/").filter(Boolean);
   var params = {};
   (parts[1] || "").split("&").forEach(function(kv){ var p = kv.split("="); if (p[0]) params[p[0]] = decodeURIComponent(p[1] || ""); });
-  window.scrollTo(0, 0);
-  if (!path.length) return viewHome();
-  switch (path[0]) {
-    case "board": return viewBoard(params.model || null);
-    case "gpu": return viewGPU(path[1]);
-    case "provider": return viewProvider(path[1]);
-    case "find": findState.task = null; findState.model = null; return viewFind(params.task || null);
-    case "models": return viewModels();
-    case "model": return viewModel(path[1]);
-    case "calculator": return viewCalc();
-    case "guides": return viewGuides();
-    case "hub": return viewHub(path[1]);
-    case "guide": return viewGuide(path[1]);
-    case "moves": case "price-watch": return viewWatch();
-    case "news": return viewNews();
-    case "story": return viewStory(path[1]);
-    case "for-providers": return viewForProviders();
-    case "how-we-price": return viewHow();
-    case "search": return viewSearch(params.q || "");
-    default: return viewHome();
+  return routeFromSegments(path, params);
+}
+function routeFromSegments(path, params){
+  if (!path.length) return { name:"home", path:"/" };
+  var head = path[0], arg = null;
+  if (path[1]) { try { arg = decodeURIComponent(path[1]); } catch (e) { arg = path[1]; } }
+  switch (head){
+    case "board": case "compare-prices": {
+      var mid = params.model || null;
+      return { name:"board", model:mid, path:"/compare-prices" + (mid ? "?model=" + encodeURIComponent(mid) : "") };
+    }
+    case "gpu": return arg ? { name:"gpu", arg:arg, path:"/gpu/" + arg } : { name:"board", model:null, path:"/compare-prices" };
+    case "model": return arg ? { name:"model", arg:arg, path:"/model/" + arg } : { name:"models", path:"/models" };
+    case "provider": return arg ? { name:"provider", arg:arg, path:"/provider/" + arg } : { name:"home", path:"/" };
+    case "guide": return arg ? { name:"guide", arg:arg, path:"/guide/" + arg } : { name:"guides", path:"/guides" };
+    case "hub": return arg ? { name:"hub", arg:arg, path:"/hub/" + arg } : { name:"guides", path:"/guides" };
+    case "story": return arg ? { name:"story", arg:arg, path:"/story/" + arg } : { name:"news", path:"/news" };
+    case "find": return { name:"find", task:params.task || null, path:"/find" };
+    case "models": return { name:"models", path:"/models" };
+    case "news": return { name:"news", path:"/news" };
+    case "moves": case "price-watch": return { name:"price-watch", path:"/price-watch" };
+    case "calculator": return { name:"calculator", path:"/calculator" };
+    case "guides": return { name:"guides", path:"/guides" };
+    case "for-providers": return { name:"for-providers", path:"/for-providers" };
+    case "how-we-price": return { name:"how-we-price", path:"/how-we-price" };
+    case "search": { var q = params.q || ""; return { name:"search", q:q, path:"/search" + (q ? "?q=" + encodeURIComponent(q) : "") }; }
+    default: return { name:"home", path:"/" };
   }
 }
-window.addEventListener("hashchange", route);
+function urlFor(r){ return (APP_BASE === "/" ? "" : APP_BASE.slice(0, -1)) + r.path; }
+function routeFromLocation(){
+  var h = location.hash || "";
+  if (h.indexOf("#/") === 0) return { r:parseRouteString(h.slice(2)), legacy:true };
+  var pn = location.pathname || "/";
+  var rest = pn.indexOf(APP_BASE) === 0 ? pn.slice(APP_BASE.length) : pn.replace(/^\//, "");
+  return { r:parseRouteString(rest + (location.search || "")), legacy:false };
+}
+function dispatch(r){
+  window.scrollTo(0, 0);
+  switch (r.name){
+    case "board": viewBoard(r.model || null); break;
+    case "gpu": viewGPU(r.arg); break;
+    case "provider": viewProvider(r.arg); break;
+    case "find": findState.task = null; findState.model = null; viewFind(r.task || null); break;
+    case "models": viewModels(); break;
+    case "model": viewModel(r.arg); break;
+    case "calculator": viewCalc(); break;
+    case "guides": viewGuides(); break;
+    case "hub": viewHub(r.arg); break;
+    case "guide": viewGuide(r.arg); break;
+    case "price-watch": viewWatch(); break;
+    case "news": viewNews(); break;
+    case "story": viewStory(r.arg); break;
+    case "for-providers": viewForProviders(); break;
+    case "how-we-price": viewHow(); break;
+    case "search": viewSearch(r.q || ""); break;
+    default: viewHome();
+  }
+  setSEO(r);
+  rewriteInternalLinks();
+}
+function navigate(r, replace){
+  var url = urlFor(r);
+  try {
+    if (replace || (location.pathname + location.search) === url) history.replaceState(null, "", url);
+    else history.pushState(null, "", url);
+  } catch (e) {}
+  dispatch(r);
+}
+function route(){ /* kept as a public alias: re-resolve the current location */
+  var got = routeFromLocation();
+  if (got.legacy){ navigate(got.r, true); return; }
+  dispatch(got.r);
+}
+function rewriteInternalLinks(){
+  var as = document.querySelectorAll('a[href^="#/"]');
+  for (var i = 0; i < as.length; i++){
+    var r = parseRouteString(as[i].getAttribute("href").slice(2));
+    as[i].setAttribute("href", urlFor(r));
+  }
+}
+/* Views re-render fragments after dispatch (board and Price Watch
+   filters, the calculator) — keep their links in path form too. */
+if (window.MutationObserver){
+  new MutationObserver(function(){ rewriteInternalLinks(); }).observe(app, { childList:true, subtree:true });
+}
+/* In-app navigation: internal links move through pushState, never a reload. */
+document.addEventListener("click", function(e){
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  var a = (e.target && e.target.closest) ? e.target.closest("a[href]") : null;
+  if (!a || (a.target && a.target !== "_self")) return;
+  var href = a.getAttribute("href") || "";
+  var r = null;
+  if (href.indexOf("#/") === 0) r = parseRouteString(href.slice(2));
+  else if (href.charAt(0) === "/" && href.charAt(1) !== "/"){
+    if (APP_BASE !== "/" && href.indexOf(APP_BASE) !== 0) return; /* outside the mount — the browser handles it */
+    r = parseRouteString(href.slice(APP_BASE.length));
+  }
+  else return;
+  if (!r) return;
+  e.preventDefault();
+  navigate(r, false);
+});
+window.addEventListener("popstate", function(){
+  var got = routeFromLocation();
+  if (got.legacy){ navigate(got.r, true); return; }
+  dispatch(got.r);
+});
+window.addEventListener("hashchange", function(){
+  var h = location.hash || "";
+  if (h.indexOf("#/") === 0) navigate(parseRouteString(h.slice(2)), true);
+});
 (function(){
   var sf = document.getElementById("searchform"), si = document.getElementById("searchinput");
   if (sf && si){
@@ -2586,10 +2867,20 @@ window.addEventListener("hashchange", route);
 document.getElementById("searchform").addEventListener("submit", function(e){
   e.preventDefault();
   var v = document.getElementById("searchinput").value.trim();
-  location.hash = "#/search?q=" + encodeURIComponent(v);
-  if ((location.hash || "").indexOf("search") >= 0) route();
+  navigate(parseRouteString("search?q=" + encodeURIComponent(v)), false);
 });
-route();
+/* Boot: a legacy hash route is translated to its clean path
+   (replaceState, where the host allows); a non-canonical path —
+   "/board", a trailing "index.html" — is normalised the same way;
+   an unknown deep path falls back to Home, never a blank page. */
+(function boot(){
+  var got = routeFromLocation();
+  var target = urlFor(got.r);
+  if (got.legacy || (location.pathname + location.search) !== target){
+    try { history.replaceState(null, "", target); } catch (e) {}
+  }
+  dispatch(got.r);
+})();
 </script>
 
 </body>
