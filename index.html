@@ -433,7 +433,7 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
       <a href="#/board">Compare prices</a><a href="#/find">Find a GPU</a><a href="#/models">Models</a><a href="#/calculator">Work out the real cost</a>
       <a href="#/guides">Guides</a><a href="#/news">News</a><a href="#/price-watch">Price Watch</a><a href="#/for-providers">For providers</a><a href="#/how-we-price">How we price</a>
     </div>
-    <p class="checked" style="margin-top:16px">Prices last checked Oct 19, 2026 · Vast.ai is a live marketplace and updates hourly · <a href="#/how-we-price">How we price</a> · Corrections are published on that page, never quietly edited.</p>
+    <p class="checked" style="margin-top:16px">Prices last checked Oct 22, 2026 · Vast.ai is a live marketplace and updates hourly · <a href="#/how-we-price">How we price</a> · Corrections are published on that page, never quietly edited.</p>
   </div>
 </footer>
 <script>
@@ -472,7 +472,7 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
 })();
 </script>
 <script>
-/* ================= DATA — verified Oct 19, 2026 =================
+/* ================= DATA — baseline sweep Oct 19, 2026; daily check Oct 22, 2026 =================
    Prices: ~/workspace/gpu-blog/price-verification-2026-10-19.md
    (providers' own published pages only). Storage/download rates:
    storage-egress-verification-2026-10-19.md. Nothing unverified appears. */
@@ -743,7 +743,7 @@ function watchBadgeHTML(w, cls){
   return dirBadgeHTML(info.dir, info.text, cls || "dir-md", info.title);
 }
 function price2(n){return "$"+(Number(n)%1===0?Number(n).toFixed(2):String(Number(n)));}
-var CHECKED = "Checked Oct 19, 2026";
+var CHECKED = "Checked Oct 22, 2026";
 function hubName(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][1]; return slug; }
 function hubDesc(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][2]; return ""; }
 /* ---- Custom picker: the only dropdown control on the site (no native <select> anywhere).
@@ -1947,7 +1947,7 @@ function viewBoard(modelId){
   }
   s += "</div>";
   s += '<div class="offer"><div class="offer-top"><span class="prov"><a href="#/provider/vast">Vast.ai</a></span><span class="note">Live marketplace — prices move hourly</span><a class="launch" href="' + PROVIDER_URL["Vast.ai"] + '" target="_blank" rel="noopener">See live listings ↗</a></div></div>';
-  s += '<p class="small" style="margin-top:22px">This board holds <b style="color:var(--ink)">' + TOTAL_PRICES + " verified prices</b> from " + TOTAL_PROVIDERS + " providers across " + TOTAL_VARIANTS + ' GPU variants, last checked Oct 19, 2026. Every figure is read from the provider\'s own published pages — <a href="#/how-we-price">How we price</a>. Node offers are shown by their total price first, with the per-GPU equivalent second.</p>';
+  s += '<p class="small" style="margin-top:22px">This board holds <b style="color:var(--ink)">' + TOTAL_PRICES + " verified prices</b> from " + TOTAL_PROVIDERS + " providers across " + TOTAL_VARIANTS + ' GPU variants, last checked Oct 22, 2026. Every figure is read from the provider\'s own published pages — <a href="#/how-we-price">How we price</a>. Node offers are shown by their total price first, with the per-GPU equivalent second.</p>';
   app.innerHTML = s;
   var q = document.getElementById("board-q"), box = document.getElementById("board-groups");
   wireTapFocus(q);
@@ -1999,7 +1999,7 @@ function viewGPU(id){
   s += '<div class="kv">';
   s += '<div class="cell"><div class="k">Lowest verified price</div><div class="v">' + (b ? money(b.price) + "/hr" : "—") + '</div><div class="small">' + (b ? "from <b style=\"color:var(--ink)\">" + esc(b.prov) + "</b>" + (function(){ var hi = histInfoFor(g, b.prov, b.price); return hi ? " &nbsp;" + dirBadgeHTML(hi.dir, (hi.dir === "down" ? "Cut " : "Rise ") + hi.pct + "%", "dir-sm", hi.title) : ""; })() : "No published price") + "</div></div>";
   s += '<div class="cell"><div class="k">Providers offering it</div><div class="v">' + Object.keys(companies).length + "</div><div class=\"small\">checked against their own pages</div></div>";
-  s += '<div class="cell"><div class="k">Last checked</div><div class="v" style="font-size:16px;padding-top:4px">Oct 19, 2026</div><div class="small"><a href="#/how-we-price">How we price</a></div></div>';
+  s += '<div class="cell"><div class="k">Last checked</div><div class="v" style="font-size:16px;padding-top:4px">Oct 22, 2026</div><div class="small"><a href="#/how-we-price">How we price</a></div></div>';
   s += "</div>";
   if (g.hist) s += "<h2>Price history</h2>" + '<div class="infobox">' + sparkSVG(g.hist, 300, 84) + "</div>";
   s += "<h2>All offers — cheapest first</h2>";
