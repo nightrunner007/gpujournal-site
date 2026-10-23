@@ -153,7 +153,9 @@ h3{font-size:17px;margin:24px 0 8px;font-weight:600}
 .spark .checked{margin-top:3px}
 /* price history — GPU page chart panel, drawn from the banked check series */
 .phist{border:1px solid var(--line2);background:var(--panel);border-radius:var(--radius);padding:18px 20px 12px;margin:18px 0;box-shadow:var(--shadow)}
-.phist svg{display:block;width:100%;height:auto;max-width:600px}
+/* direct child only: this rule sizes the chart SVG. It must never match the
+   small direction-triangle SVG inside the summary badge below the chart. */
+.phist>svg{display:block;width:100%;height:auto;max-width:600px}
 .phist .ph-cap{font-size:15px;color:var(--ink);margin:12px 0 2px}
 .phist .ph-sum{font-size:14.5px;color:var(--ink2);margin:5px 0}
 .phist .ph-sum b{color:var(--ink)}
@@ -213,7 +215,7 @@ h3{font-size:17px;margin:24px 0 8px;font-weight:600}
    verified previous price exists. Cut = green (good for the renter),
    rise = soft red (caution). The triangle is a drawn vector, never an emoji. */
 .dir{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-weight:700;white-space:nowrap;vertical-align:middle;border-radius:999px;line-height:1.2;flex:none}
-.dir svg{flex:none;display:block}
+.dir svg{flex:none;display:block;max-width:14px;max-height:13px}
 .dir-down{color:var(--green);background:var(--green-bg);border:1px solid var(--best-border)}
 .dir-up{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
 .dir-sm{font-size:11.5px;padding:3px 7px}
@@ -1824,22 +1826,51 @@ function phStepPath(pts, X, Y){
   return d;
 }
 function histChartSVG(pts){
-  var W = 400, H = 196, padL = 36, padR = 36, plotTop = 36, plotBot = 156;
+  /* Plot geometry: generous inner padding on every side so value and date
+     labels always sit fully inside the chart; a shorter plot (176 tall)
+     keeps the step legible without a void of dead space. Left padding
+     leaves room for the y-axis tick labels. */
+  var W = 400, H = 176, padL = 48, padR = 40, plotTop = 44, plotBot = 146, dateY = 166;
   var vals = pts.map(function(p){ return Number(p[1]); });
   var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals), flat = (max === min);
   var X = function(i){ return padL + i * (W - padL - padR) / (pts.length - 1); };
   var Y = function(v){ return flat ? (plotTop + plotBot) / 2 : plotBot - (v - min) / (max - min) * (plotBot - plotTop); };
   var aria = "Price history — lowest verified price: " + pts.map(function(p){ return phLabel(p[0]) + " " + money(p[1]) + " at " + p[2]; }).join(", ");
   var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(aria) + '">';
-  s += '<text x="0" y="14" style="font-family:var(--mono);font-size:10.5px" fill="var(--dim)">$/GPU/hr</text>';
-  s += '<line x1="' + padL + '" y1="' + plotBot + '" x2="' + (W - padR) + '" y2="' + plotBot + '" stroke="var(--line2)" stroke-width="1"/>';
+  s += '<text x="0" y="15" style="font-family:var(--mono);font-size:10.5px" fill="var(--dim)">$/GPU/hr</text>';
+  /* Faint horizontal gridlines with small mono tick labels: the series
+     high, a mid value, and the low (a single line at the value when flat). */
+  var ticks = flat ? [min] : [max, Math.round(((min + max) / 2) * 100) / 100, min];
+  ticks = ticks.filter(function(t, i){ return ticks.indexOf(t) === i; });
+  ticks.forEach(function(t){
+    var gy = Math.round(Y(t)) + 0.5;
+    s += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="var(--line)" stroke-width="1"/>';
+    s += '<text x="' + (padL - 7) + '" y="' + (Y(t) + 3.5).toFixed(1) + '" text-anchor="end" style="font-family:var(--mono);font-size:10px" fill="var(--mut)">' + money(t) + "</text>";
+  });
+  s += '<line x1="' + padL + '" y1="' + (plotBot + 0.5) + '" x2="' + (W - padR) + '" y2="' + (plotBot + 0.5) + '" stroke="var(--line2)" stroke-width="1"/>';
   s += '<path d="' + phStepPath(pts, X, Y) + '" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
   pts.forEach(function(p, i){
-    s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="3.5" fill="var(--amber)" stroke="var(--panel)" stroke-width="1.5"/>';
-    if (phIsKey(pts, i) || pts.length <= 6){
-      s += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(p[1]) - 10).toFixed(1) + '" text-anchor="middle" style="font-family:var(--mono);font-size:12px;font-weight:600" fill="var(--ink)">' + money(p[1]) + "</text>";
-      s += '<text x="' + X(i).toFixed(1) + '" y="176" text-anchor="middle" style="font-family:var(--mono);font-size:11px" fill="var(--mut)">' + phLabel(p[0]) + "</text>";
+    var cx = X(i), cy = Y(p[1]), v = Number(p[1]);
+    s += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.5" fill="var(--amber)" stroke="var(--panel)" stroke-width="1.5"/>';
+    if (!(phIsKey(pts, i) || pts.length <= 6)) return;
+    /* Value label: above the point by default, clamped inside the plot.
+       At the bottom of a drop the step line falls through the space above
+       the point, so the label sits beside the point, above the new level,
+       on whichever side has room — never under the line. At the foot of a
+       rise with points packed tight, it shifts left of the riser. */
+    var label = money(v), half = label.length * 3.8 + 3, lx, anchor, ly = cy - 10;
+    if (i > 0 && v < Number(pts[i-1][1])){
+      if (cx - 11 - half * 2 >= padL - 8){ lx = cx - 11; anchor = "end"; }
+      else { lx = cx + 11; anchor = "start"; }
+    } else if (i < pts.length - 1 && Number(pts[i+1][1]) > v && (X(i+1) - cx) < half + 8 && cx - 11 - half * 2 >= 0){
+      lx = cx - 11; anchor = "end";
+    } else {
+      lx = Math.max(half, Math.min(W - half, cx)); anchor = "middle";
     }
+    s += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '" style="font-family:var(--mono);font-size:12px;font-weight:600" fill="var(--ink)">' + label + "</text>";
+    var dl = phLabel(p[0]), dh = dl.length * 3.4 + 3;
+    var dx = Math.max(dh, Math.min(W - dh, cx));
+    s += '<text x="' + dx.toFixed(1) + '" y="' + dateY + '" text-anchor="middle" style="font-family:var(--mono);font-size:11px" fill="var(--mut)">' + dl + "</text>";
   });
   s += "</svg>";
   return s;
