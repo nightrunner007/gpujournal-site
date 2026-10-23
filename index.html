@@ -150,6 +150,17 @@ h3{font-size:17px;margin:24px 0 8px;font-weight:600}
 .critic b.g{color:var(--green)} .critic b.n{color:var(--red)}
 .spark{margin-left:auto;text-align:right}
 .spark svg{display:block}
+.spark .checked{margin-top:3px}
+/* price history — GPU page chart panel, drawn from the banked check series */
+.phist{border:1px solid var(--line2);background:var(--panel);border-radius:var(--radius);padding:18px 20px 12px;margin:18px 0;box-shadow:var(--shadow)}
+.phist svg{display:block;width:100%;height:auto;max-width:600px}
+.phist .ph-cap{font-size:15px;color:var(--ink);margin:12px 0 2px}
+.phist .ph-sum{font-size:14.5px;color:var(--ink2);margin:5px 0}
+.phist .ph-sum b{color:var(--ink)}
+.phist .ph-sum .mono{font-family:var(--mono);color:var(--amber);font-weight:600;white-space:nowrap}
+.phist .ph-note{font-size:14px;color:var(--ink2);margin:5px 0}
+.phist .ph-note b{color:var(--ink)}
+.phist .ph-base{font-size:13px;color:var(--mut);margin:9px 0 2px}
 .gcrit{order:1;flex:1 1 100%}
 .glaunch{margin-left:auto;display:inline-flex;align-items:center;gap:9px;background:var(--amber-fill);color:var(--btn-ink);font-weight:700;font-size:15px;line-height:1.25;padding:10px 18px;min-height:44px;border:1px solid var(--amber-fill);border-radius:9px;white-space:nowrap}
 .glaunch:hover{background:var(--btn-hover);border-color:var(--btn-hover);text-decoration:none}
@@ -599,6 +610,38 @@ function genRank(g){ var a = g.arch || ""; if (a.indexOf("Blackwell") >= 0) retu
 function vramGB(g){ var m = /^(\d+(?:\.\d+)?)\s*GB/.exec(g.vram || ""); return m ? parseFloat(m[1]) : 0; }
 function histChange(g){ if (!g.hist || !g.hist.pts || g.hist.pts.length < 2) return null; var p = g.hist.pts, f = p[0][1], l = p[p.length - 1][1]; return f ? (l - f) / f : null; }
 function finderOrder(taskId){ var ranked = (typeof FIND_RANKED !== "undefined" && FIND_RANKED[taskId]) || []; var order = {}, n = 0; ranked.forEach(function(pair){ var gid = (typeof NAME2GPU !== "undefined") ? NAME2GPU[pair[0]] : null; if (gid && !(gid in order)) order[gid] = n++; }); return function(g){ return (g.id in order) ? order[g.id] : 10000 + GPUS.indexOf(g); }; }
+/* ================= PRICE HISTORY — banked check series =================
+   The lowest verified on-demand price (the Best offer) for each GPU on
+   each check date, with the provider holding it. Generated from the
+   banked price-history dataset (snapshots 2026-10-19 full sweep and
+   2026-10-22 corroboration). Points are real dated checks only — a step
+   line, never interpolated. The RTX 4090 carries one earlier recorded
+   point: nafnaf.ai's $0.48 on Oct 13, 2026 (the provider holding the
+   best offer at every snapshot date; the cut is in MOVES / Price Watch).
+   Daily update: append one [date, price, provider] entry per GPU.
+   Variants with no verified priced offers (GB200 NVL72) have no series
+   and render no history section. */
+var PHIST = {
+ "b300":[["2026-10-19",7.4,"Hyperstack"],["2026-10-22",7.4,"Hyperstack"]],
+ "b200":[["2026-10-19",5.98,"RunPod Community"],["2026-10-22",5.98,"RunPod Community"]],
+ "h200":[["2026-10-19",3.59,"RunPod Community"],["2026-10-22",3.59,"RunPod Community"]],
+ "h100-sxm":[["2026-10-19",2.25,"TensorDock"],["2026-10-22",2.25,"TensorDock"]],
+ "h100":[["2026-10-19",4.5,"Nebius"],["2026-10-22",4.5,"Nebius"]],
+ "h100-pcie":[["2026-10-19",1.99,"RunPod Community"],["2026-10-22",1.99,"RunPod Community"]],
+ "h100-nvlink":[["2026-10-19",2.6,"Hyperstack"],["2026-10-22",2.6,"Hyperstack"]],
+ "h100-nvl":[["2026-10-19",2.59,"RunPod Community"],["2026-10-22",2.59,"RunPod Community"]],
+ "a100-80gb":[["2026-10-19",1.09,"Thunder Compute"],["2026-10-22",1.09,"Thunder Compute"]],
+ "a100-40gb":[["2026-10-19",1.52,"Verda"],["2026-10-22",1.52,"Verda"]],
+ "l40s":[["2026-10-19",0.79,"RunPod Community"],["2026-10-22",0.79,"RunPod Community"]],
+ "l40":[["2026-10-19",0.79,"Thunder Compute"],["2026-10-22",0.79,"Thunder Compute"]],
+ "rtx-4090":[["2026-10-13",0.48,"nafnaf.ai"],["2026-10-19",0.2,"nafnaf.ai"],["2026-10-22",0.2,"nafnaf.ai"]],
+ "rtx-5090":[["2026-10-19",0.69,"RunPod Community"],["2026-10-22",0.69,"RunPod Community"]],
+ "rtx-pro-6000":[["2026-10-19",1.69,"RunPod Community"],["2026-10-22",1.69,"RunPod Community"]],
+ "rtx-pro-6000-maxq":[["2026-10-19",0.42,"nafnaf.ai"],["2026-10-22",0.42,"nafnaf.ai"]],
+ "gh200":[["2026-10-19",6.5,"CoreWeave"],["2026-10-22",6.5,"CoreWeave"]],
+ "rtx-a6000":[["2026-10-19",0.35,"Thunder Compute"],["2026-10-22",0.35,"Thunder Compute"]],
+ "gb300":[["2026-10-19",11.82,"Verda"],["2026-10-22",11.82,"Verda"]]
+};
 /* Coverage totals as stated by the governing record (price-verification-2026-10-19.md):
    155 verified prices, 12 providers, 22 GPU variants, checked Oct 19, 2026. */
 var TOTAL_PRICES = 155;
@@ -1764,6 +1807,80 @@ function sparkSVG(hist, w, h){
   s += '<div class="checked">' + esc(hist.label) + ": " + pts.map(function(p){ return esc(p[0])+" "+money(p[1]); }).join(" → ") + "</div>";
   return s;
 }
+/* ---- Price history (PHIST): best-offer series as a step chart ----
+   Prices hold between checks, then jump: the line steps at each dated
+   check and is never smoothed or interpolated. */
+var PH_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function phLabel(iso, withYear){
+  var p = String(iso).split("-"); if (p.length < 3) return String(iso);
+  var s = PH_MONTHS[Number(p[1]) - 1] + " " + Number(p[2]);
+  return withYear ? s + ", " + p[0] : s;
+}
+function phSeries(g){ return (typeof PHIST !== "undefined" && g && PHIST[g.id] && PHIST[g.id].length >= 2) ? PHIST[g.id] : null; }
+function phIsKey(pts, i){ return i === 0 || i === pts.length - 1 || pts[i][1] !== pts[i-1][1] || pts[i][2] !== pts[i-1][2]; }
+function phStepPath(pts, X, Y){
+  var d = "M" + X(0).toFixed(1) + "," + Y(pts[0][1]).toFixed(1);
+  for (var i = 1; i < pts.length; i++) d += " H" + X(i).toFixed(1) + " V" + Y(pts[i][1]).toFixed(1);
+  return d;
+}
+function histChartSVG(pts){
+  var W = 400, H = 196, padL = 36, padR = 36, plotTop = 36, plotBot = 156;
+  var vals = pts.map(function(p){ return Number(p[1]); });
+  var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals), flat = (max === min);
+  var X = function(i){ return padL + i * (W - padL - padR) / (pts.length - 1); };
+  var Y = function(v){ return flat ? (plotTop + plotBot) / 2 : plotBot - (v - min) / (max - min) * (plotBot - plotTop); };
+  var aria = "Price history — lowest verified price: " + pts.map(function(p){ return phLabel(p[0]) + " " + money(p[1]) + " at " + p[2]; }).join(", ");
+  var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(aria) + '">';
+  s += '<text x="0" y="14" style="font-family:var(--mono);font-size:10.5px" fill="var(--dim)">$/GPU/hr</text>';
+  s += '<line x1="' + padL + '" y1="' + plotBot + '" x2="' + (W - padR) + '" y2="' + plotBot + '" stroke="var(--line2)" stroke-width="1"/>';
+  s += '<path d="' + phStepPath(pts, X, Y) + '" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  pts.forEach(function(p, i){
+    s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="3.5" fill="var(--amber)" stroke="var(--panel)" stroke-width="1.5"/>';
+    if (phIsKey(pts, i) || pts.length <= 6){
+      s += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(p[1]) - 10).toFixed(1) + '" text-anchor="middle" style="font-family:var(--mono);font-size:12px;font-weight:600" fill="var(--ink)">' + money(p[1]) + "</text>";
+      s += '<text x="' + X(i).toFixed(1) + '" y="176" text-anchor="middle" style="font-family:var(--mono);font-size:11px" fill="var(--mut)">' + phLabel(p[0]) + "</text>";
+    }
+  });
+  s += "</svg>";
+  return s;
+}
+function seriesSparkHTML(g){
+  var pts = phSeries(g);
+  if (!pts) return sparkSVG(g.hist, 132, 40);
+  var w = 132, h = 40;
+  var vals = pts.map(function(p){ return Number(p[1]); });
+  var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals), flat = (max === min);
+  var X = function(i){ return 4 + i * (w - 8) / (pts.length - 1); };
+  var Y = function(v){ return flat ? h / 2 : h - 5 - (v - min) / (max - min) * (h - 10); };
+  var s = '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Price history — lowest verified price: ' +
+    pts.map(function(p){ return phLabel(p[0]) + " " + money(p[1]); }).join(", ") + '">';
+  s += '<path d="' + phStepPath(pts, X, Y) + '" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  pts.forEach(function(p, i){ s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="2.5" fill="var(--amber)"/>'; });
+  s += "</svg>";
+  s += '<div class="checked">Lowest verified: ' + pts.map(function(p){ return phLabel(p[0]) + " " + money(p[1]); }).join(" → ") + "</div>";
+  return s;
+}
+function priceHistoryHTML(g){
+  var pts = phSeries(g); if (!pts) return "";
+  var first = pts[0], last = pts[pts.length - 1];
+  var s = "<h2>Price history</h2>" + '<div class="phist">' + histChartSVG(pts);
+  s += '<p class="ph-cap">Lowest verified price on each day we checked.</p>';
+  s += '<p class="ph-sum">' + phLabel(first[0], 1) + ': <span class="mono">' + money(first[1]) + '</span> at <b>' + esc(first[2]) + '</b> &nbsp;→&nbsp; ' + phLabel(last[0], 1) + ': <span class="mono">' + money(last[1]) + '</span> at <b>' + esc(last[2]) + "</b>";
+  if (Number(last[1]) !== Number(first[1])){
+    var dir = Number(last[1]) < Number(first[1]) ? "down" : "up";
+    var pct = Math.round(Math.abs(Number(last[1]) - Number(first[1])) / Number(first[1]) * 100);
+    var title = (dir === "down" ? "Price cut" : "Price rise") + " since the first check: " + money(first[1]) + " on " + phLabel(first[0], 1) + " → " + money(last[1]) + " on " + phLabel(last[0], 1);
+    s += " &nbsp;" + dirBadgeHTML(dir, (dir === "down" ? "Cut " : "Rise ") + pct + "%", "dir-md", title);
+  }
+  s += "</p>";
+  if (Number(last[1]) === Number(first[1])) s += '<p class="ph-note">No change since our daily checks began.</p>';
+  for (var i = 1; i < pts.length; i++){
+    if (pts[i][2] !== pts[i-1][2]) s += '<p class="ph-note">Best offer moved to <b>' + esc(pts[i][2]) + "</b> on " + phLabel(pts[i][0], 1) + ".</p>";
+  }
+  s += '<p class="ph-base">Our daily checks began Oct 19, 2026 — this history grows by one point every day.</p>';
+  s += "</div>";
+  return s;
+}
 function offerRowHTML(g, o, showGpu){
   var best = bestOffer(g), spot = bestSpot(g);
   var isBest = best && o.price != null && o.kind === "On-demand" && o.prov === best.prov && o.price === best.price;
@@ -1815,7 +1932,7 @@ function groupHTML(g, opts){
   else if (opts.rack) h += '<div style="margin-top:9px"><span class="tag type">Rack system · 72 GPUs</span></div>';
   else if (opts.nofit) h += '<div style="margin-top:9px"><span class="tag type">Needs more than one GPU</span></div>';
   h += "</div>";
-  if (g.hist) h += '<div class="spark">' + sparkSVG(g.hist, 132, 40) + "</div>";
+  if (g.hist) h += '<div class="spark">' + seriesSparkHTML(g) + "</div>";
   h += headerLaunchHTML(g, opts);
   h += '<div class="gcrit"><p class="critic" style="margin-bottom:2px"><b class="g">Good for:</b> ' + esc(g.good) + '</p><p class="critic" style="margin-top:2px"><b class="n">Not good for:</b> ' + esc(g.notgood) + "</p></div>";
   h += "</div>";
@@ -2024,7 +2141,7 @@ function viewGPU(id){
   s += '<div class="cell"><div class="k">Providers offering it</div><div class="v">' + Object.keys(companies).length + "</div><div class=\"small\">checked against their own pages</div></div>";
   s += '<div class="cell"><div class="k">Last checked</div><div class="v" style="font-size:16px;padding-top:4px">Oct 22, 2026</div><div class="small"><a href="#/how-we-price">How we price</a></div></div>';
   s += "</div>";
-  if (g.hist) s += "<h2>Price history</h2>" + '<div class="infobox">' + sparkSVG(g.hist, 300, 84) + "</div>";
+  s += priceHistoryHTML(g);
   s += "<h2>All offers — cheapest first</h2>";
   priced(g).forEach(function(o){ s += offerRowHTML(g, o, false); });
   offersOf(g).filter(function(o){ return o.price == null; }).forEach(function(o){ s += offerRowHTML(g, o, false); });
