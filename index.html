@@ -799,7 +799,7 @@ function watchBadgeHTML(w, cls){
   return dirBadgeHTML(info.dir, info.text, cls || "dir-md", info.title);
 }
 function price2(n){return "$"+(Number(n)%1===0?Number(n).toFixed(2):String(Number(n)));}
-var CHECKED = "Checked Oct 22, 2026";
+var CHECKED = "Checked Oct 23, 2026";
 function hubName(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][1]; return slug; }
 function hubDesc(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][2]; return ""; }
 /* ---- Custom picker: the only dropdown control on the site (no native <select> anywhere).
@@ -1171,6 +1171,77 @@ var ARTICLES = [
     { title:"Wait for the weights", body:"Mistral's earlier Voxtral launches were open from day one, which is why this one's closed start surprised the field. If your project can wait, the cheapest research you will ever do is checking Hugging Face again in a few weeks — this guide will be updated the day the position changes." }
   ],
   related:["deploy-qwen-32b-on-a-single-gpu-with-vllm","vllm-flags-that-actually-matter","true-cost-of-renting-a-gpu"]
+},
+{
+  slug:"minimax-m31-flash-self-host", hubSlug:"model-deployment",
+  title:"Self-host MiniMax M3.1 Flash: The Real Multi-GPU Maths",
+  excerpt:"For teams eyeing the weights that landed on Hugging Face on 23 October 2026 and asking a simple question: can we run this ourselves, and what would it actually take? MiniMax M3.1 Flash is a 428B mixture-of-experts model (~23B active per token) that handles text, images and video, with a context window of up to 1 million tokens. It is big, it is capable, and it does not fit on one card. This guide shows the memory maths plainly, the smallest node that honestly works, and what that node costs today.",
+  publishedDate:"2026-10-23", readMinutes:9,
+  tldr:[
+    { label:"Can one card run it?", vram:"192GB", bestFit:"No. The largest single card we track, the B200 at 192GB, sits under even the 4-bit floor of 214GB for the weights alone.", price:"—" },
+    { label:"Smallest honest FP8 node", vram:"768GB", bestFit:"4 x B200 = 768GB. Enough for the FP8 weights with headroom, plus real room for the context cache.", price:"$23.92/hr" },
+    { label:"Cheapest honest route", vram:"4 x B200", bestFit:"RunPod Community — $23.92 per hour for the 4 x B200 node ($5.98 per GPU per hour). Price checked 23 Oct 2026.", price:"$23.92/hr" },
+    { label:"Read this before you rent anything", vram:"576GB", bestFit:"A 3 x B200 node (576GB) looks cheaper and clears the headline number on paper. It leaves only about 60GB across the whole node for the context cache. That is too tight to recommend, so this guide does not recommend it.", price:"—" },
+    { label:"The alternative", vram:"—", bestFit:"Use the API: $0.15 in / $0.60 out per 1M tokens, cached input $0.015. No servers to run.", price:"$0.15/$0.60 per 1M" }
+  ],
+  metricTitle:"The maths, plainly",
+  metricBody:"Memory starts with one simple sum: parameters x bytes per parameter. M3.1 Flash has 428 billion parameters in total, and the format decides how many bytes each one takes. FP8 — the format the weights arrived in — needs about 428GB for the weights alone, about 514GB with headroom: the headline case. Squeezed further to 4-bit, the weights are about 214GB, about 257GB with headroom — smaller, with a quality trade-off to test. At full BF16 precision the weights are about 856GB, about 1,027GB with headroom, shown so the FP8 saving is clear. The headroom is our house rule: a model needs more than its weights in memory — the serving software, temporary working space and room to breathe — so we add about 20% on top of the weights before any node is called honest. A node that only just fits the weights is not a node that serves people well. And why does 'only ~23B active' not shrink the memory? This is a mixture-of-experts model: for each token, only about 23 billion of its 428 billion parameters do the work, which is what makes it fast for its size — but all 428 billion parameters still have to live in memory, ready to be called. Active parameters save compute. They do not save memory. One more warning, and it matters: every figure above is before the KV cache — the memory that holds the conversation as it grows. A full 1M-token cache for a model of this class can run to hundreds of GB and can rival the weights themselves; the exact size is not yet verified. In practice, deployments cap the serving context well below 1M. If you truly need the full 1M context, step up a node size — do not squeeze it onto the smallest node.",
+  nodeTables:[
+    { heading:"Nodes that honestly fit — FP8, the headline case",
+      intro:"Needs about 514GB plus cache room. Smallest honest node: 4 x B200 = 768GB. Every price below comes from GPUJournal's daily price check dated 23 October 2026, except Hyperstack, which is carried from 22 October 2026 and labelled as such. Node totals are the per-GPU rate multiplied by the number of cards.",
+      launchHref:"#/gpu/b200",
+      rows:[
+        ["RunPod Community","4 x B200","$5.98","$23.92","23 Oct 2026"],
+        ["Hyperstack","4 x B200","$6.00","$24.00","Carried 22 Oct"],
+        ["Lambda","4 x B200","$6.69","$26.76","23 Oct 2026"],
+        ["RunPod Secure","4 x B200","$7.99","$31.96","23 Oct 2026"],
+        ["Verda","4 x B200","$8.36","$33.44","23 Oct 2026"],
+        ["Nebius","4 x B200","$8.50","$34.00","23 Oct 2026"]
+      ],
+      after:"More comfortable: 8 x H200 — 1,128GB in total, from $28.72/hr on RunPod Community ($3.59 per GPU/hr, 23 Oct 2026). More cache room, easier long conversations. Roomiest: 8 x B200 — 1,536GB in total; CoreWeave sells it as a full node at $68.80 per node/hr (23 Oct 2026), the option for serious long-context serving." },
+    { heading:"4-bit — the smaller path",
+      intro:"Needs about 257GB plus cache room. Smallest honest node: 2 x B200 = 384GB. (2 x H200 = 282GB clears the line by only about 25GB, so it is not recommended.)",
+      launchHref:"#/gpu/b200",
+      rows:[
+        ["RunPod Community","2 x B200","$5.98","$11.96","23 Oct 2026"],
+        ["Hyperstack","2 x B200","$6.00","$12.00","Carried 22 Oct"],
+        ["Lambda","2 x B200","$6.69","$13.38","23 Oct 2026"],
+        ["RunPod Secure","2 x B200","$7.99","$15.98","23 Oct 2026"]
+      ] }
+  ],
+  nodeTablesNote:"Source for all tables: GPUJournal daily price check, 23 October 2026 (Hyperstack carried from 22 October 2026). Prices change — check the live board before you commit. Node totals = per-GPU rate x card count.",
+  costTitle:"Self-host, or use the API?",
+  costBody:"Self-hosting gives you control. The API gives you none of the work. The API costs $0.15 input / $0.60 output per 1M tokens, with cached input at $0.015 — prices as reported by MiniMax. You pay only for tokens you use, and there are no servers to rent or maintain; it is best for casual or bursty use. Self-hosting FP8 starts at $23.92/hr for the cheapest honest node (23 Oct 2026) — and that hourly cost runs whether you serve one token or a million. You get full control over the deployment, but you run, monitor and fix the node, and it only wins at sustained, high volume. What we will not invent: a break-even number. There is no verified throughput figure — no trustworthy tokens-per-second measurement for this model on these cards yet — and without one, any break-even claim would be a guess dressed up as maths. The honest position: break-even against the API must be measured on the node you actually rent. Rent for a day, measure your real workload, then decide. Casual or bursty use: the API wins by a wide margin.",
+  steps:[
+    { title:"Rent an honest node", body:"Start with 4 x B200 for FP8, or 2 x B200 for the 4-bit path. Do not start smaller to save money — a node that cannot hold the model serves nobody." },
+    { title:"Download the FP8 weights as released", body:"Fetch the weights from Hugging Face (released 23 October 2026). Use the FP8 format as the headline case; treat 4-bit as a further squeeze to test, not the default." },
+    { title:"Serve it with a confirmed engine", body:"vLLM, SGLang, or Docker Model Runner — the engines confirmed at release. Spread the model across all cards on the node; no single card holds it." },
+    { title:"Set a sensible context cap", body:"Start well below 1M tokens, watch cache memory under real load, and only raise the cap when the numbers say there is room." },
+    { title:"Measure before you commit", body:"Record your real throughput and cost per million tokens on your own workload — that measurement, not a headline, tells you whether self-hosting beats the API for you." }
+  ],
+  licenceTitle:"The licence, in plain words",
+  licenceBody:"Licence: MiniMax Community License. Commercial use is allowed — but which rule applies depends on your revenue. Revenue under $20M: you may use it commercially; you must send a notification email to MiniMax, and show a visible 'Built with MiniMax M3.1-Flash' credit. Revenue over $20M: you need written authorisation from MiniMax first, before you deploy. Military use is prohibited — in all cases. This is a plain-words summary for planning, not legal advice. Read the full licence text before a commercial launch.",
+  honestyTitle:"What we verified — and what we did not",
+  honestyVerified:[
+    "428B total / ~23B active, 1M context, text + image + video — from MiniMax's own launch posts and the Hugging Face card",
+    "FP8 weights released on Hugging Face, 23 Oct 2026",
+    "Serving engines: vLLM, SGLang, Docker Model Runner",
+    "Node prices from the daily check, 23 Oct 2026",
+    "Licence terms, disclosed 23 Oct 2026"
+  ],
+  honestyUnverified:[
+    "Exact KV-cache size at full 1M context — it can run to hundreds of GB; the exact figure needs the released configuration read directly",
+    "Throughput (tokens/sec) — no verified figure exists yet, so no break-even number is claimed",
+    "Hyperstack prices are carried from 22 Oct 2026, not re-read on 23 Oct 2026"
+  ],
+  honestyNote:"One note on the numbers: a secondary source cites 456B total / 45.9B active parameters. This guide uses the primary-source figures — 428B / ~23B — from MiniMax itself.",
+  honestyBottom:"M3.1 Flash is a multi-GPU model, full stop. The smallest honest home for it is 4 x B200 at $23.92/hr (23 Oct 2026), the comfortable home is bigger, and for most teams the API at $0.15 / $0.60 per 1M tokens is the sensible place to start — until your own measured volume proves otherwise.",
+  exits:[
+    ["MiniMax M3.1 Flash — GPUs ranked for this model","#/board?model=minimax-m3-1-flash"],
+    ["MiniMax M3.1 Flash — facts and memory maths","#/model/minimax-m3-1-flash"],
+    ["B200 — today's prices and offers","#/gpu/b200"]
+  ],
+  related:["deploy-qwen-32b-on-a-single-gpu-with-vllm","run-voxtral-3-yourself","true-cost-of-renting-a-gpu"]
 }
 ];
 var FIND_RANKED = {
@@ -1747,6 +1818,9 @@ function viewModel(id){
       s += cheapestRunHTML(m);
       s += '<p style="margin-top:18px"><a class="btn" href="#/board?model=' + m.id + '">Select a GPU</a> &nbsp;<span class="small">See these GPUs on the prices board, ranked for this model.</span></p>';
     }
+  }
+  if (m.id === "minimax-m3-1-flash"){
+    s += '<p style="margin-top:18px"><a class="btn" href="#/guide/minimax-m31-flash-self-host">Read the guide: Self-host MiniMax M3.1 Flash — the real multi-GPU maths</a></p>';
   }
   app.innerHTML = s;
 }
@@ -2456,6 +2530,18 @@ function viewGuide(slug){
     });
     s += "</tbody></table>";
   }
+  if (a.nodeTables && a.nodeTables.length){
+    a.nodeTables.forEach(function(t){
+      s += "<h3>" + esc(t.heading) + "</h3><p>" + esc(t.intro) + "</p>";
+      s += '<table><thead><tr><th>Provider</th><th>Cards</th><th>$/GPU/hr</th><th>Node $/hr</th><th>Price date</th><th></th></tr></thead><tbody>';
+      t.rows.forEach(function(r){
+        s += "<tr><td><b>" + esc(r[0]) + "</b></td><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td><td>" + esc(r[3]) + "</td><td>" + esc(r[4]) + '</td><td><a href="' + (t.launchHref || "#/gpu/b200") + '">Launch ↗</a></td></tr>';
+      });
+      s += "</tbody></table>";
+      if (t.after) s += "<p>" + esc(t.after) + "</p>";
+    });
+    if (a.nodeTablesNote) s += '<p class="small">' + esc(a.nodeTablesNote) + "</p>";
+  }
   if (a.costTitle) s += "<h2>" + esc(a.costTitle) + "</h2><p>" + esc(a.costBody) + "</p>";
   s += "</div>";
   if (a.steps && a.steps.length){
@@ -2466,9 +2552,33 @@ function viewGuide(slug){
     s += "<h2>Alternatives</h2>";
     a.alternatives.forEach(function(al){ s += '<div class="infobox"><b>' + esc(al.title) + '</b><p style="color:var(--ink2);margin:6px 0 0">' + esc(al.body) + "</p></div>"; });
   }
+  if (a.licenceTitle){
+    s += '<div class="infobox"><h3 style="margin-top:0">' + esc(a.licenceTitle) + '</h3><p style="color:var(--ink2);margin:0">' + esc(a.licenceBody) + "</p></div>";
+  }
+  if (a.honestyTitle){
+    s += '<div class="infobox"><h3 style="margin-top:0">' + esc(a.honestyTitle) + "</h3>";
+    if (a.honestyVerified && a.honestyVerified.length){
+      s += '<p style="color:var(--ink2);margin:0 0 4px"><b style="color:var(--ink)">Verified</b></p><ul style="color:var(--ink2);margin:0 0 12px;padding-left:20px">';
+      a.honestyVerified.forEach(function(v){ s += "<li>" + esc(v) + "</li>"; });
+      s += "</ul>";
+    }
+    if (a.honestyUnverified && a.honestyUnverified.length){
+      s += '<p style="color:var(--ink2);margin:0 0 4px"><b style="color:var(--ink)">Still unverified</b></p><ul style="color:var(--ink2);margin:0 0 12px;padding-left:20px">';
+      a.honestyUnverified.forEach(function(v){ s += "<li>" + esc(v) + "</li>"; });
+      s += "</ul>";
+    }
+    if (a.honestyNote) s += '<p style="color:var(--ink2);margin:0">' + esc(a.honestyNote) + "</p>";
+    if (a.honestyBottom) s += '<h3 style="margin:14px 0 0">The bottom line</h3><p style="color:var(--ink2);margin:6px 0 0">' + esc(a.honestyBottom) + "</p>";
+    s += "</div>";
+  }
   if (a.related && a.related.length){
     s += "<h2>Related guides</h2><div class=\"grid\">";
     a.related.forEach(function(r){ ARTICLES.forEach(function(x){ if (x.slug === r) s += guideCardHTML(x); }); });
+    s += "</div>";
+  }
+  if (a.exits && a.exits.length){
+    s += "<h2>Go deeper</h2><div class=\"doors4\" style=\"margin-top:12px\">";
+    a.exits.forEach(function(x){ s += '<a class="door" href="' + x[1] + '"><span class="dt" style="font-size:15.5px">' + esc(x[0]) + '</span><span class="dd">→</span></a>'; });
     s += "</div>";
   }
   app.innerHTML = s;
