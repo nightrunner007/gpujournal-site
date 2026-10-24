@@ -561,13 +561,13 @@ function provRec(tier){ return COMPANY[companyOf(tier)]; }
    Pure context (new, small, marketplace-style, region) goes in info, in the calm note style. */
 var GPUS = [
  {id:"b300",name:"B300",vram:"288GB",arch:"Blackwell",year:"2025",good:"The largest training and serving jobs — frontier-class memory and bandwidth.",notgood:"Very costly for small jobs — best value only on big work.",fits:"Frontier model training; the very largest models at full precision.",hist:null,
-  offers:[["Hyperstack",7.40,"On-demand","",""],["Nebius",9.50,"On-demand","",""],["Verda",10.28,"On-demand","",""]]},
+  offers:[["Hyperstack",7.40,"On-demand","",""],["Nebius",9.50,"On-demand","",""],["Verda",10.80,"On-demand","",""]]},
  {id:"b200",name:"B200",vram:"192GB",arch:"Blackwell",year:"2024",good:"Big training jobs and heavy serving — the strongest all-round card on this board.",notgood:"Frontier training money. If your job fits on anything cheaper, a B200 is budget burned for a spec sheet.",fits:"Large-model training and fine-tuning; 70B+ serving at full precision.",hist:null,
-  offers:[["RunPod Community",5.98,"On-demand","",""],["Hyperstack",6.00,"On-demand","",""],["Lambda",6.69,"On-demand","",""],["RunPod Secure",7.99,"On-demand","",""],["Verda",8.069,"On-demand","",""],["Nebius",8.50,"On-demand","",""],["CoreWeave",8.60,"On-demand","8-GPU node — $68.80 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",5.98,"On-demand","",""],["Hyperstack",6.00,"On-demand","",""],["Lambda",6.69,"On-demand","",""],["RunPod Secure",7.99,"On-demand","",""],["Verda",8.439,"On-demand","",""],["Nebius",8.50,"On-demand","",""],["CoreWeave",8.60,"On-demand","8-GPU node — $68.80 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"h200",name:"H200",vram:"141GB",arch:"Hopper",year:"2024",good:"70B+ serving and serious fine-tunes — H100 speed with far more memory.",notgood:"More card than most jobs need; the main trap is paying for it on small work.",fits:"70B models at FP16 on one card; large fine-tunes with room to spare.",hist:{label:"RunPod Secure — verified checks",pts:[["Oct 13",4.59],["Oct 19",5.29]]},
-  offers:[["RunPod Community",3.59,"On-demand","",""],["Hyperstack",3.99,"On-demand","",""],["RunPod Secure",5.29,"On-demand","",""],["Nebius",5.40,"On-demand","",""],["Verda",5.658,"On-demand","",""],["CoreWeave",6.31,"On-demand","8-GPU node — $50.44 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",3.59,"On-demand","",""],["Hyperstack",3.99,"On-demand","",""],["RunPod Secure",5.29,"On-demand","",""],["Nebius",5.40,"On-demand","",""],["Verda",5.947,"On-demand","",""],["CoreWeave",6.31,"On-demand","8-GPU node — $50.44 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"h100-sxm",name:"H100 SXM",vram:"80GB",arch:"Hopper",year:"2022",good:"High-throughput serving and training — FP8 and the fastest memory in the Hopper family.",notgood:"Pays off only when the card stays busy; on bursty work you pay H100 rent for idle silicon.",fits:"Busy serving fleets; FP8 inference; multi-GPU training over NVLink.",hist:null,
-  offers:[["TensorDock",2.25,"On-demand","8-GPU minimum — $18.00/hr for 8 GPUs",""],["RunPod Community",2.69,"On-demand","",""],["Thunder Compute",3.20,"On-demand","",""],["Hyperstack",3.20,"On-demand","",""],["RunPod Secure",3.99,"On-demand","",""],["Lambda",3.99,"On-demand","",""],["Verda",4.339,"On-demand","",""]]},
+  offers:[["TensorDock",2.25,"On-demand","8-GPU minimum — $18.00/hr for 8 GPUs",""],["RunPod Community",2.69,"On-demand","",""],["Thunder Compute",3.20,"On-demand","",""],["Hyperstack",3.20,"On-demand","",""],["RunPod Secure",3.99,"On-demand","",""],["Lambda",3.99,"On-demand","",""],["Verda",4.560,"On-demand","",""]]},
  {id:"h100",name:"H100",vram:"80GB",arch:"Hopper (HGX)",year:"2022",good:"The same high-throughput Hopper serving and training, from providers that sell the HGX card without splitting variants.",notgood:"Pays off only when kept busy — avoid it for bursty development work.",fits:"High-throughput serving and training where the provider sells HGX nodes.",hist:null,
   offers:[["Nebius",4.50,"On-demand","Listed as HGX — no variant split","",""],["CoreWeave",6.16,"On-demand","8-GPU node — $49.24 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"h100-pcie",name:"H100 PCIe",vram:"80GB",arch:"Hopper",year:"2022",good:"Single-card work where NVLink would sit unused — same silicon, lower price.",notgood:"No NVLink, and lower power than the SXM — slower when cards must work together.",fits:"Single-card serving and fine-tuning on a budget.",hist:null,
@@ -577,11 +577,11 @@ var GPUS = [
  {id:"h100-nvl",name:"H100 NVL",vram:"94GB",arch:"Hopper",year:"2023",good:"94GB of HBM — the H100 for models that nearly fit on 80GB.",notgood:"Sold as linked pairs, not as a lone card.",fits:"Models in the 80–94GB gap; paired-card serving.",hist:null,
   offers:[["RunPod Community",2.59,"On-demand","","Sold as linked pairs, not as a lone card."],["RunPod Secure",3.19,"On-demand","","Sold as linked pairs, not as a lone card."]]},
  {id:"a100-80gb",name:"A100 80GB",vram:"80GB",arch:"Ampere",year:"2020",good:"The honest workhorse — proven, plentiful, and the safe pair of hands for older stacks.",notgood:"An older generation — no FP8, so the newer speed tricks for serving don't apply.",fits:"32B–70B work in INT8/INT4; stacks that predate FP8.",hist:null,
-  offers:[["Thunder Compute",1.09,"On-demand","",""],["RunPod Community",1.19,"On-demand","PCIe variant","",""],["Hyperstack",1.35,"On-demand","PCIe variant","",""],["RunPod Community",1.39,"On-demand","SXM variant","",""],["Hyperstack",1.40,"On-demand","NVLink variant","",""],["TensorDock",1.50,"On-demand","Managed Containers product","",""],["RunPod Secure",1.79,"On-demand","PCIe & SXM at this rate","",""],["Verda",2.066,"On-demand","",""],["CoreWeave",2.70,"On-demand","8-GPU node — $21.60 per node","You rent the whole 8-GPU node, not one card."],["Lambda",2.79,"On-demand","",""]]},
+  offers:[["Thunder Compute",1.09,"On-demand","",""],["RunPod Community",1.19,"On-demand","PCIe variant","",""],["Hyperstack",1.35,"On-demand","PCIe variant","",""],["RunPod Community",1.39,"On-demand","SXM variant","",""],["Hyperstack",1.40,"On-demand","NVLink variant","",""],["TensorDock",1.50,"On-demand","Managed Containers product","",""],["RunPod Secure",1.79,"On-demand","PCIe & SXM at this rate","",""],["Verda",2.149,"On-demand","",""],["CoreWeave",2.70,"On-demand","8-GPU node — $21.60 per node","You rent the whole 8-GPU node, not one card."],["Lambda",2.79,"On-demand","",""]]},
  {id:"a100-40gb",name:"A100 40GB",vram:"40GB",arch:"Ampere",year:"2020",good:"Entry-price A100 — fits 32B-class work in INT4 with honest KV-cache budgeting.",notgood:"The 40GB fills up quickly on larger models.",fits:"Smaller models and learning workloads on Ampere.",hist:null,
-  offers:[["Verda",1.516,"On-demand","",""],["Lambda",1.99,"On-demand","",""]]},
+  offers:[["Verda",1.561,"On-demand","",""],["Lambda",1.99,"On-demand","",""]]},
  {id:"l40s",name:"L40S",vram:"48GB",arch:"Ada Lovelace",year:"2023",good:"7B–32B serving and image work — sub-$1/hr with datacenter manners. Our all-rounder.",notgood:"70B at FP16 does not fit, and no flag fixes that. Weak at double-precision maths; no NVLink.",fits:"32B in FP16 or 70B in INT4; image generation; everyday serving.",hist:null,
-  offers:[["RunPod Community",0.79,"On-demand","",""],["RunPod Secure",1.09,"On-demand","",""],["Nebius",1.55,"On-demand","“From” price — varies by instance size","“From” price — the exact rate varies by instance size."],["Verda",1.773,"On-demand","",""],["CoreWeave",2.25,"On-demand","8-GPU node — $18.00 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",0.79,"On-demand","",""],["RunPod Secure",1.09,"On-demand","",""],["Nebius",1.55,"On-demand","“From” price — varies by instance size","“From” price — the exact rate varies by instance size."],["Verda",1.809,"On-demand","",""],["CoreWeave",2.25,"On-demand","8-GPU node — $18.00 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"l40",name:"L40",vram:"48GB",arch:"Ada Lovelace",year:"2022",good:"The L40S's slower sibling — the same 48GB for lighter serving and image work.",notgood:"Weak at double-precision maths — not the card for scientific computing. No NVLink.",fits:"Lighter 48GB serving and rendering-adjacent work.",hist:null,
   offers:[["Thunder Compute",0.79,"On-demand","",""],["Hyperstack",1.00,"On-demand","",""]]},
  {id:"rtx-4090",name:"RTX 4090",vram:"24GB",arch:"Ada Lovelace",year:"2022",good:"Prototyping and image generation for almost nothing — the cheapest useful card on the board.",notgood:"24GB fills up fast on big models. No NVLink, so two cards can't pool memory — and it is a gaming card at heart.",fits:"7B–14B models; image generation; development and prototyping.",hist:{label:"nafnaf.ai — verified checks",pts:[["Oct 13",0.48],["Oct 19",0.20]]},
@@ -589,7 +589,7 @@ var GPUS = [
  {id:"rtx-5090",name:"RTX 5090",vram:"32GB",arch:"Blackwell",year:"2025",good:"Fast 32GB experiments on a budget — 32B in INT4 fits.",notgood:"No NVLink, so two cards can't pool memory. A consumer card — driver and ECC behaviour matter for production serving.",fits:"Fast experiments; 32B INT4; image and video generation.",hist:null,
   offers:[["RunPod Community",0.69,"On-demand","",""],["RunPod Secure",1.19,"On-demand","",""]]},
  {id:"rtx-pro-6000",name:"RTX PRO 6000",vram:"96GB",arch:"Blackwell",year:"2025",good:"70B on ONE card — the most VRAM per dollar on this board. Our sleeper pick.",notgood:"No NVLink scale-out; strong all-round, but the Max-Q version (listed separately) runs slower.",fits:"70B quantized or FP8 on a single card; big-context serving.",hist:null,
-  offers:[["RunPod Community",1.69,"On-demand","",""],["Nebius",1.80,"On-demand","",""],["Verda",2.395,"On-demand","",""],["RunPod Secure",2.49,"On-demand","",""],["CoreWeave",2.50,"On-demand","High-Memory variant · 8-GPU node — $20.00 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",1.69,"On-demand","",""],["Nebius",1.80,"On-demand","",""],["RunPod Secure",2.49,"On-demand","",""],["Verda",2.517,"On-demand","",""],["CoreWeave",2.50,"On-demand","High-Memory variant · 8-GPU node — $20.00 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"rtx-pro-6000-maxq",name:"RTX PRO 6000 Blackwell Max-Q",vram:"95GB",arch:"Blackwell (Max-Q)",year:"2025",good:"Nearly the full card's 96GB-class memory at a new-marketplace price.",notgood:"This is the Max-Q version: it runs at lower power and is slower than the full card.",fits:"70B-class work where memory matters more than raw speed.",hist:null,
   offers:[["nafnaf.ai",0.42,"On-demand","","","New marketplace — small inventory for now: 2 GPUs listed."]]},
  {id:"gh200",name:"GH200",vram:"96GB",arch:"Grace Hopper",year:"2023",good:"CPU and GPU on one coherent fabric — a specialist pick for workloads built for it.",notgood:"Its processor is ARM, not the usual x86 — some software needs changes to run on it.",fits:"Memory-bandwidth-bound work designed for Grace Hopper.",hist:null,
@@ -597,7 +597,7 @@ var GPUS = [
  {id:"rtx-a6000",name:"RTX A6000",vram:"48GB",arch:"Ampere",year:"2020",good:"48GB workstation card at the lowest hourly rate on this board.",notgood:"An older generation — no FP8, so the newer speed tricks for serving don't apply.",fits:"Workstation-class rendering and lighter AI work.",hist:null,
   offers:[["Thunder Compute",0.35,"On-demand","",""]]},
  {id:"gb300",name:"GB300",vram:"NVL72 rack",arch:"Blackwell Ultra",year:"2025",good:"Rack-scale systems for the largest training programmes.",notgood:"A whole 72-GPU rack — far more than ordinary hourly work needs, and not a card for small jobs.",fits:"Frontier training at rack scale.",hist:null,
-  offers:[["Verda",11.82,"On-demand","",""],["Nebius",null,"Quote only","Listed — quote only, no published price","",""]]},
+  offers:[["Verda",12.42,"On-demand","",""],["Nebius",null,"Quote only","Listed — quote only, no published price","",""]]},
  {id:"gb200-nvl72",name:"GB200 NVL72",vram:"NVL72 rack",arch:"Blackwell",year:"2025",good:"Rack-scale systems for the largest training programmes.",notgood:"Quote only, and a whole rack — far more than ordinary hourly work needs.",fits:"Frontier training at rack scale.",hist:null,
   offers:[["Nebius",null,"Quote only","Listed — quote only, no published price","",""]]}
 ];
@@ -624,25 +624,25 @@ function finderOrder(taskId){ var ranked = (typeof FIND_RANKED !== "undefined" &
    Variants with no verified priced offers (GB200 NVL72) have no series
    and render no history section. */
 var PHIST = {
- "b300":[["2026-10-19",7.4,"Hyperstack"],["2026-10-22",7.4,"Hyperstack"]],
- "b200":[["2026-10-19",5.98,"RunPod Community"],["2026-10-22",5.98,"RunPod Community"]],
- "h200":[["2026-10-19",3.59,"RunPod Community"],["2026-10-22",3.59,"RunPod Community"]],
- "h100-sxm":[["2026-10-19",2.25,"TensorDock"],["2026-10-22",2.25,"TensorDock"]],
- "h100":[["2026-10-19",4.5,"Nebius"],["2026-10-22",4.5,"Nebius"]],
- "h100-pcie":[["2026-10-19",1.99,"RunPod Community"],["2026-10-22",1.99,"RunPod Community"]],
- "h100-nvlink":[["2026-10-19",2.6,"Hyperstack"],["2026-10-22",2.6,"Hyperstack"]],
- "h100-nvl":[["2026-10-19",2.59,"RunPod Community"],["2026-10-22",2.59,"RunPod Community"]],
- "a100-80gb":[["2026-10-19",1.09,"Thunder Compute"],["2026-10-22",1.09,"Thunder Compute"]],
- "a100-40gb":[["2026-10-19",1.52,"Verda"],["2026-10-22",1.52,"Verda"]],
- "l40s":[["2026-10-19",0.79,"RunPod Community"],["2026-10-22",0.79,"RunPod Community"]],
- "l40":[["2026-10-19",0.79,"Thunder Compute"],["2026-10-22",0.79,"Thunder Compute"]],
- "rtx-4090":[["2026-10-13",0.48,"nafnaf.ai"],["2026-10-19",0.2,"nafnaf.ai"],["2026-10-22",0.2,"nafnaf.ai"]],
- "rtx-5090":[["2026-10-19",0.69,"RunPod Community"],["2026-10-22",0.69,"RunPod Community"]],
- "rtx-pro-6000":[["2026-10-19",1.69,"RunPod Community"],["2026-10-22",1.69,"RunPod Community"]],
- "rtx-pro-6000-maxq":[["2026-10-19",0.42,"nafnaf.ai"],["2026-10-22",0.42,"nafnaf.ai"]],
- "gh200":[["2026-10-19",6.5,"CoreWeave"],["2026-10-22",6.5,"CoreWeave"]],
- "rtx-a6000":[["2026-10-19",0.35,"Thunder Compute"],["2026-10-22",0.35,"Thunder Compute"]],
- "gb300":[["2026-10-19",11.82,"Verda"],["2026-10-22",11.82,"Verda"]]
+ "b300":[["2026-10-19",7.4,"Hyperstack"],["2026-10-22",7.4,"Hyperstack"],["2026-10-23",7.4,"Hyperstack"],["2026-10-24",7.4,"Hyperstack"]],
+ "b200":[["2026-10-19",5.98,"RunPod Community"],["2026-10-22",5.98,"RunPod Community"],["2026-10-23",5.98,"RunPod Community"],["2026-10-24",5.98,"RunPod Community"]],
+ "h200":[["2026-10-19",3.59,"RunPod Community"],["2026-10-22",3.59,"RunPod Community"],["2026-10-23",3.59,"RunPod Community"],["2026-10-24",3.59,"RunPod Community"]],
+ "h100-sxm":[["2026-10-19",2.25,"TensorDock"],["2026-10-22",2.25,"TensorDock"],["2026-10-23",2.25,"TensorDock"],["2026-10-24",2.25,"TensorDock"]],
+ "h100":[["2026-10-19",4.5,"Nebius"],["2026-10-22",4.5,"Nebius"],["2026-10-23",4.5,"Nebius"],["2026-10-24",4.5,"Nebius"]],
+ "h100-pcie":[["2026-10-19",1.99,"RunPod Community"],["2026-10-22",1.99,"RunPod Community"],["2026-10-23",1.99,"RunPod Community"],["2026-10-24",1.99,"RunPod Community"]],
+ "h100-nvlink":[["2026-10-19",2.6,"Hyperstack"],["2026-10-22",2.6,"Hyperstack"],["2026-10-23",2.6,"Hyperstack"],["2026-10-24",2.6,"Hyperstack"]],
+ "h100-nvl":[["2026-10-19",2.59,"RunPod Community"],["2026-10-22",2.59,"RunPod Community"],["2026-10-23",2.59,"RunPod Community"],["2026-10-24",2.59,"RunPod Community"]],
+ "a100-80gb":[["2026-10-19",1.09,"Thunder Compute"],["2026-10-22",1.09,"Thunder Compute"],["2026-10-23",1.09,"Thunder Compute"],["2026-10-24",1.09,"Thunder Compute"]],
+ "a100-40gb":[["2026-10-19",1.52,"Verda"],["2026-10-22",1.52,"Verda"],["2026-10-23",1.56,"Verda"],["2026-10-24",1.56,"Verda"]],
+ "l40s":[["2026-10-19",0.79,"RunPod Community"],["2026-10-22",0.79,"RunPod Community"],["2026-10-23",0.79,"RunPod Community"],["2026-10-24",0.79,"RunPod Community"]],
+ "l40":[["2026-10-19",0.79,"Thunder Compute"],["2026-10-22",0.79,"Thunder Compute"],["2026-10-23",0.79,"Thunder Compute"],["2026-10-24",0.79,"Thunder Compute"]],
+ "rtx-4090":[["2026-10-13",0.48,"nafnaf.ai"],["2026-10-19",0.2,"nafnaf.ai"],["2026-10-22",0.2,"nafnaf.ai"],["2026-10-23",0.2,"nafnaf.ai"],["2026-10-24",0.2,"nafnaf.ai"]],
+ "rtx-5090":[["2026-10-19",0.69,"RunPod Community"],["2026-10-22",0.69,"RunPod Community"],["2026-10-23",0.69,"RunPod Community"],["2026-10-24",0.69,"RunPod Community"]],
+ "rtx-pro-6000":[["2026-10-19",1.69,"RunPod Community"],["2026-10-22",1.69,"RunPod Community"],["2026-10-23",1.69,"RunPod Community"],["2026-10-24",1.69,"RunPod Community"]],
+ "rtx-pro-6000-maxq":[["2026-10-19",0.42,"nafnaf.ai"],["2026-10-22",0.42,"nafnaf.ai"],["2026-10-23",0.42,"nafnaf.ai"],["2026-10-24",0.42,"nafnaf.ai"]],
+ "gh200":[["2026-10-19",6.5,"CoreWeave"],["2026-10-22",6.5,"CoreWeave"],["2026-10-23",6.5,"CoreWeave"],["2026-10-24",6.5,"CoreWeave"]],
+ "rtx-a6000":[["2026-10-19",0.35,"Thunder Compute"],["2026-10-22",0.35,"Thunder Compute"],["2026-10-23",0.35,"Thunder Compute"],["2026-10-24",0.35,"Thunder Compute"]],
+ "gb300":[["2026-10-19",11.82,"Verda"],["2026-10-22",11.82,"Verda"],["2026-10-23",12.29,"Verda"],["2026-10-24",12.42,"Verda"]]
 };
 /* Coverage totals as stated by the governing record (price-verification-2026-10-19.md):
    155 verified prices, 12 providers, 22 GPU variants, checked Oct 19, 2026. */
@@ -664,6 +664,12 @@ var MOVES = [
    (attributed, dated) — never as our verified market price: Spheron has
    no verified prices on the board. */
 var WATCH = [
+ {prov:"Verda",gpu:"All GPUs",gpuId:"",type:"note",dir:"up",
+  ctx:"Verda has risen again — the second straight daily rise. Read on Verda's own pricing page on Oct 24, 2026 against the figures read there on Oct 23: GB300 $12.29 \u2192 $12.42, B300 $10.69 \u2192 $10.80, B200 $8.36 \u2192 $8.44, H200 $5.89 \u2192 $5.95, H100 SXM $4.51 \u2192 $4.56, A100 80GB $2.13 \u2192 $2.15 and RTX PRO 6000 $2.49 \u2192 $2.52 (A100 40GB $1.56 and L40S $1.81 unchanged). That follows the roughly 3\u20134% rise caught on Oct 23 against the Oct 19 check. Verda holds the board's Best offer only on A100 40GB and GB300, and keeps both. Two small daily rises in a row is a pattern worth watching, not yet a trend we would call.",
+  src:"Source: Verda's own pricing page (verda.com/pricing), read Oct 23 and Oct 24, 2026"},
+ {prov:"Spheron",gpu:"H100",gpuId:"",type:"split",figs:["$2.64","$2.75"],figDate:"Both stamped Oct 24, 2026, on different Spheron pages",dir:"split",
+  ctx:"One card, two prices, one date — again. Spheron's pages stamped Oct 24, 2026 state the H100 at $2.64/hr on-demand on some pages and $2.75/hr on others, so no single figure can honestly be quoted as \u201cthe\u201d Spheron H100 price. Their stated B200 on-demand price is unchanged at $11.12/hr, stamped Oct 24, 2026. Reported exactly as stated on Spheron's pages; Spheron has no verified prices on our board.",
+  src:"Source: Spheron's own pages, read Oct 24, 2026"},
  {prov:"Spheron",gpu:"B200",gpuId:"b200",type:"move",from:"$11.06",to:"$11.12",fromDate:"Stated Oct 21, 2026",toDate:"Stated Oct 22, 2026",dir:"up",
   badgeText:"$0.06 today",
   badgeTitle:"Price rise: $11.06 (Stated Oct 21, 2026) → $11.12 (Stated Oct 22, 2026) — up $0.06 today; up 13% across the week from the Oct 20 stated range of $9.80–$9.90",
@@ -799,7 +805,7 @@ function watchBadgeHTML(w, cls){
   return dirBadgeHTML(info.dir, info.text, cls || "dir-md", info.title);
 }
 function price2(n){return "$"+(Number(n)%1===0?Number(n).toFixed(2):String(Number(n)));}
-var CHECKED = "Checked Oct 23, 2026";
+var CHECKED = "Checked Oct 24, 2026";
 function hubName(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][1]; return slug; }
 function hubDesc(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][2]; return ""; }
 /* ---- Custom picker: the only dropdown control on the site (no native <select> anywhere).
@@ -2745,11 +2751,11 @@ function viewStory(slug){
 function pwModuleHTML(){
   var w = WATCH[0];
   var s = '<section class="pwmod" aria-label="Price Watch — latest caught change">';
-  s += '<div class="pwmod-top"><span class="pwmod-badge"><span class="pwmod-dot"></span>Price Watch</span><span class="pwmod-live">Latest catch · Oct 22, 2026 — the same provider has moved again</span></div>';
-  s += '<div class="pwmod-who"><span class="pwmod-prov">' + esc(w.prov) + '</span><span class="pwmod-gpu">' + esc(w.gpu) + " — stated on-demand price</span></div>";
-  s += '<div class="pwmod-figs"><span class="pwmod-from">' + esc(w.from) + '</span><span class="pwmod-arrow">→</span><span class="pwmod-to">' + esc(w.to) + '</span>' + watchBadgeHTML(w, "dir-lg") + "</div>";
-  s += '<div class="pwmod-dates"><span>' + esc(w.fromDate) + "</span><span></span><span>" + esc(w.toDate) + "</span></div>";
-  s += '<p class="pwmod-note">A second straight daily rise: $9.80–$9.90 stated on Oct 20, $11.06 on Oct 21, $11.12 today — up 13% across the week, and still above every official B200 rate we track (highest on our board: $8.60/hr). Stated spot moved too: $5.22 → $5.25. Source: Spheron&rsquo;s own pages.</p>';
+  s += '<div class="pwmod-top"><span class="pwmod-badge"><span class="pwmod-dot"></span>Price Watch</span><span class="pwmod-live">Latest catch · Oct 24, 2026 — Verda rises for the second straight day</span></div>';
+  s += '<div class="pwmod-who"><span class="pwmod-prov">' + esc(w.prov) + '</span><span class="pwmod-gpu">' + esc(w.gpu) + " — on-demand prices, read on Verda's own pricing page</span></div>";
+  s += '<div class="pwmod-figs"><span class="pwmod-from">$8.36</span><span class="pwmod-arrow">→</span><span class="pwmod-to">$8.44</span></div>';
+  s += '<div class="pwmod-dates"><span>B200 — read Oct 23, 2026</span><span></span><span>Read Oct 24, 2026</span></div>';
+  s += '<p class="pwmod-note">Verda rose again on Oct 24 — the second straight daily rise, after the roughly 3–4% rise caught on Oct 23. Seven of its nine tracked GPUs moved up about 1%: GB300 $12.29 → $12.42, B300 $10.69 → $10.80, H200 $5.89 → $5.95, H100 SXM $4.51 → $4.56. Source: Verda&rsquo;s own pricing page.</p>';
   s += '<a class="pwmod-link" href="#/price-watch">Every caught change on Price Watch →</a>';
   s += "</section>";
   return s;
@@ -2808,7 +2814,7 @@ function viewWatch(){
    honest facts only (an Offer appears only where a verified best offer
    exists, and availability is never asserted). No og:image — the site
    has no hosted share image yet, and a fake one is worse than none. */
-var STAMP_DATE = CHECKED.replace(/^Checked\s+/, ""); /* "Oct 22, 2026" */
+var STAMP_DATE = CHECKED.replace(/^Checked\s+/, ""); /* "Oct 24, 2026" */
 function trimDesc(s, n){
   s = String(s == null ? "" : s).replace(/\s+/g, " ").trim();
   n = n || 160;
