@@ -25,6 +25,30 @@
 <meta name="twitter:title" content="GPUJournal — GPU prices, checked" />
 <meta name="twitter:description" content="Every GPU price we can check, in one place — 155 verified prices from 12 providers, the best offer tagged on every card, checked Oct 22, 2026." />
 <meta name="twitter:image" content="https://gpujournal.ai/assets/og-image.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://gpujournal.ai/#organization",
+      "name": "GPUJournal",
+      "alternateName": ["GPU journal", "GPU journals", "GPUJournal.ai"],
+      "url": "https://gpujournal.ai/",
+      "logo": "https://gpujournal.ai/assets/favicon-512.png",
+      "description": "GPUJournal is an independent GPU journal: cloud GPU prices checked against providers' own pages, curated GPU news, and guides for people who rent GPUs."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://gpujournal.ai/#website",
+      "name": "GPUJournal",
+      "alternateName": ["GPU journal", "GPU journals"],
+      "url": "https://gpujournal.ai/",
+      "publisher": { "@id": "https://gpujournal.ai/#organization" }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -475,6 +499,7 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
 <footer class="site">
   <div class="wrap">
     <p><b style="color:var(--ink)">The promise:</b> we give you the prices for each, we recommend you the best GPU for whatever task you have, and you can simply click on anyone to launch them.</p>
+    <p class="small" style="margin-top:10px">GPUJournal is an independent GPU journal — checked cloud GPU prices, curated news and practical guides for people who rent GPUs.</p>
     <div class="flinks">
       <a href="#/board">Compare prices</a><a href="#/find">Find a GPU</a><a href="#/models">Models</a><a href="#/calculator">Work out the real cost</a>
       <a href="#/guides">Guides</a><a href="#/news">News</a><a href="#/price-watch">Price Watch</a><a href="#/for-providers">For providers</a><a href="#/how-we-price">How we price</a>
@@ -2859,7 +2884,7 @@ function newsCardHTML(n){
 }
 function headlinesBandHTML(){
   var s = '<section style="margin:34px 0 6px"><h2 style="margin-top:0">Headlines — the News Desk</h2>';
-  s += '<p class="lede" style="font-size:16px;margin-bottom:16px">GPUJournal is a journal: the headline stories in the GPU world, curated — what happened, and what it means if you rent GPUs.</p>';
+  s += '<p class="lede" style="font-size:16px;margin-bottom:16px">GPUJournal is a GPU journal: the headline stories in the GPU world, curated — what happened, and what it means if you rent GPUs.</p>';
   s += '<div class="newsgrid" style="margin:0">';
   NEWS.slice(0,3).forEach(function(n){ s += newsCardHTML(n); });
   s += '</div><p style="margin:14px 0 0"><a href="#/news" style="font-weight:700">All news →</a></p></section>';
@@ -2868,7 +2893,7 @@ function headlinesBandHTML(){
 function viewNews(){
   setChrome("news", "news");
   var s = "<h1>News</h1>";
-  s += '<p class="lede">Headline stories in the GPU world, curated by the Journal — newest first. Every story states its facts with sources named, then gives you our angle: what it means if you rent GPUs.</p>';
+  s += '<p class="lede">Headline stories in the GPU world, curated by the Journal — newest first. Most GPU journals report the story; we also check what it does to the price of renting one. Every story states its facts with sources named, then gives you our angle: what it means if you rent GPUs.</p>';
   s += '<div class="newsgrid">';
   NEWS.forEach(function(n){ s += newsCardHTML(n); });
   s += "</div>";
@@ -3037,7 +3062,9 @@ function seoSection(title, path, desc, crumbName){
 function seoHome(){
   return { title:"GPUJournal — GPU prices, checked", path:"/",
     desc:trimDesc(TOTAL_PRICES + " verified GPU prices from " + TOTAL_PROVIDERS + " providers, checked " + STAMP_DATE + " — every price read from the provider's own pages, the best offer tagged, one click to launch."),
-    ld:[{ "@type":"WebSite", "name":"GPUJournal", "url":location.origin + "/",
+    ld:[{ "@type":"WebSite", "@id":location.origin + "/#website", "name":"GPUJournal",
+      "alternateName":["GPU journal", "GPU journals"], "url":location.origin + "/",
+      "publisher":{ "@id":location.origin + "/#organization" },
       "potentialAction":{ "@type":"SearchAction", "target":location.origin + "/search?q={search_term_string}", "query-input":"required name=search_term_string" } }] };
 }
 function seoBoard(modelId){
@@ -3096,12 +3123,12 @@ function seoGuide(a){
   return { title:a.title + " | GPUJournal", path:"/guide/" + a.slug, desc:trimDesc(a.excerpt), type:"article",
     ld:[crumb([["Home", "/"], ["Guides", "/guides"], [hubName(a.hubSlug), "/hub/" + a.hubSlug], [a.title, "/guide/" + a.slug]]),
         { "@type":"Article", "headline":a.title, "description":trimDesc(a.excerpt), "datePublished":a.publishedDate,
-          "author":{ "@type":"Organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "name":"GPUJournal" },
+          "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" },
           "mainEntityOfPage":location.origin + "/guide/" + a.slug }] };
 }
 function seoStory(n){
   var art = { "@type":"Article", "headline":n.title, "description":trimDesc(n.standfirst),
-    "author":{ "@type":"Organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "name":"GPUJournal" },
+    "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" },
     "mainEntityOfPage":location.origin + "/story/" + n.slug };
   var iso = isoDate(n.date); if (iso) art.datePublished = iso;
   return { title:n.title + " | GPUJournal", path:"/story/" + n.slug, desc:trimDesc(n.standfirst), type:"article",
