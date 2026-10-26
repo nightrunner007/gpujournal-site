@@ -92,7 +92,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
 a{color:var(--amber);text-decoration:none}
 a:hover{text-decoration:underline}
 button{font-family:inherit;cursor:pointer}
-.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 /* header */
 header.site{position:sticky;top:0;z-index:50;background:var(--header-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .hbar{display:flex;align-items:center;gap:22px;padding:13px 0;flex-wrap:wrap}
@@ -452,6 +452,42 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
 .pw-chain-steps .pwentry-arrow{font-size:19px}
 .pw-chain-note{font-size:13.5px;font-weight:700;color:var(--ink);margin:8px 0 0}
 .pwentry-spot{font-size:14px;color:var(--ink2);margin:10px 0 0;font-family:var(--mono)}
+/* ---------- RESPONSIVE LAYOUT — width by page type ----------
+   Data pages (home, board, GPU and provider pages, finder, models,
+   calculator, News Desk, Price Watch, search) run wide and fluid, up to
+   a 1480px cap so very wide monitors keep modest side margins. Reading
+   pages (guide and story articles, the guides index, hubs, the method
+   pages) keep the measure width above; their prose is already capped at
+   720px. setChrome tags <body> lyt-wide / lyt-read on every route.
+   Under desktop widths nothing changes: one column, as on mobile. */
+body.lyt-wide .wrap{max-width:1480px}
+@media(min-width:1280px){
+  body.lyt-wide .wrap{padding:0 28px}
+  body.lyt-wide .searchbox{max-width:880px}
+  body.lyt-wide .controls{max-width:980px}
+  /* self-contained cards pair up in two columns instead of stretching
+     one row edge to edge, so a provider stays near its price and its
+     Launch link */
+  body.lyt-wide .strip{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  body.lyt-wide .strip .offer{margin:0}
+  body.lyt-wide .offergrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  body.lyt-wide .offergrid .offer{margin:0}
+  body.lyt-wide .rankgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  body.lyt-wide .rankgrid .rankrow{margin:0}
+  body.lyt-wide .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  body.lyt-wide .mgrid .mrow{margin:0}
+  body.lyt-wide .mgrid[hidden]{display:none}
+  body.lyt-wide #pw-feed{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  body.lyt-wide #pw-feed .pwentry{margin:0}
+  /* board groups: the header and the exit links span the group,
+     the offers themselves pair up underneath */
+  body.lyt-wide .ggroup{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
+  body.lyt-wide .ggroup>.ghead,body.lyt-wide .ggroup>.gexits,body.lyt-wide .ggroup>p{grid-column:1/-1}
+  body.lyt-wide .ggroup .offer{margin:6px 0}
+}
+@media (prefers-reduced-motion: no-preference){
+  .wrap{transition:max-width .3s ease}
+}
 </style>
 </head>
 <body>
@@ -1899,6 +1935,7 @@ function modelResultsHTML(m){
     s += '<p class="lede" style="font-size:16px">No single GPU we track can run ' + esc(m.name) + ' — even its 4-bit build needs ' + fmtGB(m.int4) + 'GB, plus room to work, and no single card holds that. <b style="color:var(--ink)">' + esc(minSetupSentence(m)) + '</b> The prices board shows the biggest cards and what each is short by, with the single-GPU and node prices a setup like this is built from.</p>';
     return s;
   }
+  s += '<div class="rankgrid">';
   rows.forEach(function(r, i){
     s += '<div class="rankrow"><div class="rhead"><span class="rpos">' + (i + 1) + '.</span><span class="rname"><a href="#/gpu/' + r.g.id + '">' + esc(r.g.name) + "</a></span>" +
       (i === 0 ? ' <span class="tag best">Most recommended</span>' : "") +
@@ -1908,6 +1945,7 @@ function modelResultsHTML(m){
     s += '<p class="watch" style="margin:4px 0 0">' + esc(r.g.notgood) + "</p>";
     s += '<div class="rfoot">' + lowestLineHTML(r.g) + "</div></div>";
   });
+  s += "</div>";
   var anyWell = rows.some(function(r){ return r.fit.tier === 0; });
   if (!anyWell) s += '<p class="small" style="margin-top:14px">At full precision, ' + esc(m.name) + ' needs more than one GPU — no single card we track holds its ' + fmtGB(m.fp16) + 'GB of weights plus room to work. Every card above runs a compressed build.</p>';
   return s;
@@ -1987,10 +2025,13 @@ function viewModels(){
   s += '<div id="models-results" hidden></div><div id="models-browse">';
   var latest = MODELS.filter(function(m){ return m.status !== "u" && m.rs; }).sort(function(a, b){ return a.rs < b.rs ? 1 : (a.rs > b.rs ? -1 : 0); }).slice(0, 12);
   s += "<h2>Latest models</h2>";
+  s += '<div class="mgrid">';
   latest.forEach(function(m){ s += modelRowHTML(m); });
+  s += "</div>";
   labs.forEach(function(f){
-    s += "<h2>" + esc(f) + "</h2>";
+    s += "<h2>" + esc(f) + '</h2><div class="mgrid">';
     MODELS.forEach(function(m){ if (m.family === f) s += modelRowHTML(m); });
+    s += "</div>";
   });
   s += "</div>";
   s += '<p class="small" style="margin-top:22px">Memory needs are worked out from each model\'s published total size — the weights at each precision, plus room for the conversation memory. The full method is printed on every model page. <a href="#/find">Or start from your task in Find a GPU →</a></p>';
@@ -2005,8 +2046,9 @@ function viewModels(){
       res.innerHTML = '<p class="lede" style="font-size:16px;margin-top:18px">No model matches &ldquo;' + esc(q.value.trim()) + '&rdquo; yet. If it is a real open-weight release we have missed, it belongs here — the catalogue is re-checked as new models land.</p>';
       return;
     }
-    var h = '<h2 style="margin-top:24px">' + hits.length + (hits.length === 1 ? " model" : " models") + "</h2>";
+    var h = '<h2 style="margin-top:24px">' + hits.length + (hits.length === 1 ? " model" : " models") + '</h2><div class="mgrid">';
     hits.forEach(function(m){ h += modelRowHTML(m); });
+    h += "</div>";
     res.innerHTML = h;
   });
 }
@@ -2088,6 +2130,11 @@ function wireTapFocus(input){
   input.addEventListener("click", function(){ if (document.activeElement !== input) input.focus(); });
 }
 function setChrome(key, nav){
+  /* Layout by page type: data pages run wide, reading pages keep the
+     measure width — see the RESPONSIVE LAYOUT block in the stylesheet. */
+  var WIDE = { home:1, board:1, gpu:1, provider:1, find:1, models:1, model:1, calculator:1, news:1, moves:1, search:1 };
+  document.body.classList.toggle("lyt-wide", !!WIDE[key]);
+  document.body.classList.toggle("lyt-read", !WIDE[key]);
   var purposeWrap = document.querySelector(".purpose");
   if (purposeWrap) purposeWrap.style.display = "";
   purposeEl.innerHTML = PURPOSES[key] || "";
@@ -2315,7 +2362,7 @@ function viewHome(){
   s += '<section class="modelband"><h2>Start from your model</h2>';
   s += '<p class="lede" style="font-size:16px;margin-bottom:14px">Name the open-weight model you want to run — we show what it needs and rank the GPUs that can run it, best fit first.</p>';
   s += '<div class="controls"><input type="search" inputmode="search" enterkeyhint="search" id="home-models-q" placeholder="Search models — try glm, qwen 32, r1, gemma…" aria-label="Search models" /></div>';
-  s += '<div id="home-models-results" hidden></div><div id="home-models-latest">';
+  s += '<div id="home-models-results" class="mgrid" hidden></div><div id="home-models-latest" class="mgrid">';
   MODELS.filter(function(m){ return m.status !== "u" && m.rs; }).sort(function(a, b){ return a.rs < b.rs ? 1 : (a.rs > b.rs ? -1 : 0); }).slice(0, 5).forEach(function(m){ s += modelRowHTML(m); });
   s += '</div>';
   s += '<p style="margin:14px 0 0"><a href="#/models" style="font-weight:700">Browse all models →</a></p></section>';
@@ -2476,8 +2523,10 @@ function viewGPU(id){
   s += "</div>";
   s += priceHistoryHTML(g);
   s += "<h2>All offers — cheapest first</h2>";
-  priced(g).forEach(function(o){ s += offerRowHTML(g, o, false); });
-  offersOf(g).filter(function(o){ return o.price == null; }).forEach(function(o){ s += offerRowHTML(g, o, false); });
+  var offs = "";
+  priced(g).forEach(function(o){ offs += offerRowHTML(g, o, false); });
+  offersOf(g).filter(function(o){ return o.price == null; }).forEach(function(o){ offs += offerRowHTML(g, o, false); });
+  s += '<div class="offergrid">' + offs + "</div>";
   s += '<div class="infobox"><h3 style="margin-top:0">Our verdict</h3><p style="color:var(--ink2)"><b style="color:var(--green)">Good for:</b> ' + esc(g.good) + '</p><p style="color:var(--ink2)"><b style="color:var(--red)">Not good for:</b> ' + esc(g.notgood) + "</p></div>";
   s += "<h2>What fits on it</h2><p class=\"lede\" style=\"font-size:16px\">" + esc(g.fits) + "</p>";
   var fitsHere = [];
@@ -2493,12 +2542,14 @@ function viewGPU(id){
   var idx = GPUS.indexOf(g), alts = [];
   [-2,-1,1,2].forEach(function(d){ var n = GPUS[idx + d]; if (n) alts.push(n); });
   s += "<h2>Alternatives</h2>";
+  var altOffs = "";
   alts.forEach(function(a){
     var ab = bestOffer(a);
-    s += '<div class="offer"><div class="offer-top"><span class="prov" style="font-size:16px"><a href="#/gpu/' + a.id + '">' + esc(a.name) + '</a></span><span class="note">' + esc(a.vram) + "</span>" +
+    altOffs += '<div class="offer"><div class="offer-top"><span class="prov" style="font-size:16px"><a href="#/gpu/' + a.id + '">' + esc(a.name) + '</a></span><span class="note">' + esc(a.vram) + "</span>" +
       (ab ? '<span class="price" style="font-size:16px">' + money(ab.price) + "/hr</span>" : '<span class="note">quote only</span>') + "</div>" +
       '<div class="offer-meta"><span class="note">' + esc(a.good) + "</span>" + (ab ? '<span class="note">at <b style="color:var(--ink)">' + esc(ab.prov) + "</b></span>" : "") + "</div></div>";
   });
+  s += '<div class="offergrid">' + altOffs + "</div>";
   var rel = ARTICLES.filter(function(a){ return articleMentionsGPU(a, g); });
   if (rel.length){ s += "<h2>Guides that cover it</h2><div class=\"grid\">"; rel.forEach(function(a){ s += guideCardHTML(a); }); s += "</div>"; }
   app.innerHTML = s;
@@ -2530,13 +2581,14 @@ function viewProvider(slug){
   s += '<div class="cell"><div class="k">Storage</div><div class="v" style="font-size:16px;padding-top:4px">' + esc(c.storage.label) + '</div><div class="small">' + CHECKED + "</div></div>";
   s += '<div class="cell"><div class="k">Downloads (egress)</div><div class="v" style="font-size:16px;padding-top:4px">' + esc(c.egress.label) + '</div><div class="small">' + CHECKED + "</div></div></div>";
   s += "<h2>All its GPUs</h2>";
-  var any = false;
+  var any = false, provOffs = "";
   GPUS.forEach(function(g){
     var mine = offersOf(g).filter(function(o){ return companyOf(o.prov) === name; });
     if (!mine.length) return; any = true;
     mine.sort(function(a2,b2){ return (a2.price == null ? 1e9 : a2.price) - (b2.price == null ? 1e9 : b2.price); });
-    mine.forEach(function(o){ s += offerRowHTML(g, o, true); });
+    mine.forEach(function(o){ provOffs += offerRowHTML(g, o, true); });
   });
+  if (any) s += '<div class="offergrid">' + provOffs + "</div>";
   if (!any){
     if (name === "Vast.ai") s += '<p class="lede" style="font-size:16px">Vast is a live marketplace: hosts set their own prices per machine, and they move hourly — so there is no fixed rate to list here. Check the live listings for the current price of any card.</p>';
     else if (name === "Spheron") s += '<p class="lede" style="font-size:16px">No Spheron GPU prices here yet — we\'re still checking its rates. The storage and download terms above are current: storage is included in its hourly rate, and downloads are free.</p>';
@@ -2599,7 +2651,7 @@ function findResultsHTML(taskId){
     if (!seen[g.id]) rows.push({ g:g, note:"Sits low for this job: " + g.notgood.charAt(0).toLowerCase() + g.notgood.slice(1) });
   });
   var label = ""; FIND_TASKS_UI.forEach(function(t){ if (t.id === taskId) label = t.label; });
-  var s = '<h2 style="margin-top:30px">Every GPU we track, ranked for: ' + esc(label) + "</h2>";
+  var s = '<h2 style="margin-top:30px">Every GPU we track, ranked for: ' + esc(label) + '</h2><div class="rankgrid">';
   rows.forEach(function(r, i){
     s += '<div class="rankrow"><div class="rhead"><span class="rpos">' + (i + 1) + '.</span><span class="rname"><a href="#/gpu/' + r.g.id + '">' + esc(r.g.name) + "</a></span>" +
       (i === 0 ? ' <span class="tag best">Most recommended</span>' : "") + '<span class="chip">' + esc(r.g.vram) + "</span></div>";
@@ -2607,6 +2659,7 @@ function findResultsHTML(taskId){
     s += '<p class="watch" style="margin:4px 0 0">' + esc(r.g.notgood) + "</p>";
     s += '<div class="rfoot">' + lowestLineHTML(r.g) + "</div></div>";
   });
+  s += "</div>";
   s += '<p class="small" style="margin-top:18px">Ranked by fit, from our guides\' verdicts — not by price alone. <a href="#/guides">Read the guides behind the verdicts →</a></p>';
   return s;
 }
