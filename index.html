@@ -1409,6 +1409,61 @@ var ARTICLES = [
     ["B200 — today's prices and offers","#/gpu/b200"]
   ],
   related:["deploy-qwen-32b-on-a-single-gpu-with-vllm","run-voxtral-3-yourself","true-cost-of-renting-a-gpu"]
+},
+{
+  slug:"gpu-rental-prices-rising-2026", hubSlug:"gpu-pricing",
+  title:"GPU rental prices are rising in 2026 — the dated evidence",
+  excerpt:"If you rent GPUs at a provider's own list rates, you are probably paying more than you did a few weeks ago. This page shows the rises we have verified on providers' own pages — each one dated — and the half of the market that has not moved yet.",
+  publishedDate:"2026-10-26", readMinutes:7,
+  tldr:[
+    { label:"Nebius", vram:"Oct 1, 2026", bestFit:"Raised rates across the board. H100 SXM now $4.50/hr.", price:"$4.50/hr" },
+    { label:"RunPod Secure", vram:"Oct 14, 2026", bestFit:"Raised Secure Cloud rates. H200 $4.59 → $5.29/hr (▲ 15%); RTX 4090 $0.74 → $0.89/hr (▲ 20%).", price:"H200 $5.29/hr" },
+    { label:"Verda", vram:"Oct 23, 24 & 26, 2026", bestFit:"Three rises in four days — all nine rose on Oct 23 and Oct 26; seven of nine rose again on Oct 24. H100 SXM $4.34 → $4.61/hr (▲ 6.2%).", price:"H100 SXM $4.61/hr" },
+    { label:"The cheapest offers", vram:"Oct 19–26, 2026", bestFit:"No movement in our records. The best verified H100 offer is still $2.25/hr.", price:"$2.25/hr" }
+  ],
+  metricTitle:"The evidence, date by date",
+  metricBody:"Every rise below was read on the provider's own published pricing page on both sides of the change — the before figure and the after figure, each with its date. That is the standard our Price Watch applies to every entry. October 1 — Nebius raises across the board: Nebius lifted its on-demand rates at the start of October, and our board carries the post-rise rates (H100 $4.50/hr, H200 $5.40/hr, B200 $8.50/hr, verified Oct 19 and re-read unchanged Oct 26). October 14 — RunPod Secure goes up: RTX 4090 rose from $0.74 to $0.89/hr (▲ 20%) and H200 from $4.59 to $5.29/hr (▲ 15%) on RunPod's Secure Cloud; both rates were re-read on RunPod's own page on Oct 24 and Oct 26 — unchanged since the rise. October 23, 24 and 26 — Verda rises three times in four days: all nine GPUs we track at Verda rose on Oct 23 and again on Oct 26, and seven of the nine rose on Oct 24 as well (A100 40GB and L40S held that day) — the full table is below. We are not the only ones seeing it: a third-party analysis published Oct 21, 2026 found H100 prices up at six of seven specialist GPU clouds during 2026. Our own records cover October in daily detail; the direction agrees.",
+  datedTables:[
+    { heading:"Verda — three rises in four days, in full",
+      intro:"All figures USD per GPU per hour, read on verda.com/pricing on each date shown.",
+      cols:["GPU","Oct 22","Oct 23","Oct 24","Oct 26","4-day move"],
+      rows:[
+        ["H100 SXM","$4.34","$4.51","$4.56","$4.61","▲ 6.2%"],
+        ["H200","$5.66","$5.89","$5.95","$6.01","▲ 6.2%"],
+        ["B200","$8.07","$8.36","$8.44","$8.52","▲ 5.6%"],
+        ["B300","$10.28","$10.69","$10.80","$10.91","▲ 6.1%"],
+        ["GB300","$11.82","$12.29","$12.42","$12.55","▲ 6.2%"],
+        ["A100 80GB","$2.07","$2.13","$2.15","$2.16","▲ 4.3%"],
+        ["A100 40GB","$1.52","$1.56","$1.56","$1.58","▲ 3.9%"],
+        ["RTX PRO 6000","$2.40","$2.49","$2.52","$2.54","▲ 5.8%"],
+        ["L40S","$1.77","$1.81","$1.81","$1.83","▲ 3.4%"]
+      ] },
+    { heading:"The half that has not moved",
+      intro:"Against those rises, the cheapest verified offers on our board did not move at all during the week of Oct 19–26:",
+      cols:["GPU","Best verified offer","Provider","Oct 19 → Oct 26"],
+      rows:[
+        ["H100 SXM","$2.25/hr","TensorDock (8-GPU minimum)","— unchanged"],
+        ["H200","$3.59/hr","RunPod Community","— unchanged"],
+        ["B200","$5.98/hr","RunPod Community","— unchanged"],
+        ["RTX 4090","$0.20/hr","nafnaf","— unchanged"],
+        ["A100 80GB","$1.09/hr","Thunder Compute","— unchanged"]
+      ],
+      after:"Read the terms before you chase the floor — minimum commitments and community-cloud availability differ from list-rate clouds. But the fact stands: on Oct 26 you could still rent an H100 for roughly half the rate a rising list price asks ($2.25 vs $4.50–$4.61). Rising list prices have not pulled the floor up — yet." }
+  ],
+  steps:[
+    { title:"Do not renew or expand at a list rate without checking the market first", body:"A rate you agreed in September may no longer be the rate that provider's competitors charge — or even the cheapest way to buy the same GPU today." },
+    { title:"Expect list rates to keep drifting up while demand grows", body:"Three rises in four days at one provider, on top of Nebius and RunPod, is what a market short of GPUs looks like. That is our reading of the pattern — the dated rises above are the evidence; judge it yourself." },
+    { title:"If you need capacity for months, price the reservation now", body:"When on-demand rates rise repeatedly, locking a rate earlier tends to beat locking it later. Work out the real total — GPU hours plus storage and downloads — before you commit." },
+    { title:"Watch the floor, not just the headlines", body:"The day the cheapest offers start rising too, the whole market has moved. Our Price Watch reports every verified change, dated on both sides." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"GPUJournal reads providers' own published pricing pages and banks the figures every day; a price change is only reported when both the before and after figures were seen on the provider's own page, each with its date. Our daily records began Oct 19, 2026, so the October rises are documented day by day; the Nebius (Oct 1) and RunPod (Oct 14) rises predate the daily series and are recorded from the checks made at the time. One thing you will not find in our data: prices a marketplace states about itself on marketing pages. Where a provider's own pages disagree with each other — on Oct 26, Spheron's pages stated the same H100 at $2.64 on some pages and $2.98 on others — we report the disagreement in Price Watch rather than pick a number.",
+  exits:[
+    ["Compare prices — every offer behind this page, checked daily","#/board"],
+    ["Work out the real cost — GPU hours plus storage and downloads","#/calculator"],
+    ["Price Watch — every verified change, dated on both sides","#/price-watch"]
+  ],
+  related:["true-cost-of-renting-a-gpu","best-single-gpu-for-ai-inference-2026","h100-vs-l40s-vs-rtx-pro-6000"]
 }
 ];
 var FIND_RANKED = {
@@ -2714,6 +2769,18 @@ function viewGuide(slug){
       if (t.after) s += "<p>" + esc(t.after) + "</p>";
     });
     if (a.nodeTablesNote) s += '<p class="small">' + esc(a.nodeTablesNote) + "</p>";
+  }
+  if (a.datedTables && a.datedTables.length){
+    a.datedTables.forEach(function(t){
+      s += "<h3>" + esc(t.heading) + "</h3>";
+      if (t.intro) s += "<p>" + esc(t.intro) + "</p>";
+      s += '<table><thead><tr>' + t.cols.map(function(c){ return "<th>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>";
+      t.rows.forEach(function(r){
+        s += "<tr>" + r.map(function(cell, ci){ return "<td>" + (ci === 0 ? "<b>" + esc(cell) + "</b>" : esc(cell)) + "</td>"; }).join("") + "</tr>";
+      });
+      s += "</tbody></table>";
+      if (t.after) s += "<p>" + esc(t.after) + "</p>";
+    });
   }
   if (a.costTitle) s += "<h2>" + esc(a.costTitle) + "</h2><p>" + esc(a.costBody) + "</p>";
   s += "</div>";
