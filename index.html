@@ -571,6 +571,27 @@ body{text-rendering:optimizeLegibility}
 .nlead .nart img{filter:saturate(1.14) contrast(1.07) brightness(1.03)}
 .storyart{box-shadow:var(--lift)}
 .ntitle{letter-spacing:-.005em}
+/* ---------- FIND A GPU — balanced choosers, real result grids ----------
+   The two choosers sit side by side in panels that share the column
+   between them (stacked on narrow screens), instead of a task row and a
+   lone half-width picker stacked down one side. The ranked results —
+   which render inside a .rankgrid wrapper — get the two-column grid
+   that wrapper always implied, scoped to the Find page so model and
+   reading pages keep their single column. Picking a task or a model
+   scrolls its results into view, so a choice visibly does something. */
+.findpanels{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin:20px 0 2px}
+.findpanel{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);min-width:0}
+.findpanel h2{margin:0 0 4px;display:block}
+.findpanel h2::after{content:none}
+.findpanel .tasks{margin:12px 0 4px}
+.findpanel .picker{margin-top:12px}
+@media(max-width:880px){.findpanels{grid-template-columns:1fr}}
+#find-model-results,#find-results{scroll-margin-top:185px}
+#find-model-results .rankgrid,#find-results .rankgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+#find-model-results .rankgrid .rankrow,#find-results .rankgrid .rankrow{margin:0}
+@media(max-width:880px){
+  #find-model-results .rankgrid,#find-results .rankgrid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -623,7 +644,7 @@ body{text-rendering:optimizeLegibility}
       <a href="#/board">Compare prices</a><a href="#/find">Find a GPU</a><a href="#/models">Models</a><a href="#/calculator">Work out the real cost</a>
       <a href="#/guides">Guides</a><a href="#/news">News</a><a href="#/price-watch">Price Watch</a><a href="#/for-providers">For providers</a><a href="#/how-we-price">How we price</a>
     </div>
-    <p class="checked" style="margin-top:16px">Prices last checked Oct 22, 2026 · Vast.ai is a live marketplace and updates hourly · <a href="#/how-we-price">How we price</a> · Corrections are published on that page, never quietly edited.</p>
+    <p class="checked" style="margin-top:16px"><span id="footer-checked">Prices last checked</span> · Vast.ai is a live marketplace and updates hourly · <a href="#/how-we-price">How we price</a> · Corrections are published on that page, never quietly edited.</p>
   </div>
 </footer>
 <script>
@@ -1086,6 +1107,12 @@ function watchBadgeHTML(w, cls){
 }
 function price2(n){return "$"+(Number(n)%1===0?Number(n).toFixed(2):String(Number(n)));}
 var CHECKED = "Checked Oct 26, 2026";
+/* The footer carries the same live check stamp as every card on the site —
+   it is filled from CHECKED, the single source, never a date of its own. */
+(function(){
+  var f = document.getElementById("footer-checked");
+  if (f) f.textContent = "Prices last " + CHECKED.charAt(0).toLowerCase() + CHECKED.slice(1);
+})();
 function hubName(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][1]; return slug; }
 function hubDesc(slug){ if (typeof HUBS !== "undefined") for (var i=0;i<HUBS.length;i++) if (HUBS[i][0]===slug) return HUBS[i][2]; return ""; }
 /* ---- Custom picker: the only dropdown control on the site (no native <select> anywhere).
@@ -2719,11 +2746,13 @@ function viewFind(task){
   setChrome("find", "find");
   if (task) findState.task = task;
   var s = "<h1>Find a GPU</h1>";
-  s += '<h2 style="margin-top:10px">What is your task?</h2><div class="tasks" role="group" aria-label="Choose your task">';
+  s += '<p class="lede">Start from your task, the model you want to run, or both — your rankings appear below the moment you choose.</p>';
+  s += '<div class="findpanels">';
+  s += '<section class="findpanel"><h2>What is your task?</h2><div class="tasks" role="group" aria-label="Choose your task">';
   FIND_TASKS_UI.forEach(function(t){
     s += '<button type="button" class="taskbtn' + (findState.task === t.id ? " on" : "") + '" data-task="' + t.id + '">' + esc(t.label) + "</button>";
   });
-  s += '</div><p class="small">Tap your task — we rank every GPU we track for it.</p>';
+  s += '</div><p class="small">Tap your task — we rank every GPU we track for it.</p></section>';
   var modelRows = MODELS.map(function(m){
     var label = m.name + (m.params != null ? " · " + m.sizeStr : "") + (m.status === "u" ? " · being verified" : "") + (m.status === "s" ? " · weights land Oct 23" : "");
     var f = '<span class="pr-label">' + esc(label) + "</span>";
@@ -2731,13 +2760,18 @@ function viewFind(task){
   });
   var curModel = findState.model ? modelById(findState.model) : null;
   var modelFace = curModel ? '<span class="pr-label">' + esc(curModel.name) + '</span>' : '<span class="pr-label" style="color:var(--dim)">Choose a model…</span>';
-  s += '<h2 style="margin-top:26px">Which model do you want to run?</h2>';
-  s += '<div style="max-width:540px">' + pickerHTML("find-model", "Model you want to run", findState.model || "", modelRows, modelFace, { search:"Search models — try glm, qwen 32, r1…" }) + "</div>";
-  s += '<p class="small">Pick a model — we show every GPU that can run it, and how well it runs there. &nbsp;<a href="#/models">Browse all models →</a></p>';
+  s += '<section class="findpanel"><h2>Which model do you want to run?</h2>';
+  s += pickerHTML("find-model", "Model you want to run", findState.model || "", modelRows, modelFace, { search:"Search models — try glm, qwen 32, r1…" });
+  s += '<p class="small">Pick a model — we show every GPU that can run it, and how well it runs there. &nbsp;<a href="#/models">Browse all models →</a></p></section>';
+  s += "</div>";
   s += '<div id="find-model-results">';
   if (curModel){
     if (curModel.status) s += '<h2 style="margin-top:30px">' + esc(curModel.name) + "</h2>" + modelStatusHTML(curModel);
-    else s += '<h2 style="margin-top:30px">GPUs that can run ' + esc(curModel.name) + "</h2>" + modelResultsHTML(curModel);
+    else if (modelRanked(curModel).length) s += '<h2 style="margin-top:30px">GPUs that can run ' + esc(curModel.name) + "</h2>" + modelResultsHTML(curModel);
+    /* No single card runs it: say so in the heading, then give the answer
+       the model's own page gives — the minimum-setup panel with the board
+       button — never a lone paragraph that reads as nothing happening. */
+    else s += '<h2 style="margin-top:30px">No single GPU runs ' + esc(curModel.name) + " alone</h2>" + modelResultsHTML(curModel) + cheapestRunHTML(curModel);
   }
   s += "</div>";
   s += '<div id="find-results">';
@@ -2745,9 +2779,17 @@ function viewFind(task){
   s += "</div>";
   app.innerHTML = s;
   app.querySelectorAll(".taskbtn").forEach(function(btn){
-    btn.addEventListener("click", function(){ findState.task = btn.getAttribute("data-task"); viewFind(); });
+    btn.addEventListener("click", function(){ findState.task = btn.getAttribute("data-task"); viewFind(); scrollToFindResults("find-results"); });
   });
-  wirePicker("find-model", function(v){ findState.model = v || null; viewFind(); });
+  wirePicker("find-model", function(v){ findState.model = v || null; viewFind(); if (findState.model) scrollToFindResults("find-model-results"); });
+}
+/* After a Find choice, bring its results into view — a pick must visibly
+   do something, even when the answer sits below the fold. */
+function scrollToFindResults(id){
+  var el = document.getElementById(id);
+  if (!el || !el.innerHTML.trim()) return;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ behavior:reduce ? "auto" : "smooth", block:"start" });
 }
 function findResultsHTML(taskId){
   var ranked = (typeof FIND_RANKED !== "undefined" && FIND_RANKED[taskId]) || [];
