@@ -92,7 +92,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font
 a{color:var(--amber);text-decoration:none}
 a:hover{text-decoration:underline}
 button{font-family:inherit;cursor:pointer}
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
 /* header */
 header.site{position:sticky;top:0;z-index:50;background:var(--header-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .hbar{display:flex;align-items:center;gap:22px;padding:13px 0;flex-wrap:wrap}
@@ -452,42 +452,6 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
 .pw-chain-steps .pwentry-arrow{font-size:19px}
 .pw-chain-note{font-size:13.5px;font-weight:700;color:var(--ink);margin:8px 0 0}
 .pwentry-spot{font-size:14px;color:var(--ink2);margin:10px 0 0;font-family:var(--mono)}
-/* ---------- RESPONSIVE LAYOUT — width by page type ----------
-   Data pages (home, board, GPU and provider pages, finder, models,
-   calculator, News Desk, Price Watch, search) run wide and fluid, up to
-   a 1480px cap so very wide monitors keep modest side margins. Reading
-   pages (guide and story articles, the guides index, hubs, the method
-   pages) keep the measure width above; their prose is already capped at
-   720px. setChrome tags <body> lyt-wide / lyt-read on every route.
-   Under desktop widths nothing changes: one column, as on mobile. */
-body.lyt-wide .wrap{max-width:1480px}
-@media(min-width:1280px){
-  body.lyt-wide .wrap{padding:0 28px}
-  body.lyt-wide .searchbox{max-width:880px}
-  body.lyt-wide .controls{max-width:980px}
-  /* self-contained cards pair up in two columns instead of stretching
-     one row edge to edge, so a provider stays near its price and its
-     Launch link */
-  body.lyt-wide .strip{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  body.lyt-wide .strip .offer{margin:0}
-  body.lyt-wide .offergrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  body.lyt-wide .offergrid .offer{margin:0}
-  body.lyt-wide .rankgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-  body.lyt-wide .rankgrid .rankrow{margin:0}
-  body.lyt-wide .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
-  body.lyt-wide .mgrid .mrow{margin:0}
-  body.lyt-wide .mgrid[hidden]{display:none}
-  body.lyt-wide #pw-feed{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-  body.lyt-wide #pw-feed .pwentry{margin:0}
-  /* board groups: the header and the exit links span the group,
-     the offers themselves pair up underneath */
-  body.lyt-wide .ggroup{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
-  body.lyt-wide .ggroup>.ghead,body.lyt-wide .ggroup>.gexits,body.lyt-wide .ggroup>p{grid-column:1/-1}
-  body.lyt-wide .ggroup .offer{margin:6px 0}
-}
-@media (prefers-reduced-motion: no-preference){
-  .wrap{transition:max-width .3s ease}
-}
 </style>
 </head>
 <body>
@@ -2130,11 +2094,6 @@ function wireTapFocus(input){
   input.addEventListener("click", function(){ if (document.activeElement !== input) input.focus(); });
 }
 function setChrome(key, nav){
-  /* Layout by page type: data pages run wide, reading pages keep the
-     measure width — see the RESPONSIVE LAYOUT block in the stylesheet. */
-  var WIDE = { home:1, board:1, gpu:1, provider:1, find:1, models:1, model:1, calculator:1, news:1, moves:1, search:1 };
-  document.body.classList.toggle("lyt-wide", !!WIDE[key]);
-  document.body.classList.toggle("lyt-read", !WIDE[key]);
   var purposeWrap = document.querySelector(".purpose");
   if (purposeWrap) purposeWrap.style.display = "";
   purposeEl.innerHTML = PURPOSES[key] || "";
