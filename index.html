@@ -532,6 +532,7 @@ main h2::after{content:"";flex:1 1 auto;height:1px;background:linear-gradient(90
    action it points to, and the News page opens with the prices its
    stories are about. */
 .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 2px}
+.hero-actions .btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.25}
 .leadline{margin:14px 0 0;font-size:15.5px;color:var(--ink2);max-width:780px}
 .leadline a{color:var(--ink);font-weight:600}
 .leadline a:hover{color:var(--amber)}
@@ -640,7 +641,9 @@ body{text-rendering:optimizeLegibility}
   .hero h1{font-size:32px;line-height:1.12}
   .hero .lede{font-size:16.5px}
   .hero-actions{gap:8px;margin-top:14px}
-  .hero-actions .btn{flex:1 1 150px;text-align:center;padding:11px 14px}
+  .hero-actions .btn{flex:1 1 0;padding:12px 10px;min-height:48px}
+  .hero-actions .btn:first-child{flex:1 1 100%}
+  .hero-actions .btn.ghost{font-size:13px;white-space:nowrap;padding-left:6px;padding-right:6px}
   .leadline{font-size:14.5px}
   .herostats{gap:9px;margin-top:18px}
   .hstat{padding:12px 13px 10px}
