@@ -1941,6 +1941,68 @@ var ARTICLES = [
     ["Price Watch — every verified change, dated on both sides","#/price-watch"]
   ],
   related:["true-cost-of-renting-a-gpu","best-single-gpu-for-ai-inference-2026","h100-vs-l40s-vs-rtx-pro-6000"]
+},
+{
+  slug:"verda-six-rises-october-2026", hubSlug:"gpu-pricing",
+  title:"Six rises in seven days: what Verda's October says about GPU demand",
+  excerpt:"One provider raised its GPU prices on Oct 23, Oct 24, Oct 26, Oct 27, Oct 28 and again on Oct 29 — six rises in seven days, across almost its whole range, each one small and each one in the same direction. We know the dates and the figures because we check and bank these prices every day. Here is the full record, what else moved in October, and the half of the market that still has not.",
+  publishedDate:"2026-10-29", readMinutes:8,
+  tldr:[
+    { label:"Verda rises", vram:"Oct 23–29, 2026", bestFit:"Six rises in seven days — Oct 23, 24, 26, 27, 28 and 29, across almost the whole range.", price:"6 rises" },
+    { label:"Biggest single card — GB300", vram:"Oct 22 → Oct 29", bestFit:"GB300 rose $11.82 → $12.93/hr (▲ 9.4%).", price:"$12.93/hr" },
+    { label:"The workhorse — H100 SXM", vram:"Oct 22 → Oct 29", bestFit:"H100 SXM rose $4.34 → $4.75/hr (▲ 9.4%).", price:"$4.75/hr" },
+    { label:"Range-wide", vram:"All 9 GPUs", bestFit:"Every GPU in Verda's range is up 4.6%–9.4% in seven days.", price:"▲ 4.6–9.4%" },
+    { label:"The cheapest offers", vram:"Oct 19–29, 2026", bestFit:"Mostly flat. The best verified H100 offer is still $2.25/hr; the floor has not moved.", price:"$2.25/hr" }
+  ],
+  metricTitle:"The six rises, rise by rise",
+  metricBody:"Each rise was read on Verda's own pricing page on the day it happened, against the figure banked from the previous check. Rise 1, Oct 23: all 9 GPUs up. Rise 2, Oct 24: 7 of 9 up. Rise 3, Oct 26: all 9 up. Rise 4, Oct 27: 8 of 9 up. Rise 5, Oct 28: all 9 up. Rise 6, Oct 29: 8 of 9 up. No single rise was dramatic — most were around 1% — which is exactly why the pattern is easy to miss unless prices are recorded daily. Seven days of it, in full:",
+  datedTables:[
+    { heading:"Verda — six rises in seven days, in full",
+      intro:"All figures USD per GPU per hour, on-demand, read on verda.com/pricing on each date shown; the Oct 22 column is the pre-rise baseline (the same rates banked in our Oct 19 sweep and corroborated unchanged on Oct 22).",
+      cols:["GPU","Before (Oct 22)","Oct 23","Oct 24","Oct 26","Oct 27","Oct 28","Oct 29","7-day move"],
+      rows:[
+        ["GB300","$11.82","$12.29","$12.42","$12.55","$12.67","$12.80","$12.93","▲ 9.4%"],
+        ["B300","$10.28","$10.69","$10.80","$10.91","$11.02","$11.13","$11.24","▲ 9.3%"],
+        ["B200","$8.07","$8.36","$8.44","$8.52","$8.61","$8.69","$8.78","▲ 8.8%"],
+        ["H200","$5.66","$5.89","$5.95","$6.01","$6.07","$6.13","$6.19","▲ 9.4%"],
+        ["H100 SXM","$4.34","$4.51","$4.56","$4.61","$4.65","$4.70","$4.75","▲ 9.4%"],
+        ["A100 80GB","$2.07","$2.13","$2.15","$2.16","$2.18","$2.20","$2.23","▲ 7.7%"],
+        ["A100 40GB","$1.52","$1.56","$1.56","$1.58","$1.58","$1.59","$1.59","▲ 4.6%"],
+        ["RTX PRO 6000","$2.40","$2.49","$2.52","$2.54","$2.57","$2.59","$2.62","▲ 9.2%"],
+        ["L40S","$1.77","$1.81","$1.81","$1.83","$1.85","$1.86","$1.88","▲ 6.2%"]
+      ],
+      after:"The only pauses in the run: A100 40GB held on Oct 24, Oct 27 and Oct 29, and L40S held on Oct 24. What that costs in practice, on a 730-hour month (24/7 usage): one H100 rented around the clock at Verda's rate went from $4.34 to $4.75/hr in seven days — +$0.41/hr, about $299 more per month for the same card. A GB300 went from $11.82 to $12.93 — +$1.11/hr, about $810 more per month, on the same 730-hour basis. Small daily rises compound fast at 24/7 usage. And Verda was not alone in October: Nebius raised across the board on Oct 1 — an announced rise, with the post-rise rates (H100 $4.50/hr, H200 $5.40/hr, B200 $8.50/hr, B300 $9.50/hr) verified Oct 19 and re-read unchanged on Oct 26, 27 and 28 — and RunPod Secure rose on Oct 14 (RTX 4090 $0.74 → $0.89/hr, ▲ 20%; H200 $4.59 → $5.29/hr, ▲ 15%; both re-read unchanged on Oct 24, 26, 27 and 28). Three providers, three different corners of the market — a large European cloud (Nebius), a major US platform (RunPod), and a Finnish specialist (Verda) raising six times in seven days. October's rises were not one company's pricing decision." },
+    { heading:"The counterweight: the floor still has not moved",
+      intro:"Against all of that, the cheapest verified offer for almost every GPU is exactly where it was when our records began — because the providers holding those offers did not move:",
+      cols:["GPU","Best verified offer","Provider","Oct 19 → Oct 29"],
+      rows:[
+        ["H100 SXM","$2.25/hr","TensorDock (8-GPU minimum)","— unchanged"],
+        ["H200","$3.59/hr","RunPod Community","— unchanged"],
+        ["B200","$5.98/hr","RunPod Community","— unchanged"],
+        ["B300","$7.40/hr","Hyperstack","— unchanged"],
+        ["A100 80GB","$1.09/hr","Thunder Compute","— unchanged"],
+        ["RTX 4090","$0.20 → $0.34/hr","nafnaf → RunPod Community","▲ best offer changed hands Oct 28"],
+        ["GB300","$11.82 → $12.93/hr","Verda (only offer we list)","▲ rose with Verda"]
+      ],
+      after:"Two honest exceptions, both in the table. The 4090's best offer rose on Oct 28 — not because RunPod Community raised its price (it did not; $0.34 throughout) but because the cheaper listing underneath it moved up: nafnaf's 4090, $0.20/hr since our records began, was re-read at $0.432/hr on Oct 28. And the GB300's best offer is Verda's price, because Verda is the only provider whose GB300 rate we list — so its rises are the best offer's rises. Everywhere else, the gap between the floor and the rising list prices widened all month: on Oct 29 an H100's best verified offer ($2.25) sat at less than half of Verda's new rate ($4.75) and half of Nebius's ($4.50). Rising list prices have still not pulled the floor up — but Oct 28 showed the floor is held by individual listings, and individual listings can move." }
+  ],
+  costTitle:"Context, and our reading",
+  costBody:"Context — the buyers' side (Oct 28 earnings): the two biggest GPU buyers reported on Oct 28. Microsoft's capital spending was $45.2 billion in the quarter and Alphabet's was $51.4 billion — about $96.6 billion combined — with both guiding toward further GPU-led acceleration, and Microsoft's CFO noting that third-party GPU capacity deliveries were delayed. Those are the buyers' own reported figures, offered as context for the seller-side record above — not proof of anything by themselves. Our reading — interpretation, not fact: providers do not raise on-demand prices six times in seven days, across a whole range, into weak demand. The dated rises — Nebius across the board on Oct 1, RunPod Secure on Oct 14, Verda six times between Oct 23 and Oct 29, and the market's cheapest 4090 listing giving up its price on Oct 28 — read to us as a market where demand for GPU hours is running ahead of supply, and sellers know it. The Oct 28 earnings context points the same way: the biggest buyers are spending at record pace and still waiting on capacity. That is an interpretation of the evidence on this page, not a measured fact: we record prices, not order books. If the rises stop, or the floor starts falling, the reading changes — and our daily records will show that too, dated the same way.",
+  steps:[
+    { title:"Small rises are the expensive kind", body:"A 1% rise is easy to wave through; six of them in seven days added about 9% to Verda's H100 and GB300 rates. If you rent there, re-price your running total against today's page — not the rate you remember from last week." },
+    { title:"Do not renew or expand at a list rate without checking the market first", body:"While Verda added about 9%, the best verified H100 offer never moved off $2.25/hr. The spread between a rising list price and the floor is now the biggest saving available to a renter." },
+    { title:"If you need capacity for months, price the reservation now", body:"When on-demand rates rise repeatedly, locking a rate earlier tends to beat locking it later. Work out the real total — GPU hours plus storage and downloads — before you commit." },
+    { title:"Watch the floor, not just the headlines", body:"The 4090's best offer changed hands on Oct 28 without any headline at all. The day the cheapest offers start rising across the board, the whole market has moved. Our Price Watch reports every verified change, dated on both sides." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"GPUJournal reads providers' own published pricing pages and banks the figures on each check; a price change is only reported when both the before and after figures were seen on the provider's own page, each with its date. This guide rests on our banked daily checks of Oct 19, 22, 23, 24, 26, 27, 28 and 29, 2026 — there are no banked checks for Oct 20, 21 or 25, and we do not fill those gaps in from memory or from anyone else's data. Verda's page was re-read first-hand on each of the six rise dates. The Nebius (Oct 1) rise predates the daily series: it was an announced rise, and only the post-rise rates were verified on Nebius's own pages — we do not present before-figures for it that we did not see. One thing you will never find presented as a verified price here: a figure a marketplace states about itself on marketing pages. Where a provider's own pages disagree with each other — on Oct 28, Spheron's pages stated the same H100 at $4.20 on some pages while others still said $2.64, $2.65, $2.75 or $2.98 — we report the disagreement in Price Watch rather than pick a number. This page extends Guide 1, “GPU rental prices are rising in 2026 — the dated evidence”, which covers the first three Verda rises and the wider 2026 picture.",
+  exits:[
+    ["Compare prices — every offer behind this page, checked daily","#/board"],
+    ["Work out the real cost — GPU hours plus storage and downloads","#/calculator"],
+    ["Price Watch — every verified change, dated on both sides","#/price-watch"],
+    ["GPU rental prices are rising in 2026 — the dated evidence","#/guide/gpu-rental-prices-rising-2026"]
+  ],
+  related:["gpu-rental-prices-rising-2026","true-cost-of-renting-a-gpu","best-single-gpu-for-ai-inference-2026"]
 }
 ];
 var FIND_RANKED = {
