@@ -660,6 +660,17 @@ body{text-rendering:optimizeLegibility}
   table{font-size:14px}
   th,td{padding:7px 9px}
 }
+/* ---------- GUIDE TABLES ON PHONES — wrap, never overflow ----------
+   Guide pages are the only pages that put tables inside .prose (story
+   and explainer prose carry no tables). At phone width a wide dated
+   table — five cost columns, or file names like UD-Q4_K_XL that cannot
+   break on their own — could otherwise force the page wider than the
+   screen. Inside 760px, prose table cells may break anywhere, so no
+   guide table can overflow. A guide's verdict is a list, not a table,
+   and already stacks. Desktop and all other pages are untouched. */
+@media(max-width:760px){
+  .prose table th,.prose table td{overflow-wrap:anywhere;word-break:break-word}
+}
 </style>
 </head>
 <body>
@@ -2003,6 +2014,141 @@ var ARTICLES = [
     ["GPU rental prices are rising in 2026 — the dated evidence","#/guide/gpu-rental-prices-rising-2026"]
   ],
   related:["gpu-rental-prices-rising-2026","true-cost-of-renting-a-gpu","best-single-gpu-for-ai-inference-2026"]
+},
+{
+  slug:"nemotron-bolt-e4b-small-gpu", hubSlug:"model-deployment",
+  title:"Nemotron 3.5 Bolt E4B on a small GPU: what actually fits, and what it costs to rent",
+  excerpt:"NVIDIA's Bolt E4B is an 8B-parameter agent model (about 4B working at a time) built to run small. The headlines talk in parameters; your graphics card cares about gigabytes. This page uses the real download sizes — the compressed file is 6.18 GB, the full-quality file 15.99 GB — and works out which rented cards run which version, and what that costs.",
+  publishedDate:"2026-10-29", readMinutes:8,
+  cta:[["Compare prices for this model — ranked for Bolt E4B","#/board?model=nemotron-35-bolt-e4b"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"Smallest sensible download", vram:"Q4_K_M GGUF", bestFit:"The compressed GGUF file — 6.18 GB. That, not the “4GB” in the repo name, is what your card has to hold.", price:"6.18 GB" },
+    { label:"Smallest card for it", vram:"8 GB", bestFit:"An 8 GB card holds the weights, with little spare; 12 GB is comfortable.", price:"8 GB" },
+    { label:"Full-quality version", vram:"BF16", bestFit:"BF16 — 15.99 GB → a 24 GB card (RTX 4090 class) runs the un-compressed model with room to work.", price:"15.99 GB" },
+    { label:"Cheapest way to rent it", vram:"RTX 4090", bestFit:"RTX 4090 from $0.34/hr (RunPod Community). A weekend of trying it — 24 hours — costs $8.16 on a 4090.", price:"$0.34/hr" },
+    { label:"Speed claim", vram:"RTX 5070", bestFit:"272.6 tokens/sec on an RTX 5070 — NVIDIA-reported, not measured by us.", price:"272.6 tok/s" }
+  ],
+  metricTitle:"The real file sizes",
+  metricBody:"Everything below was read on the model's own Hugging Face repos on Oct 29, 2026 — the actual files you would download, not a formula. Two things stand out. First, NVIDIA's own small download lives in a repo named “4GB” — that name is the model's roughly 4-billion effective parameters, not the file. The file itself is 6.18 GB, and 6.18 GB is what your card has to hold. Second, there is no single “the model is X GB” number: you pick a compression level, and each level is a different file.",
+  datedTables:[
+    { heading:"The files, as listed on Hugging Face (Oct 29, 2026)",
+      intro:"Sizes are the files as listed on Hugging Face, Oct 29, 2026.",
+      cols:["File","Size","Where it lives","What it is"],
+      rows:[
+        ["Q4_K_M GGUF","6.18 GB","NVIDIA's own repo (…Bolt-E4B-4GB)","The standard small download — the one most people run"],
+        ["UD-Q4_K_XL GGUF","5.06 GB","Unsloth GGUF repo","A slightly tighter squeeze at the same rough quality tier"],
+        ["UD-Q5_K_XL GGUF","5.83 GB","Unsloth GGUF repo","A step up in quality, still small"],
+        ["Q8_0 GGUF","8.03 GB","ggml-org GGUF repo","Near-full quality in GGUF form"],
+        ["BF16 (safetensors)","15.99 GB","NVIDIA's own BF16 repo","The full-quality weights: a 15.88 GB main file plus a 0.11 GB shared file"],
+        ["mmproj (vision add-on)","≈0.99 GB","Unsloth GGUF repo","Only needed if you want the model to read images — add it to the bill if so"]
+      ],
+      after:"Still smaller experimental compressions exist (down to about 3.5 GB); quality at that level is a trade-off we have not tested, so they are not the recommendation here." },
+    { heading:"What fits where",
+      intro:"Memory first, speed second: a card either holds the model or it doesn't. These verdicts are the weights file plus normal working room — the context warning underneath applies to every row.",
+      cols:["Card memory","What runs","Verdict"],
+      rows:[
+        ["8 GB","Q4_K_M (6.18 GB)","Runs it — weights fit with little spare, so keep contexts modest"],
+        ["12 GB","Q4_K_M or Q8_0 (8.03 GB)","Comfortable — the class of card NVIDIA's own speed figure was produced on (RTX 5070)"],
+        ["16 GB","Q8_0 comfortably; BF16 does not fit in practice","BF16 is 15.99 GB before anything else loads — a 16 GB card has nothing left for the model to work with"],
+        ["24 GB","BF16 (15.99 GB) with ≈8 GB spare","The full-quality route — an RTX 4090 runs the un-compressed model with room to work"]
+      ],
+      after:"Watch out — context eats memory too. Bolt E4B accepts up to 64K tokens of context. The longer the conversation or document you feed it, the more extra memory (the KV cache) it sets aside on top of the weights, and that growth is real even though the exact size depends on your settings. The fits above assume ordinary chat-length use. If you plan to fill the whole 64K window, step up a card size rather than trusting the weights figure alone." },
+    { heading:"What it costs to rent",
+      intro:"You do not need a data-centre card for this model — the honest rental question is how cheaply a small card rents, and for how long. Cheapest verified offers, checked Oct 29, 2026, all on RunPod's Community Cloud:",
+      cols:["Card","Per hour","A weekend (24 hrs)","A month of evenings (90 hrs)","Always on (730 hrs)"],
+      rows:[
+        ["RTX 4090 (24 GB — runs BF16)","$0.34","$8.16","$30.60","$248.20"],
+        ["RTX 5090 (32 GB — runs BF16)","$0.69","$16.56","$62.10","$503.70"],
+        ["L40S (48 GB — runs BF16)","$0.79","$18.96","$71.10","$576.70"]
+      ],
+      after:"Worked lines use a 730-hour month and “a month of evenings” = 3 hours a day for 30 days (90 hours), at the Oct 29 checked rates. Community Cloud availability varies — a card at this price is not guaranteed to be free the moment you look. The same money, compared: the $30.60 that buys a month of evenings on a 4090 buys about 44 hours on a 5090 or about 39 hours on an L40S (calculated from the rates above). For this model the extra money buys newer or roomier hardware, not a bigger model — the 4090 already runs the best version of Bolt E4B there is. And a warning in the other direction: the cheapest H100 in our prices is $2.25/hr at TensorDock, but that rental carries an 8-GPU minimum — $18.00/hr in total. Renting it for a model that fits on one small card would be paying eight times for capacity you cannot use.",
+      ctaAfter:true }
+  ],
+  steps:[
+    { title:"The small-card route (GGUF)", body:"Download the Q4_K_M file (6.18 GB) and run it with Ollama, LM Studio or llama.cpp — all three carry this model, and this is the route for 8–12 GB cards and for trying the model on a laptop-class GPU. The same GGUF files are what the rented cards above would run if you choose the compressed version there." },
+    { title:"The full-quality route (BF16)", body:"On a 24 GB card or better, serve the BF16 weights (15.99 GB) with vLLM — the standard choice when the model answers requests from other programs, not just one person chatting. NVIDIA also offers the model as a NIM for its own supported serving stack, and Unsloth publishes fine-tuning builds if you want to adapt it rather than just run it." }
+  ],
+  alternatives:[
+    { title:"The speed figure is NVIDIA's, not ours", body:"The 272.6 tokens/sec on an RTX 5070 is NVIDIA-reported, produced with its DFlash drafter helping generation (the drafter is itself a small extra file, about 0.40 GB in the GGUF repos). Treat it as the maker's best case until independent tests land — we have not benchmarked this model." },
+    { title:"“4B” is the working size, not the download", body:"Bolt E4B carries 8B parameters in total and uses about 4B at a time. That design is why it is fast for its quality — but memory is bought on the total file, 6.18 GB compressed or 15.99 GB in full, not on the 4B figure in the name." },
+    { title:"The licence is OpenMDW-1.1 — not Apache or MIT", body:"NVIDIA released the model under the OpenMDW-1.1 licence. It is an open release, but it is a different rulebook from the Apache 2.0 / MIT terms many open models use, so read its terms before building anything commercial on it. (Hugging Face's metadata simply tags NVIDIA's repos “other”; the licence name comes from NVIDIA's own release.) This is a pointer, not legal advice." },
+    { title:"Compressed is a quality choice", body:"Q4_K_M is the community's standard working compromise, not the model's full quality. If answers disappoint, the fix order is: step up a compression level (Q5, Q8), then BF16 — each step is a bigger file, which is exactly what the size table above is for." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"The model facts — 8B total / about 4B effective parameters, built from Google's Gemma 4 E4B with reinforcement-learning post-training, 64K context, OpenMDW-1.1 licence, released by NVIDIA on Oct 23, 2026 — were checked against NVIDIA's release and the model's own Hugging Face presence on Oct 24, 2026. The file sizes were re-read first-hand on Hugging Face on Oct 29, 2026: the Q4_K_M file (6.18 GB) in NVIDIA's own …Bolt-E4B-4GB repo, the BF16 safetensors (15.88 GB + 0.11 GB) in NVIDIA's BF16 repo, and the other GGUF files in the Unsloth and ggml-org repos. Rental prices are the cheapest verified offers from our daily check of Oct 29, 2026 (RunPod Community Cloud for all three cards; TensorDock's H100 rate and 8-GPU minimum as published). The 272.6 tokens/sec figure is NVIDIA's own published result with its DFlash drafter and is labelled company-reported wherever it appears; we ran no benchmark for this guide. Worked costs are arithmetic on the printed rates and hour counts — nothing else is estimated.",
+  exits:[
+    ["Compare prices for this model — ranked for Bolt E4B","#/board?model=nemotron-35-bolt-e4b"],
+    ["Nemotron 3.5 Bolt E4B — facts and memory maths","#/model/nemotron-35-bolt-e4b"],
+    ["Find a GPU","#/find"]
+  ],
+  related:["minimax-m31-flash-self-host","run-voxtral-3-yourself","deploy-qwen-32b-on-a-single-gpu-with-vllm"]
+},
+{
+  slug:"tensordock-pricing-explained", hubSlug:"gpu-pricing",
+  title:"TensorDock pricing explained: the cheapest H100 headline, and the 8-GPU catch",
+  excerpt:"TensorDock's H100 rate — $2.25 per GPU per hour — is the lowest per-GPU price in our checks. It is also a price quoted at an eight-GPU minimum, which makes the real entry ticket $18.00 an hour. Neither fact cancels the other. This page prices the same jobs both ways, so you can see exactly when the headline saves you money and when it quietly multiplies your bill.",
+  publishedDate:"2026-10-29", readMinutes:7,
+  cta:[["See today's H100 prices","#/board"],["Find a GPU","#/find"]],
+  tldr:[
+    { label:"Cheapest H100 per GPU?", vram:"TensorDock", bestFit:"TensorDock, $2.25/GPU/hr — the lowest per-GPU H100 price in our Oct 28–29 checks.", price:"$2.25/hr" },
+    { label:"The catch", vram:"8-GPU minimum", bestFit:"That rate is priced at an 8-GPU minimum — TensorDock's own table labels the row “Price per GPU, 8x minimum” — so the real floor is 8 × $2.25 = $18.00/hr.", price:"$18.00/hr" },
+    { label:"One H100 for 10 hours", vram:"Job 1", bestFit:"TensorDock forces all 8 cards; RunPod Community rents a single card. $180.00 vs $26.90.", price:"$180.00 vs $26.90" },
+    { label:"A full 8-card node for a week", vram:"168 hrs", bestFit:"TensorDock wins clearly when the job truly uses 8 cards at once. $3,024.00 vs $3,615.36 over 168 hours.", price:"$3,024.00" },
+    { label:"RTX 4090, single card", vram:"Job 3", bestFit:"The headline is not a TensorDock win here: TensorDock $0.36 vs RunPod Community $0.34.", price:"$0.36 vs $0.34" }
+  ],
+  metricTitle:"The H100 rates, side by side",
+  metricBody:"The rule this page keeps coming back to: cheapest per-GPU headline is not the same as cheapest job. Match the minimum to the size of the work. Below are the on-demand H100 SXM prices from our checks of Oct 28–29, 2026, with the minimum commitment printed next to each — the column most price lists leave off.",
+  datedTables:[
+    { heading:"H100 SXM — rates, minimums and real floors",
+      cols:["Provider","H100 SXM, per GPU/hr","Minimum","Real hourly floor"],
+      rows:[
+        ["TensorDock","$2.25","8 GPUs","$18.00/hr"],
+        ["RunPod Community","$2.69","None — a single card can be rented","$2.69/hr"],
+        ["Hyperstack","$3.20","Single GPU","$3.20/hr"],
+        ["RunPod Secure","$3.99","Single GPU","$3.99/hr"],
+        ["Lambda","$3.99","Single GPU","$3.99/hr"]
+      ],
+      after:"TensorDock's own H100 page adds two honest details worth knowing. First, its on-demand pricing is billed à la carte — allocating additional CPU, RAM or storage raises the cost above the GPU rate. Second, its footnote says hosts are listed at staggered pricing from $1.90 to $2.50/hr, so the rate on a given host can sit either side of the $2.25 headline. The same page also lists a monthly rate of $2.00/GPU/hr at the same 8× minimum — the headline falls further if you commit. (All read on marketplace.tensordock.com, Oct 29, 2026.) TensorDock's other rates in our checks: A100 at $1.50/GPU/hr and RTX 4090 at $0.36/GPU/hr." },
+    { heading:"The same job, priced honestly — Job 1: one H100 for 10 hours",
+      intro:"A fine-tune, a benchmark run, a day of inference testing. Per-GPU prices only mislead when the job and the minimum don't match — three ordinary jobs, worked in full:",
+      cols:["Route","What you actually rent","Total"],
+      rows:[
+        ["TensorDock","8 GPUs × $2.25 × 10 hrs — the minimum applies even if seven cards sit idle","$180.00"],
+        ["RunPod Community","1 GPU × $2.69 × 10 hrs","$26.90"]
+      ],
+      after:"The “cheapest” H100 costs $153.10 more for this job. The per-GPU saving is real; it is simply priced in units of eight." },
+    { heading:"Job 2: a full 8× H100 node for a 168-hour week",
+      intro:"A training run that genuinely uses every card.",
+      cols:["Route","Maths","Total"],
+      rows:[
+        ["TensorDock","8 × $2.25 × 168 hrs","$3,024.00"],
+        ["RunPod Community","8 × $2.69 × 168 hrs","$3,615.36"]
+      ],
+      after:"Now the headline does its job: TensorDock is $591.36 cheaper over the week — the same roughly 16% per-GPU gap, finally working in your favour because the job fills the minimum. This is the honest counterweight to Job 1: nothing about the $2.25 rate is a trick. It is a bulk price, and it rewards bulk work.",
+      ctaAfter:true }
+  ],
+  costTitle:"Job 3: a single RTX 4090 experiment",
+  costBody:"TensorDock lists the 4090 at $0.36/hr; RunPod Community lists it at $0.34/hr. Over 10 hours that is $3.60 against $3.40. Plainly: on the card most people rent for small experiments, TensorDock is not the cheapest option in our checks — the H100 headline does not carry across its whole range. Two things about TensorDock are stated plainly on its own pages. Billing is pre-paid: its H100 FAQ says you deposit money, then provision a server — and that once your balance nears $0, the server is automatically deleted. And its H100 capacity, per the same page, sits in Dallas. Beyond that, the steps below are questions to ask before money goes in — printed as questions because the answers are not published on a page we could verify.",
+  steps:[
+    { title:"Availability", body:"Is the $2.25 rate actually in stock at the size and time you need, or only at the staggered host prices ($1.90–$2.50) the footnote describes? Which regions beyond Dallas hold which GPUs?" },
+    { title:"Billing increments", body:"Is on-demand time billed by the second, the minute or the hour — and what exactly does the à-la-carte CPU/RAM/storage allocation add to the GPU rate on the configuration you need?" },
+    { title:"Storage", body:"TensorDock's H100 page says a lower storage-only rate applies when you stop and unreserve your GPUs, but publishes no figure for it. What is the storage rate, running and stopped?" },
+    { title:"Egress", body:"What does it cost to move your data and checkpoints out? No egress rate appears on the pages we read." },
+    { title:"The balance rule", body:"Pre-paid deletion at a near-zero balance is automatic — what warning do you get, and how much float should you keep so a long job is never cut mid-run?" }
+  ],
+  alternatives:[
+    { title:"It suits you if your work fills eight cards at once", body:"Multi-GPU training runs, distributed fine-tunes, or batch jobs you can spread across a full node. At that size the $2.25 rate is the cheapest verified H100 price we have, and over a week it is worth roughly $590 against the next option. Long, steady jobs suit it too — the monthly rate on TensorDock's own page ($2.00/GPU/hr at the same 8× minimum, read Oct 29) rewards committing, and a full node run for days at a time is exactly the shape of work the pricing is built for. And you can plan around one location: TensorDock's H100 page places its H100 SXM5 capacity in a Dallas data centre — fine for most training and batch work, wherever you are." },
+    { title:"Look elsewhere if you need one card, briefly", body:"A single-GPU experiment at TensorDock's H100 minimum costs $18.00/hr before you have done anything; a single RunPod Community card at $2.69/hr does the same job for a seventh of the outlay. Bursty work fits badly too — minimums punish idle time: if the job runs two hours a day, you pay the floor for the hours the cards sit unused, and a no-minimum provider fits better. And if you are price-shopping a single 4090, RunPod Community's $0.34/hr beats TensorDock's $0.36/hr in our checks." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"The prices on this page are from GPUJournal's own checks of Oct 28–29, 2026, read on the providers' published pages: TensorDock H100 SXM $2.25/GPU/hr, A100 $1.50/GPU/hr, RTX 4090 $0.36/GPU/hr; RunPod Community H100 SXM $2.69 and RTX 4090 $0.34, with no multi-GPU minimum; RunPod Secure H100 SXM $3.99; Hyperstack H100 SXM $3.20; Lambda H100 SXM $3.99. The terms were re-read first-hand on TensorDock's own H100 page on Oct 29, 2026: its pricing table labels the $2.25 row “Price per GPU, 8x minimum”, its footnote describes à-la-carte billing and staggered host pricing from $1.90 to $2.50/hr, its monthly column shows $2.00/GPU/hr at the same minimum, and its FAQ describes pre-paid billing and the Dallas location. Two things are deliberately missing from this guide because we could not verify them: TensorDock publishes no storage rate and no egress rate on the pages we read, so neither appears in any total here — every worked figure above is GPU time only. Billing increments are likewise unpublished on those pages, which is why they appear above as a question to ask, not a fact. All worked totals are exact arithmetic on the checked rates: 8 × $2.25 × 10 = $180.00; 1 × $2.69 × 10 = $26.90; 8 × $2.25 × 168 = $3,024.00; 8 × $2.69 × 168 = $3,615.36.",
+  exits:[
+    ["Compare prices — every offer behind this page, checked daily","#/board"],
+    ["Work out the real cost — GPU hours plus storage and downloads","#/calculator"],
+    ["TensorDock — its offers and listing","#/provider/tensordock"]
+  ],
+  related:["verda-six-rises-october-2026","gpu-rental-prices-rising-2026","true-cost-of-renting-a-gpu"]
 }
 ];
 var FIND_RANKED = {
@@ -3334,6 +3480,17 @@ function livePriceFor(label){
   var g = null; GPUS.forEach(function(x){ if (x.name.toLowerCase() === String(label).toLowerCase()) g = x; });
   if (!g) return null; var b = bestOffer(g); return b ? { g:g, b:b } : null;
 }
+/* Guide action blocks: the prices exit a guide carries right after its
+   verdict, again mid-page (a dated table can set ctaAfter), and — where the
+   guide sets ctaClosing — once more before its method box. Rendered in the
+   same doors style as the end-of-guide exits; only guides that set cta
+   show them, so every earlier guide renders exactly as before. */
+function guideCtaHTML(a){
+  if (!a.cta || !a.cta.length) return "";
+  var s = '<div class="doors4" style="margin:18px 0">';
+  a.cta.forEach(function(x){ s += '<a class="door" href="' + x[1] + '"><span class="dt" style="font-size:15.5px">' + esc(x[0]) + '</span><span class="dd">→</span></a>'; });
+  return s + "</div>";
+}
 function viewGuide(slug){
   var a = null; ARTICLES.forEach(function(x){ if (x.slug === slug) a = x; });
   if (!a) { viewGuides(); return; }
@@ -3348,6 +3505,7 @@ function viewGuide(slug){
     });
     s += "</ul></div>";
   }
+  s += guideCtaHTML(a);
   var tableGpus = {};
   (a.tldr || []).forEach(function(t){ var lp = livePriceFor(t.label); if (lp) tableGpus[lp.g.id] = lp.g; });
   (a.comparison || []).forEach(function(c){ var lp = livePriceFor(c.name); if (lp) tableGpus[lp.g.id] = lp.g; });
@@ -3388,6 +3546,7 @@ function viewGuide(slug){
       });
       s += "</tbody></table>";
       if (t.after) s += "<p>" + esc(t.after) + "</p>";
+      if (t.ctaAfter) s += guideCtaHTML(a);
     });
   }
   if (a.costTitle) s += "<h2>" + esc(a.costTitle) + "</h2><p>" + esc(a.costBody) + "</p>";
@@ -3400,6 +3559,7 @@ function viewGuide(slug){
     s += "<h2>Alternatives</h2>";
     a.alternatives.forEach(function(al){ s += '<div class="infobox"><b>' + esc(al.title) + '</b><p style="color:var(--ink2);margin:6px 0 0">' + esc(al.body) + "</p></div>"; });
   }
+  if (a.ctaClosing) s += guideCtaHTML(a);
   if (a.licenceTitle){
     s += '<div class="infobox"><h3 style="margin-top:0">' + esc(a.licenceTitle) + '</h3><p style="color:var(--ink2);margin:0">' + esc(a.licenceBody) + "</p></div>";
   }
