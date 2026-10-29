@@ -2167,6 +2167,90 @@ var ARTICLES = [
     ["TensorDock — its offers and listing","#/provider/tensordock"]
   ],
   related:["verda-six-rises-october-2026","gpu-rental-prices-rising-2026","true-cost-of-renting-a-gpu"]
+},
+{
+  slug:"mistral-large-4-deploy-cost", hubSlug:"model-deployment",
+  title:"Thinking of deploying Mistral Large 4? Here’s how — and what it actually costs",
+  excerpt:"Mistral’s Large 4 — “Le Chonk” — landed on Hugging Face on Oct 29, 2026: about a trillion parameters, free to download, and far too big for any single graphics card. This page does the deployment maths in the open: how much memory each version needs, the smallest rental setups that honestly hold it, what those setups cost per hour, per day and per month — and the point where renting GPUs beats paying per token, and where it doesn’t.",
+  publishedDate:"2026-10-29", readMinutes:10,
+  cta:[["Compare prices for this model — ranked for Mistral Large 4","#/board?model=mistral-large-4"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"Can one GPU run it?", vram:"No single GPU", bestFit:"No. About 1 trillion parameters (1.05T on Mistral’s detailed count, 49B active per token) — no single card holds it at any useful precision.", price:"No" },
+    { label:"Smallest honest setup", vram:"8× B200 or 8× B300", bestFit:"8× B200 or 8× B300, one node — the FP8 checkpoint, served tensor-parallel across 8 GPUs, the shape of Mistral’s own recipes.", price:"8-GPU node" },
+    { label:"FP8 cost", vram:"8× B200", bestFit:"8× B200 from $47.84/hr — $1,148.16 a day, $34,923.20 a month always-on.", price:"$47.84/hr" },
+    { label:"The smaller download", vram:"NVFP4, 610 GB", bestFit:"NVFP4 checkpoint (610 GB) → 4× B200 from $23.92/hr or 3× B300 from $22.20/hr.", price:"$22.20/hr" },
+    { label:"Self-host cost per 1M tokens", vram:"Printed assumption", bestFit:"$3.32 on the 8× B200 setup — at a printed assumption of 4,000 tokens/sec (an assumption, not a benchmark).", price:"$3.32" },
+    { label:"Mistral’s own API", vram:"$0.70 in / $2.10 out", bestFit:"$0.70 in / $2.10 out per 1M tokens — cheaper per token than self-hosting at ordinary volumes.", price:"$1.05 blended" },
+    { label:"Licence watch-out", vram:"Hosted service", bestFit:"Self-hosting is allowed. Selling access to it as a hosted service needs a separate commercial licence from Mistral.", price:"Separate licence" },
+  ],
+  metricTitle:"The memory maths",
+  metricBody:"The method is the one we print on every model page: memory ≈ parameters × bytes per parameter, plus about 20% headroom for the context cache and serving overhead. Mistral’s detailed count is 1.05 trillion total parameters (a 1.6B vision encoder included), with 49B active per token — 52B including embeddings and output layers. The active count decides speed; the total count decides memory. And here the arithmetic can be checked against reality, because we also summed the actual files on Hugging Face on Oct 29, 2026.",
+  datedTables:[
+    { heading:"Memory by version — the method checked against the real download",
+      cols:["Version","By the method","The real download","Plan on (with headroom)","Smallest honest setup"],
+      rows:[
+        ["FP8 — the main checkpoint","≈1,050 GB (1 byte per parameter)","1,060.6 GB (54 files)","≈1,260 GB","8× B200 (1,536 GB) or 8× B300 (2,304 GB)"],
+        ["NVFP4 — the 4-bit Blackwell checkpoint","≈525 GB (half a byte per parameter)","610.0 GB (32 files)","≈630 GB","4× B200 (768 GB) or 3× B300 (864 GB)"],
+        ["FP16 — full precision","≈2,100 GB (2 bytes per parameter)","—","≈2,520 GB","Not a practical rental shape — nobody sane rents for this"]
+      ],
+      after:"The real NVFP4 download (610.0 GB) is bigger than the raw 4-bit arithmetic (525 GB) — the format carries scaling data alongside the weights. Plan on the real file size, not the formula, whenever the two disagree; here both point at the same setups. File sizes are the shard totals read on Hugging Face, Oct 29, 2026. Watch out — context eats memory too. Large 4 accepts up to 1M tokens of context. The longer the conversations and documents you serve, the more extra memory (the KV cache) the server sets aside on top of the weights. The 20% headroom is a planning allowance, not a promise: Mistral’s own serving notes advise lowering the maximum context length and concurrency if you run short of GPU memory. If filling the whole 1M window is your use case, the B300 setups’ extra memory per card is worth real money to you." },
+    { heading:"What the setups cost",
+      intro:"Cheapest verified offers, checked Oct 29, 2026: B200 from $5.98/GPU/hr on RunPod’s Community Cloud, B300 from $7.40/GPU/hr at Hyperstack. Multiplied out into the whole setups the memory maths demands:",
+      cols:["Setup","Per hour","Per day (24 hrs)","Always-on month (730 hrs)"],
+      rows:[
+        ["8× B200 — FP8 (RunPod Community, 8 × $5.98)","$47.84","$1,148.16","$34,923.20"],
+        ["8× B300 — FP8 (Hyperstack, 8 × $7.40)","$59.20","$1,420.80","$43,216.00"],
+        ["4× B200 — NVFP4 (RunPod Community, 4 × $5.98)","$23.92","$574.08","$17,461.60"],
+        ["3× B300 — NVFP4 (Hyperstack, 3 × $7.40)","$22.20","$532.80","$16,206.00"]
+      ],
+      after:"Every rental figure here is a whole-setup price — cards × the per-GPU rate — because that is what you actually pay. Per-GPU headlines are shown alongside, never instead. Community Cloud availability varies — a card at the best price is not guaranteed to be free the moment you look. You do not have to run a node around the clock: the same 8× B200 setup rented 8 hours a day, 30 days a month (240 hours) costs $11,481.60. Renting bills every hour the node is up, working or idle — remember that when the API comparison below looks expensive.",
+      ctaAfter:true },
+    { heading:"Or skip the GPUs: what the APIs charge",
+      intro:"The honest alternative to deploying Large 4 yourself is not deploying it at all. Mistral sells the same model by the token, and the frontier closed models sell theirs. Prices below were read on each maker’s own pricing pages on Oct 29, 2026. Printed assumptions (not measurements): (1) the rented node serves an aggregate 4,000 tokens per second, input and output combined, under a realistic mixed load — we have not benchmarked Large 4; your real figure depends on your traffic shape, context lengths and settings. (2) API usage is blended at 3 input tokens to 1 output token, uncached. At half the assumed throughput, every self-host figure below doubles; at double, it halves.",
+      cols:["Route","Price","Cost per 1M tokens","The catch"],
+      rows:[
+        ["Self-host — FP8 on 8× B200","$47.84/hr flat","$3.32 (at the printed assumption)","You run it, you staff it, it bills while idle"],
+        ["Self-host — NVFP4 on 4× B200","$23.92/hr flat","$1.66 (at the printed assumption)","Smaller node, same responsibilities"],
+        ["Mistral API — mistral-large-4","$0.70 in / $2.10 out per 1M (cached input $0.07)","$1.05 blended at the printed mix","Same model, someone else’s GPUs — and Mistral’s batch API halves the price again for work that can wait"],
+        ["OpenAI API — GPT-6 Astra (frontier closed)","$10.00 in / $50.00 out per 1M (cached input $1.00)","$20.00 blended at the printed mix","A frontier closed model: top-tier capability, zero operations, priced like it"]
+      ],
+      after:"Against Mistral’s own API, self-hosting almost never wins on price. An always-on 8× B200 node costs $34,923.20 a month. At the blended $1.05 per 1M tokens, you would need to push about 33.3 billion tokens a month through the API before it cost the same — a sustained average of roughly 12,700 tokens per second, around the clock. Almost nobody’s workload looks like that. If the model itself is what you want and per-token price is the whole question, Mistral’s API is the rational buy. Against a frontier closed API, the maths flips early. At GPT-6 Astra’s blended $20.00 per 1M tokens, the same always-on node breaks even at about 1.75 billion tokens a month — a sustained average of only about 665 tokens per second. A genuinely busy product crosses that line, and past it every additional token on your own node is effectively free until the node saturates. That is the real self-hosting bargain: not “cheaper than the model’s own API”, but “frontier-class capacity at a flat rate”." }
+  ],
+  costTitle:"What the money can’t settle",
+  costBody:"Control. Self-hosted weights are pinned: the model cannot be changed, deprecated or repriced underneath you, and you can fine-tune it. An API model is whatever the provider serves this month. Privacy and residency. On your own node, prompts never leave your infrastructure — for legal, medical, financial and security work (the fields Mistral says this model is aimed at) that can be the whole decision, before price enters it. Zero operations. The API side never pages you at 3am, never waits for a scarce 8-GPU node to free up, and bills nothing while you sleep. The rented node bills every hour it exists. Frontier quality. GPT-6 Astra is a frontier closed model and priced as one; Large 4’s published benchmark scores are Mistral-reported and strong among open weights, but “strongest open model” and “strongest model” are different claims, and which one your task needs is a testing question, not a pricing one.",
+  steps:[
+    { title:"The standard route is vLLM, tensor-parallel across the node", body:"Mistral recommends vLLM for production serving of Large 4 and publishes a ready-made Docker image for it; its own example serves the FP8 checkpoint with --tensor-parallel-size 8 — the weights are sharded across all 8 GPUs of one node, which is why the smallest honest FP8 setup is an 8-GPU node and not, say, a very patient pair of cards. SGLang is the other first-class route, with its own published cookbook for this model. Feed it requests through its OpenAI-style API and it is, from your application’s side, just an endpoint." },
+    { title:"Two details from the card worth knowing", body:"The checkpoint ships with an embedded DSpark speculative-decoding draft head, which Mistral measures at up to 1.9× the throughput — that is Mistral’s own measurement, not ours. And the separate NVFP4 checkpoint targets Blackwell GPUs (B200 and B300 are both Blackwell), is served by the same vLLM/SGLang route, and Mistral states it keeps the same performance at the smaller footprint — again, the maker’s claim, printed as such. There is also an NVIDIA NIM microservice if you would rather run inside NVIDIA’s supported stack." }
+  ],
+  alternatives:[
+    { title:"Every speed-derived figure here rests on a printed assumption", body:"The $3.32 and $1.66 per-1M-token costs assume 4,000 tokens/sec aggregate. We ran no benchmark for this guide, and no independent Large 4 serving benchmark existed to check against at publication. If your real throughput is 2,000 tokens/sec, self-hosting costs twice what this page’s headline says — the break-even conclusions against the frontier API survive that, the ones against Mistral’s API were never close." },
+    { title:"The maker’s speed claims are labelled, not adopted", body:"The DSpark draft head’s “up to 1.9× throughput” and the NVFP4 checkpoint’s “same performance” are Mistral’s own statements from its model card, printed as claims. The same applies to Large 4’s benchmark scores in our news coverage — Mistral-reported." },
+    { title:"Best-offer prices are a snapshot, and availability is real", body:"Rental figures are the cheapest verified offers from the Oct 29, 2026 check. Community Cloud nodes at the best price come and go; an 8-GPU node in the region you need may cost more than the headline when you actually book. The live comparison carries today’s figures." },
+    { title:"An 8-GPU node is an operations commitment", body:"One node, one point of failure. Serious deployments budget for a second node or accept the downtime risk — either way the always-on figures above are a floor, not a ceiling." },
+  ],
+  licenceTitle:"The licence, in plain words",
+  licenceBody:"Large 4 is released under the Mistral Ecosystem Open-Weight License — a modified version of the MIT licence — read on the model’s Hugging Face card on Oct 29, 2026. Download and self-host: yes. Commercial and non-commercial use are both allowed — running it inside your own company or product is fine. Selling it as a hosted service: not on this licence. Operating a Model-as-a-Service business on these weights — charging others to query your deployment — requires a separate commercial licence from Mistral. There is no revenue threshold in the term we read; the trigger is the hosted-service activity itself. Building on Mistral’s API instead (the per-token route above) is ordinary API terms — the MaaS question only arises for the weights. This is a plain-words summary of the headline term, not legal advice. Read the licence itself before building a business on the weights.",
+  honestyTitle:"How we know",
+  honestyVerified:[
+    "Model facts — 1.05T total parameters including a 1.6B vision encoder, 49B active per token (52B including embeddings and output layers), 128 routed experts with 4 active plus 1 shared, 1M context, text and image input, trained on 3,800 NVIDIA Grace Blackwell GPUs — read on Mistral’s own Hugging Face model card and Mistral’s documentation on Oct 29, 2026, the day the weights were released",
+    "File sizes are the safetensors shard totals summed from the same repos the same day: FP8, 54 files totalling 1,060.6 GB; NVFP4, 32 files totalling 610.0 GB",
+    "Serving route — vLLM recommended, tensor-parallel size 8, official Docker image; SGLang cookbook as the alternative; the embedded DSpark draft head — is from Mistral’s card",
+    "Licence summary is from the Mistral Ecosystem Open-Weight License as linked on the card, read Oct 29, 2026",
+    "Rental prices are the cheapest verified offers from our daily check of Oct 29, 2026 (B200 $5.98/GPU/hr RunPod Community Cloud; B300 $7.40/GPU/hr Hyperstack), multiplied into whole setups",
+    "API prices read on Oct 29, 2026 on Mistral’s own model documentation (mistral-large-4: $0.70 input / $0.07 cached input / $2.10 output per 1M tokens; batch discount per Mistral’s pricing FAQ) and on OpenAI’s official API pricing page (GPT-6 Astra: $10.00 input / $1.00 cached input / $50.00 output per 1M tokens)",
+  ],
+  honestyUnverified:[
+    "Throughput — the cost-per-1M-token and break-even figures are arithmetic on the checked prices and the two printed assumptions (4,000 tokens/sec aggregate throughput; a 3:1 input-to-output token mix). The throughput is an assumption for comparison, not a measured result, and we ran no benchmark for this guide",
+    "Mistral’s performance figures — the DSpark draft head’s up-to-1.9× figure and the NVFP4 checkpoint’s same-performance claim — are the maker’s own statements wherever they appear, labelled as claims",
+  ],
+  honestyNote:"Nothing else on this page is estimated.",
+  exits:[
+    ["Compare prices for this model — ranked for Mistral Large 4","#/board?model=mistral-large-4"],
+    ["Mistral Large 4 — fits and prices by GPU","#/model/mistral-large-4"],
+    ["Find a GPU","#/find"]
+  ],
+  related:["minimax-m31-flash-self-host","run-voxtral-3-yourself","deploy-qwen-32b-on-a-single-gpu-with-vllm"]
 }
 ];
 var FIND_RANKED = {

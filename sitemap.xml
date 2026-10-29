@@ -251,4 +251,5 @@
 <url><loc>https://gpujournal.ai/story/microsoft-alphabet-earnings-gpu-capacity</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/story/mistral-large-4-open-weights</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/mistral-large-4</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/guide/mistral-large-4-deploy-cost</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
