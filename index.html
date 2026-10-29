@@ -40,7 +40,8 @@
       "alternateName": ["GPU journal", "GPU journals", "GPUJournal.ai"],
       "url": "https://gpujournal.ai/",
       "logo": "https://gpujournal.ai/assets/favicon-512.png",
-      "description": "GPUJournal is an independent GPU journal: cloud GPU prices checked against providers' own pages, curated GPU news, and guides for people who rent GPUs."
+      "description": "GPUJournal is an independent GPU journal: cloud GPU prices checked against providers' own pages, curated GPU news, and guides for people who rent GPUs.",
+      "sameAs": ["https://x.com/GPUJournalAI", "https://github.com/nightrunner007/gpujournal-site"]
     },
     {
       "@type": "WebSite",
@@ -930,6 +931,11 @@ var MOVES = [
    (attributed, dated) — never as our verified market price: Spheron has
    no verified prices on the board. */
 var WATCH = [
+ {prov:"nafnaf.ai",gpu:"RTX 4090",gpuId:"rtx-4090",type:"move",dir:"down",from:"$0.432",to:"$0.35",fromDate:"Read Oct 28, 2026",toDate:"Read Oct 29, 2026",
+  headline:"nafnaf.ai\u2019s RTX 4090 listing drops to $0.35/hr",catchDate:"Oct 29, 2026",
+  bandSub:"Down from the $0.432 read on Oct 28 \u2014 a live-marketplace listing repricing through the day",
+  ctx:"The single RTX 4090 listed on nafnaf.ai \u2014 one card in Zug, Switzerland \u2014 read $0.35/GPU-hour in two afternoon reads on Oct 29, 2026, down from the $0.432 read on Oct 28, 2026 that the board carries. nafnaf is a live marketplace and the listing repriced through the day: morning reads on Oct 29 showed $0.36\u2013$0.38 and the availability section briefly showed no listings at all, so $0.35 is the afternoon\u2019s settled read, not a fixed rate. It does not take the RTX 4090 Best offer, which stays with RunPod Community at $0.34/hr; the board\u2019s nafnaf row updates on the next daily check. nafnaf\u2019s other listing, an RTX PRO 6000 Blackwell Max-Q, read above the board\u2019s $0.42 all day but never settled on one figure ($0.77\u2013$0.88 across Oct 29\u2019s reads), so no figure is printed for it and the board keeps its Oct 28 read.",
+  src:"Source: nafnaf.ai homepage listings, read Oct 28 and Oct 29, 2026"},
  {prov:"Verda",gpu:"All GPUs",gpuId:"",type:"note",dir:"up",
   headline:"Verda rises for the sixth time in seven days",catchDate:"Oct 29, 2026",
   heroGpu:"B200",heroFrom:"$8.69",heroTo:"$8.78",heroFromDate:"read Oct 28, 2026",heroToDate:"Read Oct 29, 2026",
@@ -1013,6 +1019,18 @@ var WATCH = [
    exists (credited under the image on the story page); otherwise the
    site's own abstract panels. */
 var NEWS = [
+{slug:"mistral-large-4-open-weights",art:"chip",
+  kicker:"Models \u00b7 Mistral AI",
+  title:"Mistral Large 4 weights are out \u2014 the 1-trillion-parameter \u2018Le Chonk\u2019 is downloadable, and it takes eight GPUs to serve",
+  date:"Oct 29, 2026",dateShort:"Oct 29, 2026",
+  standfirst:"Published on Hugging Face on Oct 29, 2026: Mistral has released the weights of Mistral Large 4, its 1.05-trillion-parameter multimodal flagship, for anyone to download and self-host \u2014 under a modified-MIT licence with one catch that matters directly to GPU providers. The checkpoint is FP8, a smaller NVFP4 build targets Blackwell cards, and Mistral\u2019s own serving recipes run it across eight GPUs. Here is what it is, what the licence actually says, and what that eight-GPU node costs at today\u2019s checked rental prices.",
+  facts:[
+   "What dropped, from Mistral\u2019s own Hugging Face model card and repository record, both read on Oct 29, 2026: the repository mistralai/Mistral-Large-4-1T-A52B is live and ungated (last modified Oct 29, 14:51 UTC). The card describes a 1 trillion-parameter natively multimodal Mixture-of-Experts model \u2014 1.05 trillion parameters in total, 49 billion active per token (52 billion including embeddings and output layers), 128 routed experts with 4 active per token plus one shared expert, a 1-million-token context, text and image input with text output, and native fluency in 160+ languages. It was trained from scratch on 3,800 NVIDIA Grace Blackwell GPUs in Mistral\u2019s own European datacentres, and the final weights are stronger than the Oct 6 public preview after three more weeks of reinforcement learning: on the Artificial Analysis Coding Agent Index it scores 48%, effectively tied with the leading open-weight model GLM-5.3 while using 47% fewer tokens per task, and 26 on the Artificial Analysis Intelligence Index v5, the highest score among western open-weight models \u2014 all figures as reported by Mistral on the card.",
+   "The licence, in the card\u2019s own words: Large 4 is released under the Mistral Ecosystem Open-Weight License, \u2018a modified version of the MIT license, for both commercial and non-commercial use \u2014 operating a Model-as-a-Service business requires a separate commercial license with Mistral.\u2019 The trigger is what you do with the model, not how large your revenue is: use it, modify it, fine-tune it and build commercial products on it freely, but if you want to sell access to the model itself as a service, you need Mistral\u2019s separate commercial licence first. That clause is aimed squarely at the rental and inference providers in our price board\u2019s world. Alongside the weights, Mistral serves the model itself as mistral-large-4 on its API at $0.70 per million input tokens, $0.07 for cached input and $2.10 per million output tokens (Mistral\u2019s listed release pricing, Oct 29, 2026) \u2014 roughly half the $1.36 / $4.18 preview rates of Oct 6.",
+   "What it takes to run, from the same card: the main checkpoint is FP8 (the repository configuration is FP8-quantised, which is why 1.05 trillion parameters land at roughly 1,050GB of weights by our method \u2014 total parameters \u00d7 1 byte at 8-bit), and a separate NVFP4 checkpoint with a smaller footprint targets Blackwell GPUs. Mistral\u2019s recommended vLLM recipe and its SGLang recipe both serve the model with tensor parallelism across 8 GPUs \u2014 an eight-GPU node \u2014 and the checkpoint carries an embedded DSpark speculative-decoding draft head that Mistral measures at up to 1.9\u00d7 higher throughput. No single GPU can run this alone. At the board\u2019s checked prices of Oct 29, 2026, that eight-GPU node costs $59.20/hr on B300 (8 \u00d7 Hyperstack\u2019s $7.40/hr best offer, about $43,200 a month run around the clock) or $47.84/hr on B200 (8 \u00d7 RunPod Community\u2019s $5.98/hr best offer, about $34,900 a month). The NVFP4 build roughly halves the weight memory (about 525GB by our method), which brings smaller Blackwell setups into reach \u2014 the model page below works through every fit from the same arithmetic."
+  ],
+  meaning:"This is the largest Western open-weight release of the year, and it lands directly on the rental market twice over. First as demand: a flagship that needs an eight-GPU Blackwell node to serve is exactly the high end of the board, on the same day Microsoft told investors its third-party GPU capacity had arrived late. Second as a warning label: the Model-as-a-Service clause means a provider cannot simply download Large 4 and start selling endpoints \u2014 that route runs through a separate Mistral licence, and any listing that skips it is a risk a renter is sharing. For builders choosing between the API and their own node, Mistral has priced the API keenly at $0.70 / $2.10 per million tokens, so at today\u2019s checked prices self-hosting\u2019s case is control, privacy, customisation and very high sustained volume \u2014 not small-scale savings. That is our reading of the dated figures above.",
+  exits:[["Mistral Large 4 \u2014 fits and prices by GPU","#/model/mistral-large-4"],["Compare GPU prices","#/board"],["Start from your model","#/models"]]},
 {slug:"microsoft-alphabet-earnings-gpu-capacity",art:"bars",
   kicker:"Market \u00b7 Microsoft + Alphabet",
   title:"Microsoft and Alphabet spent $96.6 billion in one quarter \u2014 and GPU capacity still arrived late",
@@ -2369,6 +2387,7 @@ var MODELS_RAW = [
 ["glm-4-6v","GLM-4.6V","Z.ai — GLM",106,null,"128K","Not yet confirmed — check the model's own card before relying on its licence.","Dec 2025","2025-12","","A vision-language model — it reads images as well as text."],
 ["glm-4-6v-flash","GLM-4.6V-Flash","Z.ai — GLM",9,null,"128K","Not yet confirmed — check the model's own card before relying on its licence.","Dec 2025","2025-12","","A vision-language model — it reads images as well as text."],
 /* Mistral AI */
+["mistral-large-4","Mistral Large 4","Mistral AI",1050,"52B","1M","Mistral Ecosystem Open-Weight License \u2014 a modified MIT: free to use, modify, fine-tune and commercialise, but operating a Model-as-a-Service business needs a separate commercial licence from Mistral.","Oct 29, 2026","2026-10-29","","Mistral\u2019s flagship \u2018Le Chonk\u2019: a natively multimodal MoE trained on 3,800 Grace Blackwell GPUs in Europe. The Hugging Face checkpoint is FP8, with an NVFP4 build for Blackwell; Mistral\u2019s own vLLM and SGLang recipes serve it on an 8-GPU node."],
 ["mistral-large-3","Mistral Large 3","Mistral AI",675,"41B","262K","apache","Dec 2, 2025","2025-12-02",""],
 ["mistral-medium-3-5","Mistral Medium 3.5","Mistral AI",128,null,"256K","modmit","Apr 2026","2026-04",""],
 ["mistral-small-4","Mistral Small 4","Mistral AI",119,"~6B","256K","apache","Mar 16, 2026","2026-03-16",""],
@@ -4033,12 +4052,12 @@ function seoGuide(a){
   return { title:a.title + " | GPUJournal", path:"/guide/" + a.slug, desc:trimDesc(a.excerpt), type:"article",
     ld:[crumb([["Home", "/"], ["Guides", "/guides"], [hubName(a.hubSlug), "/hub/" + a.hubSlug], [a.title, "/guide/" + a.slug]]),
         { "@type":"Article", "headline":a.title, "description":trimDesc(a.excerpt), "datePublished":a.publishedDate,
-          "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" },
+          "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal", "sameAs":["https://x.com/GPUJournalAI", "https://github.com/nightrunner007/gpujournal-site"] }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal", "sameAs":["https://x.com/GPUJournalAI", "https://github.com/nightrunner007/gpujournal-site"] },
           "mainEntityOfPage":location.origin + "/guide/" + a.slug }] };
 }
 function seoStory(n){
   var art = { "@type":"Article", "headline":n.title, "description":trimDesc(n.standfirst),
-    "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal" },
+    "author":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal", "sameAs":["https://x.com/GPUJournalAI", "https://github.com/nightrunner007/gpujournal-site"] }, "publisher":{ "@type":"Organization", "@id":location.origin + "/#organization", "name":"GPUJournal", "sameAs":["https://x.com/GPUJournalAI", "https://github.com/nightrunner007/gpujournal-site"] },
     "mainEntityOfPage":location.origin + "/story/" + n.slug };
   var iso = isoDate(n.date); if (iso) art.datePublished = iso;
   return { title:n.title + " | GPUJournal", path:"/story/" + n.slug, desc:trimDesc(n.standfirst), type:"article",
