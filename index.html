@@ -3222,16 +3222,16 @@ function moveHTML(m){
    Everything in this block is pure string/data work over the board's own
    offers: no DOM access, so it can be exercised directly in checks. */
 /* CMP-PURE-BEGIN */
-function cmpProviders(){
+/* The providers that offer one GPU, in the order the board lists them
+   for it. The Provider A and B pickers are populated from this list and
+   nothing else — a provider that doesn't offer the chosen GPU never
+   appears in either list. */
+function cmpProvidersOf(g){
   var seen = {}, out = [];
-  GPUS.forEach(function(g){ offersOf(g).forEach(function(o){ if (!seen[o.prov]){ seen[o.prov] = 1; out.push(o.prov); } }); });
+  offersOf(g).forEach(function(o){ if (!seen[o.prov]){ seen[o.prov] = 1; out.push(o.prov); } });
   return out;
 }
-function cmpGpusOf(prov){
-  var out = [];
-  GPUS.forEach(function(g){ if (offersOf(g).some(function(o){ return o.prov === prov; })) out.push(g); });
-  return out;
-}
+
 /* A provider's offers for one GPU. The cheapest priced offer leads — that is
    the figure the comparison is built on; any others are named under it. A
    provider whose only offer is quote-only leads with that listing. */
@@ -3261,35 +3261,39 @@ function cmpFamilyOf(id){
   for (var i = 0; i < CMP_FAMILIES.length; i++) if (CMP_FAMILIES[i].indexOf(id) >= 0) return CMP_FAMILIES[i];
   return [id];
 }
-/* GPUs provider B offers that are similar to g: same base chip first; if B
-   has none of the family, B's cards within ±25% of g's memory, nearest
-   first, marked as size matches. Deterministic; at most three. */
-function cmpSimilar(g, provB){
-  var fam = cmpFamilyOf(g.id), family = [];
-  cmpGpusOf(provB).forEach(function(bg){ if (bg.id !== g.id && fam.indexOf(bg.id) >= 0) family.push({ g:bg, why:"chip" }); });
+/* GPUs similar to g that at least one provider OTHER than soloProv
+   offers — the way forward when g itself has a single provider. Same
+   base chip first (in family order); if none qualifies, cards within
+   ±25% of g's memory, nearest first, marked as size matches. Each entry
+   carries the providers that offer it. Deterministic; at most three. */
+function cmpSimilarAnywhere(g, soloProv){
+  function usable(cg){ return cmpProvidersOf(cg).some(function(p){ return p !== soloProv; }); }
+  var family = [];
+  cmpFamilyOf(g.id).forEach(function(id){
+    if (id === g.id) return;
+    var cg = gpuById(id);
+    if (cg && usable(cg)) family.push({ g:cg, why:"chip", provs:cmpProvidersOf(cg) });
+  });
   if (family.length) return family.slice(0, 3);
   var v = vramGB(g);
   if (!(v > 0)) return [];
   var cands = [];
-  cmpGpusOf(provB).forEach(function(bg){
+  GPUS.forEach(function(bg){
+    if (bg.id === g.id) return;
     var bv = vramGB(bg);
-    if (bv > 0 && bv >= v * 0.75 && bv <= v * 1.25) cands.push({ g:bg, why:"size", d:Math.abs(bv - v), i:GPUS.indexOf(bg) });
+    if (bv > 0 && bv >= v * 0.75 && bv <= v * 1.25 && usable(bg)) cands.push({ g:bg, why:"size", d:Math.abs(bv - v), i:GPUS.indexOf(bg), provs:cmpProvidersOf(bg) });
   });
   cands.sort(function(a, b){ return (a.d - b.d) || (a.i - b.i); });
-  return cands.slice(0, 3).map(function(c){ return { g:c.g, why:c.why }; });
+  return cands.slice(0, 3);
 }
-/* The whole decision, from the board's real offers only. */
-function cmpDecide(aProv, gpuId, bProv){
-  var g = gpuById(gpuId);
-  if (!g || !aProv || !bProv) return null;
-  var aOff = cmpOfferFor(g, aProv);
-  if (!aOff) return null;
-  var bOff = cmpOfferFor(g, bProv);
-  if (bOff) return { kind:"same", g:g, a:{ prov:aProv, off:aOff }, b:{ prov:bProv, off:bOff } };
-  var others = [];
-  cmpProviders().forEach(function(p){ if (p !== aProv && p !== bProv && cmpOfferFor(g, p)) others.push(p); });
-  return { kind:"missing", g:g, a:{ prov:aProv, off:aOff }, bProv:bProv, others:others, similar:cmpSimilar(g, bProv) };
+/* A same-GPU pairing for the side-by-side. Both providers come from the
+   pickers' own lists, so each holds an offer for g by construction. */
+function cmpPair(g, aProv, bProv){
+  var aOff = cmpOfferFor(g, aProv), bOff = cmpOfferFor(g, bProv);
+  if (!aOff || !bOff) return null;
+  return { g:g, a:{ prov:aProv, off:aOff }, b:{ prov:bProv, off:bOff } };
 }
+
 function cmpCardHTML(g, side, isCheaper){
   var o = side.off.lead, ni = nodeInfo(o);
   var h = '<div class="offer cmp-card"><div class="offer-top"><span class="prov"><a href="#/provider/' + provRec(side.prov).slug + '">' + esc(side.prov) + "</a></span>";
@@ -3340,37 +3344,25 @@ function cmpSameHTML(d){
   h += cmpDiffHTML(d.a, d.b);
   return h;
 }
-function cmpCrossHTML(aProv, gpuId, bProv, altId){
-  var gA = gpuById(gpuId), gB = gpuById(altId);
-  var sA = { prov:aProv, off:cmpOfferFor(gA, aProv) }, sB = { prov:bProv, off:cmpOfferFor(gB, bProv) };
-  var ch = cmpCheaperSide(sA, sB);
-  var h = '<p class="cmp-verdict">Two different GPUs — <b>' + esc(aProv) + "’s " + esc(gA.name) + "</b> (" + esc(gA.vram) + ") against <b>" + esc(bProv) + "’s " + esc(gB.name) + "</b> (" + esc(gB.vram) + "). Different cards — read these as alternatives, not as two prices for one card.</p>";
-  h += '<div class="cmp-vs">' + cmpCardHTML(gA, sA, ch === "a") + cmpCardHTML(gB, sB, ch === "b") + "</div>";
-  h += cmpDiffHTML(sA, sB);
-  return h;
-}
-function cmpMissingHTML(d){
-  var h = "";
-  if (d.others.length){
-    h += '<p class="cmp-verdict"><b>' + esc(d.bProv) + "</b> doesn’t offer the <b>" + esc(d.g.name) + "</b>, so there’s nothing to compare with " + esc(d.bProv) + ".</p>";
-  } else {
-    h += '<p class="cmp-verdict">Only <b>' + esc(d.a.prov) + "</b> offers the <b>" + esc(d.g.name) + "</b> — <b>" + esc(d.bProv) + "</b> doesn’t offer it, so there’s nothing to compare.</p>";
-  }
-  h += '<div class="cmp-vs one">' + cmpCardHTML(d.g, d.a, false) + "</div>";
-  if (d.others.length){
-    h += '<p class="cmp-altlab">You can compare <b>' + esc(d.a.prov) + '</b> against:</p><div class="cmp-alts">';
-    d.others.forEach(function(p){ h += '<button type="button" class="cmp-altbtn" data-cmp-swap="' + esc(p) + '">' + esc(p) + "</button>"; });
-    h += "</div>";
-  }
-  if (d.similar.length){
-    h += '<p class="cmp-altlab"><b>' + esc(d.bProv) + '</b> offers similar GPUs — compare one of those instead?</p><div class="cmp-alts">';
-    d.similar.forEach(function(sg){
-      h += '<button type="button" class="cmp-qbtn" data-cmp-sim="' + esc(sg.g.id) + '">Compare <b>' + esc(d.a.prov) + "</b>’s <b>" + esc(d.g.name) + "</b> with <b>" + esc(d.bProv) + "</b>’s <b>" + esc(sg.g.name) + "</b> instead?" + '<span class="note"> ' + esc(sg.g.vram) + (sg.why === "size" ? " · similar size" : "") + "</span></button>";
+/* The single-provider case: the chosen GPU has exactly one provider, so
+   there is no second price to set beside it. The notice says so in plain
+   words, the one offer is shown, and similar GPUs that other providers
+   offer are put as questions — tapping one makes it the panel's GPU. */
+function cmpSingleHTML(g, aProv){
+  var h = '<p class="cmp-verdict">Only <b>' + esc(aProv) + '</b> offers the <b>' + esc(g.name) + '</b>, so there’s nothing to compare.</p>';
+  h += '<div class="cmp-vs one">' + cmpCardHTML(g, { prov:aProv, off:cmpOfferFor(g, aProv) }, false) + "</div>";
+  var sim = cmpSimilarAnywhere(g, aProv);
+  if (sim.length){
+    h += '<p class="cmp-altlab">Similar GPUs — compare one of those instead?</p><div class="cmp-alts">';
+    sim.forEach(function(sg){
+      var provs = sg.provs.map(function(p){ return esc(p); }).join(", ");
+      h += '<button type="button" class="cmp-qbtn" data-cmp-gpu="' + esc(sg.g.id) + '">Compare the <b>' + esc(sg.g.name) + '</b> instead?<span class="note"> ' + esc(sg.g.vram) + (sg.why === "size" ? " · similar size" : "") + " · Offered by " + provs + "</span></button>";
     });
     h += "</div>";
   }
   return h;
 }
+
 /* CMP-PURE-END */
 
 /* ---------- BOARD ---------- */
@@ -3396,10 +3388,10 @@ function viewBoard(modelId){
   var s = mm ? "" : "<h1>Compare prices</h1>";
   if (!mm){
     s += '<section class="cmp" id="cmp-panel"><h2>Compare two providers</h2>' +
-      '<p class="lede cmp-purpose">Pick two providers and a GPU — see both prices side by side, or find out who else offers it.</p>' +
+      '<p class="lede cmp-purpose">Pick a GPU, then two providers — see both prices side by side, or find out who else offers it.</p>' +
       '<div class="cmp-pickers">' +
-      '<div class="cmp-pick"><span class="cmp-lab">Provider A</span><div id="cmp-pa"></div></div>' +
       '<div class="cmp-pick"><span class="cmp-lab">GPU</span><div id="cmp-pg"></div></div>' +
+      '<div class="cmp-pick"><span class="cmp-lab">Provider A</span><div id="cmp-pa"></div></div>' +
       '<div class="cmp-pick"><span class="cmp-lab">Provider B</span><div id="cmp-pb"></div></div>' +
       '</div><div id="cmp-result"></div></section>';
   }
@@ -3478,48 +3470,62 @@ function viewBoard(modelId){
     secs.forEach(function(sec){ box.appendChild(sec); });
   });
   if (!mm){
-    var cmpState = { a:null, gpu:null, b:null, alt:null };
+    var cmpState = { gpu:null, a:null, b:null };
     var cmpFace = function(label){ return '<span class="pr-label">' + esc(label) + "</span>"; };
-    var cmpProvRows = function(exclude){
-      return cmpProviders().filter(function(p){ return p !== exclude; }).map(function(p){ var f = cmpFace(p); return { value:p, html:f, face:f }; });
+    var cmpProvRow = function(p){ var f = cmpFace(p); return { value:p, html:f, face:f }; };
+    var cmpGpuNow = function(){ return cmpState.gpu ? gpuById(cmpState.gpu) : null; };
+    /* Picking a GPU resets both providers — except that a GPU with exactly
+       one provider names that provider as A straight away, so the panel can
+       show the nothing-to-compare notice without another tap. */
+    var cmpPickGpu = function(id){
+      cmpState.gpu = id; cmpState.b = null;
+      var provs = cmpProvidersOf(gpuById(id));
+      cmpState.a = provs.length === 1 ? provs[0] : null;
+      cmpRenderPickers(); cmpRenderResult();
     };
     var cmpRenderResult = function(){
       var box = document.getElementById("cmp-result"); if (!box) return;
-      if (!cmpState.a || !cmpState.gpu || !cmpState.b){
-        box.innerHTML = '<p class="small cmp-hint">Pick a provider, one of its GPUs, and a second provider — the comparison appears here.</p>';
+      var g = cmpGpuNow();
+      if (!g){
+        box.innerHTML = '<p class="small cmp-hint">Pick a GPU first — then pick between the providers that offer it, and the comparison appears here.</p>';
         return;
       }
-      if (cmpState.alt){ box.innerHTML = cmpCrossHTML(cmpState.a, cmpState.gpu, cmpState.b, cmpState.alt); }
-      else {
-        var d = cmpDecide(cmpState.a, cmpState.gpu, cmpState.b);
-        box.innerHTML = d.kind === "same" ? cmpSameHTML(d) : cmpMissingHTML(d);
+      var provs = cmpProvidersOf(g);
+      if (provs.length === 1){
+        box.innerHTML = cmpSingleHTML(g, provs[0]);
+        box.querySelectorAll("[data-cmp-gpu]").forEach(function(btn){
+          btn.addEventListener("click", function(){ cmpPickGpu(btn.getAttribute("data-cmp-gpu")); });
+        });
+        return;
       }
-      box.querySelectorAll("[data-cmp-swap]").forEach(function(btn){
-        btn.addEventListener("click", function(){ cmpState.b = btn.getAttribute("data-cmp-swap"); cmpState.alt = null; cmpRenderPickers(); cmpRenderResult(); });
-      });
-      box.querySelectorAll("[data-cmp-sim]").forEach(function(btn){
-        btn.addEventListener("click", function(){ cmpState.alt = btn.getAttribute("data-cmp-sim"); cmpRenderResult(); });
-      });
+      if (!cmpState.a){
+        box.innerHTML = '<p class="small cmp-hint">Now pick Provider A — only the providers that offer the <b>' + esc(g.name) + "</b> are listed.</p>";
+        return;
+      }
+      if (!cmpState.b){
+        box.innerHTML = '<p class="small cmp-hint">Now pick Provider B — the two prices for the <b>' + esc(g.name) + "</b> appear side by side here.</p>";
+        return;
+      }
+      var d = cmpPair(g, cmpState.a, cmpState.b);
+      box.innerHTML = d ? cmpSameHTML(d) : "";
     };
     var cmpRenderPickers = function(){
       var pa = document.getElementById("cmp-pa"), pg = document.getElementById("cmp-pg"), pb = document.getElementById("cmp-pb");
       if (!pa || !pg || !pb) return;
-      pa.innerHTML = pickerHTML("cmp-a", "Provider A", cmpState.a, cmpProvRows(null), cmpFace(cmpState.a || "Choose a provider"));
-      wirePicker("cmp-a", function(v){
-        cmpState.a = v; cmpState.alt = null;
-        if (cmpState.b === v) cmpState.b = null;
-        if (cmpState.gpu && !cmpOfferFor(gpuById(cmpState.gpu), v)) cmpState.gpu = null;
-        cmpRenderPickers(); cmpRenderResult();
+      var g = cmpGpuNow();
+      var gRows = GPUS.map(function(x){
+        return { value:x.id, html:'<span class="pr-label">' + esc(x.name) + '</span><span class="note">' + esc(x.vram) + "</span>", face:cmpFace(x.name) };
       });
-      var gRows = (cmpState.a ? cmpGpusOf(cmpState.a) : []).map(function(g){
-        return { value:g.id, html:'<span class="pr-label">' + esc(g.name) + '</span><span class="note">' + esc(g.vram) + "</span>", face:cmpFace(g.name) };
-      });
-      pg.innerHTML = pickerHTML("cmp-g", "GPU", cmpState.gpu, gRows, cmpFace(cmpState.gpu ? gpuById(cmpState.gpu).name : (cmpState.a ? "Choose a GPU" : "Pick Provider A first")));
-      wirePicker("cmp-g", function(v){ cmpState.gpu = v; cmpState.alt = null; cmpRenderResult(); });
-      pb.innerHTML = pickerHTML("cmp-b", "Provider B", cmpState.b, cmpProvRows(cmpState.a), cmpFace(cmpState.b || "Choose another provider"));
-      wirePicker("cmp-b", function(v){ cmpState.b = v; cmpState.alt = null; cmpRenderResult(); });
+      pg.innerHTML = pickerHTML("cmp-g", "GPU", cmpState.gpu, gRows, cmpFace(g ? g.name : "Choose a GPU"));
+      wirePicker("cmp-g", function(v){ cmpPickGpu(v); });
+      var provs = g ? cmpProvidersOf(g) : [];
+      pa.innerHTML = pickerHTML("cmp-a", "Provider A", cmpState.a, provs.map(cmpProvRow), cmpFace(!g ? "Pick a GPU first" : (cmpState.a || "Choose a provider")));
+      wirePicker("cmp-a", function(v){ cmpState.a = v; cmpState.b = null; cmpRenderPickers(); cmpRenderResult(); });
+      var bRows = (g && cmpState.a) ? provs.filter(function(p){ return p !== cmpState.a; }).map(cmpProvRow) : [];
+      var bFace = !g ? "Pick a GPU first" : (!cmpState.a ? "Pick Provider A first" : (cmpState.b || (provs.length === 1 ? "No other provider offers it" : "Choose another provider")));
+      pb.innerHTML = pickerHTML("cmp-b", "Provider B", cmpState.b, bRows, cmpFace(bFace));
+      wirePicker("cmp-b", function(v){ cmpState.b = v; cmpRenderResult(); });
     };
-    cmpRenderPickers();
     cmpRenderResult();
   }
 }
