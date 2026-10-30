@@ -363,6 +363,24 @@ footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;fon
 .controls input::placeholder{color:var(--dim)}
 .controls .picker{flex:1;min-width:180px}
 .controls .sortlab{align-self:center;font-weight:600;font-size:14.5px;color:var(--ink2);flex:none}
+.cmp{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:18px;margin:16px 0 4px;box-shadow:var(--shadow)}
+.cmp h2{margin:0 0 4px}
+.cmp-purpose{font-size:16px;margin:0 0 14px}
+.cmp-pickers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.cmp-lab{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:0 0 6px}
+.cmp-verdict{font-size:16.5px;margin:16px 0 2px}
+.cmp-vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.cmp-vs.one{grid-template-columns:1fr}
+.cmp-vs .offer{margin:0}
+.cmp-diff{font-size:16px;margin:12px 0 0}
+.cmp-hint{margin:14px 0 0}
+.cmp-altlab{margin:16px 0 8px;font-size:15.5px}
+.cmp-alts{display:flex;gap:8px;flex-wrap:wrap}
+.cmp-altbtn,.cmp-qbtn{background:var(--bg2);border:1px solid var(--line2);color:var(--ink);border-radius:999px;padding:8px 14px;font-family:inherit;font-size:14.5px;cursor:pointer;text-align:left}
+.cmp-qbtn{border-radius:10px}
+.cmp-altbtn:hover,.cmp-qbtn:hover{border-color:var(--amber)}
+.cmp-altbtn:focus-visible,.cmp-qbtn:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+@media (max-width:760px){.cmp-pickers{grid-template-columns:1fr}.cmp-vs{grid-template-columns:1fr}}
 .startbadge{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--btn-ink);background:var(--amber-fill);border-radius:4px;padding:2px 7px;text-transform:uppercase}
 /* model catalogue rows + small button + board model-mode banner + picker search */
 .btn.sm{padding:9px 16px;font-size:14px;border-radius:8px;white-space:nowrap}
@@ -3200,6 +3218,161 @@ function moveHTML(m){
   return h;
 }
 
+/* ---------- COMPARE TWO PROVIDERS — decision logic + card builders ----------
+   Everything in this block is pure string/data work over the board's own
+   offers: no DOM access, so it can be exercised directly in checks. */
+/* CMP-PURE-BEGIN */
+function cmpProviders(){
+  var seen = {}, out = [];
+  GPUS.forEach(function(g){ offersOf(g).forEach(function(o){ if (!seen[o.prov]){ seen[o.prov] = 1; out.push(o.prov); } }); });
+  return out;
+}
+function cmpGpusOf(prov){
+  var out = [];
+  GPUS.forEach(function(g){ if (offersOf(g).some(function(o){ return o.prov === prov; })) out.push(g); });
+  return out;
+}
+/* A provider's offers for one GPU. The cheapest priced offer leads — that is
+   the figure the comparison is built on; any others are named under it. A
+   provider whose only offer is quote-only leads with that listing. */
+function cmpOfferFor(g, prov){
+  var mine = offersOf(g).filter(function(o){ return o.prov === prov; });
+  if (!mine.length) return null;
+  var pricedMine = mine.filter(function(o){ return o.price != null; }).sort(function(a, b){ return a.price - b.price; });
+  var lead = pricedMine.length ? pricedMine[0] : mine[0];
+  return { lead:lead, also:mine.filter(function(o){ return o !== lead; }) };
+}
+/* The figure a comparison is priced on: what the renter actually pays per
+   hour as the offer is sold — node and minimum totals first, per-GPU
+   otherwise. The same rule the board's own rows follow. */
+function cmpLeadFigure(o){
+  var ni = nodeInfo(o);
+  if (ni) return { amount:ni.total, node:ni };
+  return { amount:o.price, node:null };
+}
+/* Base-chip families among the board's variants — the same chip in another
+   form counts as similar before memory size is even considered. */
+var CMP_FAMILIES = [
+  ["h100-sxm", "h100", "h100-pcie", "h100-nvlink", "h100-nvl"],
+  ["a100-80gb", "a100-40gb"],
+  ["rtx-pro-6000", "rtx-pro-6000-maxq"]
+];
+function cmpFamilyOf(id){
+  for (var i = 0; i < CMP_FAMILIES.length; i++) if (CMP_FAMILIES[i].indexOf(id) >= 0) return CMP_FAMILIES[i];
+  return [id];
+}
+/* GPUs provider B offers that are similar to g: same base chip first; if B
+   has none of the family, B's cards within ±25% of g's memory, nearest
+   first, marked as size matches. Deterministic; at most three. */
+function cmpSimilar(g, provB){
+  var fam = cmpFamilyOf(g.id), family = [];
+  cmpGpusOf(provB).forEach(function(bg){ if (bg.id !== g.id && fam.indexOf(bg.id) >= 0) family.push({ g:bg, why:"chip" }); });
+  if (family.length) return family.slice(0, 3);
+  var v = vramGB(g);
+  if (!(v > 0)) return [];
+  var cands = [];
+  cmpGpusOf(provB).forEach(function(bg){
+    var bv = vramGB(bg);
+    if (bv > 0 && bv >= v * 0.75 && bv <= v * 1.25) cands.push({ g:bg, why:"size", d:Math.abs(bv - v), i:GPUS.indexOf(bg) });
+  });
+  cands.sort(function(a, b){ return (a.d - b.d) || (a.i - b.i); });
+  return cands.slice(0, 3).map(function(c){ return { g:c.g, why:c.why }; });
+}
+/* The whole decision, from the board's real offers only. */
+function cmpDecide(aProv, gpuId, bProv){
+  var g = gpuById(gpuId);
+  if (!g || !aProv || !bProv) return null;
+  var aOff = cmpOfferFor(g, aProv);
+  if (!aOff) return null;
+  var bOff = cmpOfferFor(g, bProv);
+  if (bOff) return { kind:"same", g:g, a:{ prov:aProv, off:aOff }, b:{ prov:bProv, off:bOff } };
+  var others = [];
+  cmpProviders().forEach(function(p){ if (p !== aProv && p !== bProv && cmpOfferFor(g, p)) others.push(p); });
+  return { kind:"missing", g:g, a:{ prov:aProv, off:aOff }, bProv:bProv, others:others, similar:cmpSimilar(g, bProv) };
+}
+function cmpCardHTML(g, side, isCheaper){
+  var o = side.off.lead, ni = nodeInfo(o);
+  var h = '<div class="offer cmp-card"><div class="offer-top"><span class="prov"><a href="#/provider/' + provRec(side.prov).slug + '">' + esc(side.prov) + "</a></span>";
+  h += '<span class="note">' + esc(g.name) + " · " + esc(g.vram) + "</span>";
+  if (isCheaper) h += ' <span class="tag best">Cheaper</span>';
+  if (o.price != null && ni) h += '<span class="price">' + money(ni.total) + (ni.label.indexOf("minimum") >= 0 ? " <small>/ hr total</small>" : " <small>/ node / hr</small>") + "</span>";
+  else if (o.price != null) h += '<span class="price">' + money(o.price) + " <small>/ GPU / hr</small></span>";
+  else h += '<span class="price" style="color:var(--ink2);font-size:15px">' + esc(o.kind) + "</span>";
+  h += '</div><div class="offer-meta"><span class="tag type">' + esc(o.kind) + "</span>";
+  if (ni) h += '<span class="node-equiv">' + esc(ni.label) + " — " + money(o.price) + " / GPU / hr equivalent</span>";
+  if (o.note && ni){ var rem = nodeNoteRemainder(o); if (rem) h += '<span class="note">' + esc(rem) + "</span>"; }
+  else if (o.note) h += '<span class="note">' + esc(o.note) + "</span>";
+  if (o.info) h += '<span class="note">' + esc(o.info) + "</span>";
+  if (o.watch) h += '<span class="watch">' + esc(o.watch) + "</span>";
+  side.off.also.forEach(function(x){
+    h += '<span class="note">Also at ' + esc(side.prov) + ": " + (x.price != null ? money(x.price) + "/GPU/hr" : esc(x.kind)) + (x.note ? " — " + esc(x.note) : "") + "</span>";
+  });
+  h += '<span class="checked">' + CHECKED + "</span>";
+  if (o.price != null) h += '<a class="launch" href="' + PROVIDER_URL[side.prov] + '" target="_blank" rel="noopener">Launch ↗</a>';
+  h += "</div></div>";
+  return h;
+}
+/* The difference line shared by the same-GPU and different-GPU pairings:
+   priced on the figures the two cards lead with. */
+function cmpDiffHTML(sideA, sideB){
+  var oA = sideA.off.lead, oB = sideB.off.lead;
+  if (oA.price == null || oB.price == null){
+    var up = oA.price == null ? sideA : sideB;
+    return '<p class="cmp-diff"><b>' + esc(up.prov) + "</b> lists its offer quote-only — no published price, so there is no difference to show.</p>";
+  }
+  var fA = cmpLeadFigure(oA), fB = cmpLeadFigure(oB);
+  var asSold = (fA.node || fB.node) ? ", on the prices as sold above" : "";
+  if (fA.amount === fB.amount) return '<p class="cmp-diff">Same price at both — ' + money(fA.amount) + "/hr" + asSold + ".</p>";
+  var diff = Math.abs(fA.amount - fB.amount), cp = fA.amount < fB.amount ? sideA.prov : sideB.prov;
+  return '<p class="cmp-diff">Difference: <b>' + money(diff) + "/hr</b> — <b>" + money(diff * 730) + "</b> over a 730-hour month. <b>" + esc(cp) + "</b> is cheaper" + asSold + ".</p>";
+}
+function cmpCheaperSide(sideA, sideB){
+  var oA = sideA.off.lead, oB = sideB.off.lead;
+  if (oA.price == null || oB.price == null) return null;
+  var fA = cmpLeadFigure(oA), fB = cmpLeadFigure(oB);
+  if (fA.amount === fB.amount) return null;
+  return fA.amount < fB.amount ? "a" : "b";
+}
+function cmpSameHTML(d){
+  var ch = cmpCheaperSide(d.a, d.b);
+  var h = '<p class="cmp-verdict">The same GPU at both providers — <b>' + esc(d.g.name) + "</b> · " + esc(d.g.vram) + ".</p>";
+  h += '<div class="cmp-vs">' + cmpCardHTML(d.g, d.a, ch === "a") + cmpCardHTML(d.g, d.b, ch === "b") + "</div>";
+  h += cmpDiffHTML(d.a, d.b);
+  return h;
+}
+function cmpCrossHTML(aProv, gpuId, bProv, altId){
+  var gA = gpuById(gpuId), gB = gpuById(altId);
+  var sA = { prov:aProv, off:cmpOfferFor(gA, aProv) }, sB = { prov:bProv, off:cmpOfferFor(gB, bProv) };
+  var ch = cmpCheaperSide(sA, sB);
+  var h = '<p class="cmp-verdict">Two different GPUs — <b>' + esc(aProv) + "’s " + esc(gA.name) + "</b> (" + esc(gA.vram) + ") against <b>" + esc(bProv) + "’s " + esc(gB.name) + "</b> (" + esc(gB.vram) + "). Different cards — read these as alternatives, not as two prices for one card.</p>";
+  h += '<div class="cmp-vs">' + cmpCardHTML(gA, sA, ch === "a") + cmpCardHTML(gB, sB, ch === "b") + "</div>";
+  h += cmpDiffHTML(sA, sB);
+  return h;
+}
+function cmpMissingHTML(d){
+  var h = "";
+  if (d.others.length){
+    h += '<p class="cmp-verdict"><b>' + esc(d.bProv) + "</b> doesn’t offer the <b>" + esc(d.g.name) + "</b>, so there’s nothing to compare with " + esc(d.bProv) + ".</p>";
+  } else {
+    h += '<p class="cmp-verdict">Only <b>' + esc(d.a.prov) + "</b> offers the <b>" + esc(d.g.name) + "</b> — <b>" + esc(d.bProv) + "</b> doesn’t offer it, so there’s nothing to compare.</p>";
+  }
+  h += '<div class="cmp-vs one">' + cmpCardHTML(d.g, d.a, false) + "</div>";
+  if (d.others.length){
+    h += '<p class="cmp-altlab">You can compare <b>' + esc(d.a.prov) + '</b> against:</p><div class="cmp-alts">';
+    d.others.forEach(function(p){ h += '<button type="button" class="cmp-altbtn" data-cmp-swap="' + esc(p) + '">' + esc(p) + "</button>"; });
+    h += "</div>";
+  }
+  if (d.similar.length){
+    h += '<p class="cmp-altlab"><b>' + esc(d.bProv) + '</b> offers similar GPUs — compare one of those instead?</p><div class="cmp-alts">';
+    d.similar.forEach(function(sg){
+      h += '<button type="button" class="cmp-qbtn" data-cmp-sim="' + esc(sg.g.id) + '">Compare <b>' + esc(d.a.prov) + "</b>’s <b>" + esc(d.g.name) + "</b> with <b>" + esc(d.bProv) + "</b>’s <b>" + esc(sg.g.name) + "</b> instead?" + '<span class="note"> ' + esc(sg.g.vram) + (sg.why === "size" ? " · similar size" : "") + "</span></button>";
+    });
+    h += "</div>";
+  }
+  return h;
+}
+/* CMP-PURE-END */
+
 /* ---------- BOARD ---------- */
 function viewBoard(modelId){
   var mm = modelId ? modelById(modelId) : null;
@@ -3221,6 +3394,15 @@ function viewBoard(modelId){
     mmNeedEff = mm.int4 ? Math.ceil(mm.int4 * 1.2) : 0;
   }
   var s = mm ? "" : "<h1>Compare prices</h1>";
+  if (!mm){
+    s += '<section class="cmp" id="cmp-panel"><h2>Compare two providers</h2>' +
+      '<p class="lede cmp-purpose">Pick two providers and a GPU — see both prices side by side, or find out who else offers it.</p>' +
+      '<div class="cmp-pickers">' +
+      '<div class="cmp-pick"><span class="cmp-lab">Provider A</span><div id="cmp-pa"></div></div>' +
+      '<div class="cmp-pick"><span class="cmp-lab">GPU</span><div id="cmp-pg"></div></div>' +
+      '<div class="cmp-pick"><span class="cmp-lab">Provider B</span><div id="cmp-pb"></div></div>' +
+      '</div><div id="cmp-result"></div></section>';
+  }
   if (mm){
     var verdict = "";
     if (mmRanked.length) verdict = mmRanked.length + (mmRanked.length === 1 ? " GPU can run " : " GPUs can run ") + mm.name + ". Best fit first.";
@@ -3295,6 +3477,51 @@ function viewBoard(modelId){
     });
     secs.forEach(function(sec){ box.appendChild(sec); });
   });
+  if (!mm){
+    var cmpState = { a:null, gpu:null, b:null, alt:null };
+    var cmpFace = function(label){ return '<span class="pr-label">' + esc(label) + "</span>"; };
+    var cmpProvRows = function(exclude){
+      return cmpProviders().filter(function(p){ return p !== exclude; }).map(function(p){ var f = cmpFace(p); return { value:p, html:f, face:f }; });
+    };
+    var cmpRenderResult = function(){
+      var box = document.getElementById("cmp-result"); if (!box) return;
+      if (!cmpState.a || !cmpState.gpu || !cmpState.b){
+        box.innerHTML = '<p class="small cmp-hint">Pick a provider, one of its GPUs, and a second provider — the comparison appears here.</p>';
+        return;
+      }
+      if (cmpState.alt){ box.innerHTML = cmpCrossHTML(cmpState.a, cmpState.gpu, cmpState.b, cmpState.alt); }
+      else {
+        var d = cmpDecide(cmpState.a, cmpState.gpu, cmpState.b);
+        box.innerHTML = d.kind === "same" ? cmpSameHTML(d) : cmpMissingHTML(d);
+      }
+      box.querySelectorAll("[data-cmp-swap]").forEach(function(btn){
+        btn.addEventListener("click", function(){ cmpState.b = btn.getAttribute("data-cmp-swap"); cmpState.alt = null; cmpRenderPickers(); cmpRenderResult(); });
+      });
+      box.querySelectorAll("[data-cmp-sim]").forEach(function(btn){
+        btn.addEventListener("click", function(){ cmpState.alt = btn.getAttribute("data-cmp-sim"); cmpRenderResult(); });
+      });
+    };
+    var cmpRenderPickers = function(){
+      var pa = document.getElementById("cmp-pa"), pg = document.getElementById("cmp-pg"), pb = document.getElementById("cmp-pb");
+      if (!pa || !pg || !pb) return;
+      pa.innerHTML = pickerHTML("cmp-a", "Provider A", cmpState.a, cmpProvRows(null), cmpFace(cmpState.a || "Choose a provider"));
+      wirePicker("cmp-a", function(v){
+        cmpState.a = v; cmpState.alt = null;
+        if (cmpState.b === v) cmpState.b = null;
+        if (cmpState.gpu && !cmpOfferFor(gpuById(cmpState.gpu), v)) cmpState.gpu = null;
+        cmpRenderPickers(); cmpRenderResult();
+      });
+      var gRows = (cmpState.a ? cmpGpusOf(cmpState.a) : []).map(function(g){
+        return { value:g.id, html:'<span class="pr-label">' + esc(g.name) + '</span><span class="note">' + esc(g.vram) + "</span>", face:cmpFace(g.name) };
+      });
+      pg.innerHTML = pickerHTML("cmp-g", "GPU", cmpState.gpu, gRows, cmpFace(cmpState.gpu ? gpuById(cmpState.gpu).name : (cmpState.a ? "Choose a GPU" : "Pick Provider A first")));
+      wirePicker("cmp-g", function(v){ cmpState.gpu = v; cmpState.alt = null; cmpRenderResult(); });
+      pb.innerHTML = pickerHTML("cmp-b", "Provider B", cmpState.b, cmpProvRows(cmpState.a), cmpFace(cmpState.b || "Choose another provider"));
+      wirePicker("cmp-b", function(v){ cmpState.b = v; cmpState.alt = null; cmpRenderResult(); });
+    };
+    cmpRenderPickers();
+    cmpRenderResult();
+  }
 }
 
 /* ---------- GPU PAGE ---------- */
