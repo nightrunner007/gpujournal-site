@@ -915,7 +915,7 @@ var PHIST = {
    155 verified prices, 12 providers, 22 GPU variants, checked Oct 19, 2026. */
 var TOTAL_PRICES = 155;
 var TOTAL_PROVIDERS = 12;
-var TOTAL_VARIANTS = 22;
+var TOTAL_VARIANTS = 20;
 
 /* Verified price moves — only changes evidenced in the Oct 19 records. */
 var MOVES = [
@@ -1265,7 +1265,7 @@ var NEWS = [
   meaning:"Why this is a GPU story and not only a biology story: it is a specialist open model deliberately sized for one 80GB card \u2014 an H100 or A100 80GB you can rent by the hour \u2014 so a lab can keep sensitive, unpublished sequences on its own rented infrastructure instead of sending them to a closed API whose filters and data handling it does not control. That is the open-weight bargain in its clearest form, and the single-card fit is exactly the maths our model page does: 14.8B parameters at full precision is about 29.6GB of weights before headroom, comfortably inside 80GB, tight but workable at 8-bit on smaller cards.",
   exits:[["Carbon-X \u2014 GPUs that run it","#/model/carbon-x"],["Compare GPU prices","#/board"],["Browse all models","#/models"]]},
  {slug:"spheron-price-contradiction",art:"bars",kicker:"Prices · Spheron",chart:"spheron-b200",
-  title:"One GPU, three prices: what Spheron's own pages state, day by day",
+  title:"Spheron GPU pricing: four different prices for the same GPU, on Spheron's own pages",
   date:"Oct 24, 2026",dateShort:"Oct 24, 2026",
   standfirst:"We read Spheron's own pages across Oct 20–24, 2026. The same GPU wears different stated prices on different pages — sometimes on the same day. Every figure below is stated on Spheron's own pages and dated; none of them is a verified board price.",
   facts:[
@@ -4042,7 +4042,7 @@ function gpuBrand(g){
 function applySEO(o){
   document.title = o.title;
   setMeta("name", "description", o.desc);
-  var canon = location.origin + o.path;
+  var canon = "https://gpujournal.ai" + o.path;
   setCanonical(canon);
   setMeta("property", "og:title", o.title);
   setMeta("property", "og:description", o.desc);
@@ -4091,7 +4091,7 @@ function seoBoard(modelId){
       desc:trimDesc(verdict + " Prices checked " + STAMP_DATE + "."),
       ld:[crumb([["Home", "/"], ["Compare prices", "/compare-prices"], ["Models", "/models"], [mm.name, "/model/" + mm.id]])] };
   }
-  return { title:"Compare GPU prices | GPUJournal", path:"/compare-prices",
+  return { title:"Compare cloud GPU rental prices | GPUJournal", path:"/compare-prices",
     desc:trimDesc(TOTAL_PRICES + " verified prices for " + TOTAL_VARIANTS + " GPU variants from " + TOTAL_PROVIDERS + " providers — checked " + STAMP_DATE + ". The same GPU on every provider, side by side, best offer tagged."),
     ld:[crumb([["Home", "/"], ["Compare prices", "/compare-prices"]])] };
 }
@@ -4151,17 +4151,17 @@ function setSEO(r){
   var o;
   switch (r.name){
     case "gpu": { var g = gpuById(r.arg); o = g ? seoGPU(g) : seoBoard(null); break; }
-    case "model": { var m = modelById(r.arg); o = m ? seoModel(m) : seoSection("Models | GPUJournal", "/models", modelsDesc(), "Models"); break; }
+    case "model": { var m = modelById(r.arg); o = m ? seoModel(m) : seoSection("Open-weight models and the GPUs that run them | GPUJournal", "/models", modelsDesc(), "Models"); break; }
     case "provider": { var nm = null; for (var k in COMPANY) if (COMPANY[k].slug === r.arg) nm = k; o = nm ? seoProvider(nm) : seoHome(); break; }
     case "guide": { var a = null; ARTICLES.forEach(function(x){ if (x.slug === r.arg) a = x; }); o = a ? seoGuide(a) : seoSection("Guides | GPUJournal", "/guides", guidesDesc(), "Guides"); break; }
     case "story": { var n = newsBySlug(r.arg); o = n ? seoStory(n) : seoSection("News | GPUJournal", "/news", newsDesc(), "News"); break; }
     case "hub": { var hn = hubName(r.arg); o = seoSection(hn + " guides | GPUJournal", "/hub/" + r.arg, hubDesc(r.arg) + " Guides on GPUJournal, with the board's checked prices behind every verdict.", hn); break; }
     case "board": o = seoBoard(r.model); break;
-    case "models": o = seoSection("Models | GPUJournal", "/models", modelsDesc(), "Models"); break;
+    case "models": o = seoSection("Open-weight models and the GPUs that run them | GPUJournal", "/models", modelsDesc(), "Models"); break;
     case "news": o = seoSection("News | GPUJournal", "/news", newsDesc(), "News"); break;
     case "guides": o = seoSection("Guides | GPUJournal", "/guides", guidesDesc(), "Guides"); break;
     case "price-watch": o = seoSection("Price Watch | GPUJournal", "/price-watch", "Every price change we catch, checked against the provider's own pages — both observation dates and the source named on every entry.", "Price Watch"); break;
-    case "find": o = seoSection("Find a GPU | GPUJournal", "/find", "Tell us your task — run a model, teach one, train one, generate images, learn — and we rank every GPU for that job, best fit first.", "Find a GPU"); break;
+    case "find": o = seoSection("Find a GPU for an open-weight model | GPUJournal", "/find", "Tell us your task — run a model, teach one, train one, generate images, learn — and we rank every GPU for that job, best fit first.", "Find a GPU"); break;
     case "calculator": o = seoSection("Work out the real cost | GPUJournal", "/calculator", "The whole bill, not the sticker price: hours, idle time, failed runs, storage and downloads worked out for any GPU offer on the board.", "Work out the real cost"); break;
     case "for-providers": o = seoSection("For providers | GPUJournal", "/for-providers", "How a GPU marketplace or host gets listed on the board: prices publicly checkable, independently verified — and a listing never buys rank.", "For providers"); break;
     case "how-we-price": o = seoSection("How we price | GPUJournal", "/how-we-price", "Where every number on GPUJournal comes from — providers' own published pages only, re-checked daily — and what “verified” means.", "How we price"); break;
