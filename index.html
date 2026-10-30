@@ -1912,6 +1912,20 @@ var ARTICLES = [
       ] }
   ],
   nodeTablesNote:"Source for all tables: GPUJournal daily price check, 23 October 2026 (Hyperstack carried from 22 October 2026). Prices change — check the live board before you commit. Node totals = per-GPU rate x card count.",
+  datedTables:[
+    { heading:"Update — Oct 30, 2026: the official serving recipes are out",
+      intro:"When this guide was published on Oct 23, 2026, the confirmed serving picture was vLLM, SGLang and Docker Model Runner at release. A week on, MiniMax’s official recipes have landed, AMD has published its own enablement, and the released checkpoint can be measured instead of estimated. The update, checked Oct 30, 2026:",
+      cols:["Route","Shape","What it is"],
+      rows:[
+        ["vLLM — official recipe","Tensor parallelism 4 on Blackwell; TP8 on H100/H200","MiniMax’s own serving recipe, linked from the model’s Hugging Face card"],
+        ["SGLang — official recipe","Recipe linked from the Hugging Face card","The second first-party serving route"],
+        ["TokenSpeed — official recipe","Recipe linked from the Hugging Face card","The third official recipe route"],
+        ["AMD — vLLM","4× MI350X","AMD’s enablement article (Oct 23, 2026), with AMD’s own measurements"],
+        ["AMD — ATOM","4× MI355X","AMD’s second serving route, from the same article"],
+        ["AMD — Quark","MXFP4 export","AMD’s quantisation export for the checkpoint"]
+      ],
+      after:"Two more facts from the same update. The released checkpoint is mixed low-precision — including NVFP4 experts — and the repository totals about 252 GB including the DSpark draft head. Set that real 252 GB against the roughly 214 GB the 4-bit arithmetic at the top of this guide promises: plan from the file, not the formula. And Together AI now offers a serverless endpoint for the model — the hosted route for teams that want the model without renting the node. One community report describes the model serving on 4× DGX Spark; that report is community-reported, not independently verified. None of this changes the guide’s verdicts: M3.1 Flash is still a multi-GPU model, and 4× B200 remains the smallest honest FP8 node." }
+  ],
   costTitle:"Self-host, or use the API?",
   costBody:"Self-hosting gives you control. The API gives you none of the work. The API costs $0.15 input / $0.60 output per 1M tokens, with cached input at $0.015 — prices as reported by MiniMax. You pay only for tokens you use, and there are no servers to rent or maintain; it is best for casual or bursty use. Self-hosting FP8 starts at $23.92/hr for the cheapest honest node (23 Oct 2026) — and that hourly cost runs whether you serve one token or a million. You get full control over the deployment, but you run, monitor and fix the node, and it only wins at sustained, high volume. What we will not invent: a break-even number. There is no verified throughput figure — no trustworthy tokens-per-second measurement for this model on these cards yet — and without one, any break-even claim would be a guess dressed up as maths. The honest position: break-even against the API must be measured on the node you actually rent. Rent for a day, measure your real workload, then decide. Casual or bursty use: the API wins by a wide margin.",
   steps:[
@@ -1928,6 +1942,7 @@ var ARTICLES = [
     "428B total / ~23B active, 1M context, text + image + video — from MiniMax's own launch posts and the Hugging Face card",
     "FP8 weights released on Hugging Face, 23 Oct 2026",
     "Serving engines: vLLM, SGLang, Docker Model Runner",
+    "Official vLLM, SGLang and TokenSpeed recipes, AMD enablement (vLLM on 4× MI350X, ATOM on 4× MI355X, Quark MXFP4 export), the ~252 GB mixed low-precision checkpoint and Together AI’s serverless endpoint — checked Oct 30, 2026",
     "Node prices from the daily check, 23 Oct 2026",
     "Licence terms, disclosed 23 Oct 2026"
   ],
@@ -2280,6 +2295,288 @@ var ARTICLES = [
     ["Find a GPU","#/find"]
   ],
   related:["minimax-m31-flash-self-host","run-voxtral-3-yourself","deploy-qwen-32b-on-a-single-gpu-with-vllm"]
+},
+{
+  slug:"runpod-batch-inference-pricing", hubSlug:"gpu-pricing",
+  title:"Batch is the new spot: what RunPod’s 20% batch discount does to the maths for work that can wait",
+  excerpt:"On Oct 28, 2026, RunPod made Serverless Batch Inference generally available: send requests in bulk, let them run when RunPod’s batch workers get to them, and pay 20% less than the on-demand rate on H100, H200, B200 and B300. This page does the maths on that trade — what the discount is worth in dollars, and what you give up for it.",
+  publishedDate:"2026-10-30", readMinutes:7,
+  cta:[["Compare prices","#/board"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"H100 SXM — RunPod Secure", vram:"80GB", bestFit:"Real-time $3.99/hr. Batch, at the announced 20% off, works out at $3.19/hr (calculated) — save $0.80/hr, $798 per 1,000 GPU-hours.", price:"$3.19/hr batch" },
+    { label:"H200 — RunPod Secure", vram:"141GB", bestFit:"Real-time $5.29/hr. Batch works out at $4.23/hr (calculated) — save $1.06/hr, $1,058 per 1,000 GPU-hours.", price:"$4.23/hr batch" },
+    { label:"B200 — RunPod Secure", vram:"192GB", bestFit:"Real-time $7.99/hr. Batch works out at $6.39/hr (calculated) — save $1.60/hr, $1,598 per 1,000 GPU-hours.", price:"$6.39/hr batch" },
+    { label:"B300 — RunPod Secure", vram:"288GB", bestFit:"Real-time $8.99/hr. Batch works out at $7.19/hr (calculated) — save $1.80/hr, $1,798 per 1,000 GPU-hours.", price:"$7.19/hr batch" },
+    { label:"The price of the discount", vram:"Time", bestFit:"Batch start times are not guaranteed. The trade is not “your job may be stopped” — it is “your job may be started late”. See the catch below before you move anything.", price:"Not guaranteed" }
+  ],
+  metricTitle:"What batch inference actually is",
+  metricBody:"Real-time inference answers one request at a time, the moment it arrives — a person is waiting on the other end. Batch inference is the opposite shape: you hand over a large set of requests at once, they are processed in bulk, and you collect the results when the set is done. Nobody is waiting on any single answer, so the work can be scheduled whenever capacity is free. RunPod’s version, per its Oct 28 announcement and its documentation: batch requests go to the same queue-based Serverless endpoint that already serves your real-time traffic, but run on dedicated batch workers with your own model and container — a bulk job does not take capacity from interactive requests. Requests are plain JSON, sent from the console or by API: create a batch, finalize it to start processing, then poll for status and progress with per-request counts. The limits, per RunPod: up to 3 million requests a day depending on the account, up to 5,000 requests in one batch and up to 10 active batches on an endpoint. Billing is on compute time per request, at up to 30% off on-demand pricing depending on GPU type — 20% off on H100, H200, B200 and B300. That last point is why the comparison on this page is drawn the way it is. Spot pricing, the older “cheap if you’re flexible” deal, discounts capacity that can be taken away. Batch discounts something different: work that can wait in a queue. Whether that trade is worth 20% depends entirely on the job, which is what the rest of this page is for.",
+  datedTables:[
+    { heading:"Worked examples — what 20% is worth",
+      intro:"Three common shapes of deferrable work, costed both ways at the verified rates above. The hours are your variable — multiply your own GPU-hours by the per-hour saving in the verdict table.",
+      cols:["Job","Real-time","Batch","Saving"],
+      rows:[
+        ["Overnight corpus embedding — 200 H100 GPU-hours a night","$798.00 / night","$638.40 / night","$159.60 / night · $4,788 over 30 nights"],
+        ["Evaluation / dataset scoring run — 1,000 H200 GPU-hours","$5,290","$4,232","$1,058"],
+        ["Synthetic data generation — 500 B200 GPU-hours","$3,995","$3,196","$799"]
+      ],
+      after:"Arithmetic: real-time = GPU-hours × the verified Secure on-demand rate; batch = the same hours × the rate with 20% off. Your mileage varies only with your hours — the discount itself is a flat fifth on these four GPUs.", ctaAfter:true },
+    { heading:"What did not change",
+      intro:"Batch is a new lane, not a price cut. RunPod’s real-time and pod prices are a separate rate card, re-read on Oct 28, 2026 — the day batch launched — and again on Oct 30, 2026. Secure Cloud is unchanged, and the Community rates are unchanged in our records from Oct 19–30:",
+      cols:["Rate card","H100 SXM","H200","B200","B300"],
+      rows:[
+        ["RunPod Secure (on-demand)","$3.99/hr","$5.29/hr","$7.99/hr","$8.99/hr"],
+        ["RunPod Community (pods)","$2.69/hr","$3.59/hr","$5.98/hr","Not listed"]
+      ],
+      after:"If your work cannot wait, Oct 28 changed nothing about what you pay. It is also worth noting the week batch landed in: on-demand list prices elsewhere rose again the same day (Verda’s fifth rise in six days at that point — and Verda has risen twice more since, seven rises in eight days to Oct 30; see Price Watch). The patient lane is getting cheaper relative to the impatient one; that gap is the number to watch." }
+  ],
+  costTitle:"The catch, stated plainly",
+  costBody:"Start times are not guaranteed. RunPod says so itself: requests run in no set order, and its own guidance is to plan for multi-hour latency and keep real-time endpoints for anything a user is waiting on. There is no cost estimate before you commit — RunPod states this openly: you cannot see the bill before you finalize a batch, and its own advice is to run a 100-request test batch first and extrapolate from what that costs. Cancelling is fair, but not free: cancel a batch and the charges stop — queued requests are not billed — but requests already running finish, and are billed. And the discount is against on-demand rates. One honest check: RunPod’s Community Cloud pod rates are lower than Secure on these cards (H100 $2.69/hr, H200 $3.59/hr, B200 $5.98/hr, checked Oct 30, 2026) — a batch H100 at $3.19/hr does not beat a Community pod you manage yourself. Batch wins against the on-demand rate card, on the endpoint you already run, with no pod to babysit. If your alternative was already a self-managed Community pod, run that comparison before switching.",
+  steps:[
+    { title:"Split your workload by deadline, not by habit", body:"Most inference estates are a mix: some requests a user is waiting on, and a long tail of bulk work that drifted onto real-time endpoints because that was the default. The bulk tail is where the 20% lives." },
+    { title:"Run RunPod’s own test first", body:"A 100-request test batch tells you your real per-request compute time. Extrapolate from that, never from a guess — there is no estimate screen coming to save you." },
+    { title:"Cost the switch honestly", body:"Batch hours × your per-hour saving (the verdict table) is the gross win. Set it against the cost of results arriving hours later. If the second number is zero — genuinely zero — the switch is free money." },
+    { title:"Keep the real-time endpoint for the front door", body:"RunPod’s own guidance, and ours: batch behind it, for the work that can queue." }
+  ],
+  alternatives:[
+    { title:"Switch: work with a deadline measured in hours or days", body:"Embedding a corpus or re-embedding it after a model change; evaluation runs and benchmark sweeps; dataset scoring, labelling and filtering; overnight processing and backfills over an image or document library; launch-day backlogs — the overflow a real-time endpoint cannot absorb; synthetic data generation. These are also the workloads RunPod itself names as fits. The common thread: the result is wanted by morning, not by the second." },
+    { title:"Do not switch: anything someone is waiting on", body:"Interactive chat and API traffic with a person on the other end; endpoints with a latency promise to your own users; jobs with a hard deadline inside the multi-hour window — a start time you cannot control is the wrong tool; and small one-off jobs: two GPU-hours of batch saves you roughly $1.60–$3.60 at these rates, so if waiting costs you anything at all, it costs more than that." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"Batch terms (20% off on H100/H200/B200/B300, up to 30% off on other GPU types, up to 3M requests/day, 5,000 requests per batch, 10 active batches per endpoint, start times not guaranteed, cancellation billing, no upfront cost estimate, the 100-request test advice) are from RunPod’s own announcement of Oct 28, 2026, read in full the day it published; the create–finalize–poll mechanics are from RunPod’s documentation (docs.runpod.io, Batch Jobs), checked Oct 28, 2026. Real-time rates are RunPod Secure Cloud on-demand prices read on runpod.io/pricing in our full verification sweep of Oct 19, 2026, re-read unchanged on Oct 28 and Oct 30, 2026, and banked in our daily price records (Oct 19–30). RunPod publishes the batch discount as a percentage, not a per-GPU batch price list — every batch figure on this page is the verified real-time rate with that announced discount applied (exact: $3.192, $4.232, $6.392, $7.192 per hour), and is labelled “calculated” for that reason. Pod prices are a separate RunPod rate card and are quoted here only for the comparison in the catch section.",
+  exits:[
+    ["Compare prices — every verified RunPod rate, checked daily","#/board"],
+    ["RunPod — its offers and listing","#/provider/runpod"],
+    ["Price Watch — every change, dated both sides","#/price-watch"]
+  ],
+  related:["inference-metrics-gpu-cost","tensordock-pricing-explained","gpu-rental-prices-rising-2026"]
+},
+{
+  slug:"h200-vs-mi325x-rental", hubSlug:"gpu-selection",
+  title:"H200 vs MI325X for inference — the honest rental maths",
+  excerpt:"On paper, AMD’s MI325X beats NVIDIA’s H200 where inference hurts most: 256GB of memory against 141GB, and 6 TB/s of bandwidth against 4.8. But there is a catch nobody puts in the headline — you can barely rent an MI325X at all: no verified price list we checked carries one. This page does the comparison honestly: the H200 prices you can actually pay today, the AMD prices that actually exist (MI300X and MI355X, verified on Oracle’s own list), and the one comparison the spec sheet can’t settle for you.",
+  publishedDate:"2026-10-30", readMinutes:8,
+  cta:[["Compare prices","#/board"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"NVIDIA H200", vram:"141GB", bestFit:"Rentable today — cheapest verified rental $3.59/hr on RunPod Community.", price:"$3.59/hr" },
+    { label:"AMD MI300X", vram:"192GB", bestFit:"Rentable today — $6.00/hr at Oracle OCI’s list price.", price:"$6.00/hr" },
+    { label:"AMD MI355X", vram:"288GB", bestFit:"Rentable today — $8.60/hr at Oracle OCI’s list price.", price:"$8.60/hr" },
+    { label:"AMD MI325X", vram:"256GB", bestFit:"The one you searched for — no published price on any list we verified (checked Oct 27–28, 2026). See the honest section below.", price:"No published price" }
+  ],
+  metricTitle:"The specs that matter for inference",
+  metricBody:"Inference is a memory game. Two numbers decide most of it: how much model and KV cache a card can hold (capacity), and how fast it can stream weights while generating tokens (bandwidth). Everything in the table below is from the makers’ own product pages, checked Oct 28, 2026. The short version of the whole guide: the H200 is cheaper per GPU-hour everywhere we can verify a price. The AMD cards win on memory per card — and memory, not the hourly rate, is what decides the bill when your model doesn’t fit on one H200. The maths for both cases is below.",
+  datedTables:[
+    { heading:"The spec sheet",
+      intro:"Sources: NVIDIA’s H200 product page (nvidia.com); AMD’s Instinct product pages (amd.com) for MI300X, MI325X and MI355X. Bandwidth figures are the makers’ published peak figures — spec-sheet numbers, not measured throughput on any provider’s machines.",
+      cols:["GPU","Memory","Memory type","Peak bandwidth","Architecture"],
+      rows:[
+        ["NVIDIA H200","141GB","HBM3e","4.8 TB/s","Hopper"],
+        ["AMD MI300X","192GB","HBM3","5.3 TB/s","CDNA 3"],
+        ["AMD MI325X","256GB","HBM3e","6.0 TB/s","CDNA 3"],
+        ["AMD MI355X","288GB","HBM3e","8.0 TB/s","CDNA 4"]
+      ],
+      after:"Read the table the way an inference engineer does. Every AMD card here holds more than an H200 — the MI300X by about a third, the MI325X by over 80%, the MI355X by more than double. AMD makes the same point itself: its MI325X platform material claims 1.8× the memory capacity and 1.3× the memory bandwidth of the competing platform — that is AMD’s own comparison, attributed to AMD, and on the raw spec numbers it is fair. NVIDIA’s counter is not in this table: it is the CUDA software ecosystem and the sheer number of places you can rent the card, which is where the rental maths starts." },
+    { heading:"The H200 rental market, verified",
+      intro:"The H200 is one of the most widely rented GPUs in the world, and it shows in the spread of prices. These are the verified on-demand rates from our checks — the specialist-cloud rows from our daily board check of Oct 30, 2026, the hyperscaler rows from Oracle’s and Microsoft’s official lists as dated in the method box (monthly figures at 730 hours, the standard month we use across the site):",
+      cols:["Provider","Per GPU/hr","Per month (730h)","Terms to know"],
+      rows:[
+        ["RunPod Community","$3.59","$2,621","Community cloud — availability varies by host"],
+        ["Hyperstack","$3.99","$2,913","Single-GPU VMs"],
+        ["RunPod Secure","$5.29","$3,862","Secure Cloud tier"],
+        ["Nebius","$5.40","$3,942","Excl. VAT"],
+        ["Verda","$6.25","$4,563","Rose seven times in eight days, Oct 23–30"],
+        ["CoreWeave","$6.31","$4,606","8-GPU nodes at $50.44/node/hr; per-GPU figure is that node rate divided by 8"],
+        ["Oracle OCI","$10.00","$7,300","Oracle’s list price, per GPU; sold as 8-GPU bare-metal shapes ($80.00/hr the shape)"],
+        ["Microsoft Azure","$10.60","$7,738","East US 2; from the 8-GPU VM at $84.80/hr on Microsoft’s retail price list"]
+      ],
+      after:"Same GPU, a near-3× spread between the cheapest community offer and hyperscaler list. That spread — not the chip — is the first thing to get right when you rent an H200.", ctaAfter:true },
+    { heading:"The AMD side: the prices that actually exist",
+      intro:"AMD silicon rents through far fewer doors. The cleanest verified public prices we found are on Oracle’s own cloud price list, read Oct 27, 2026 — Oracle publishes AMD Instinct per GPU per hour, globally, in USD:",
+      cols:["GPU (Oracle OCI)","Per GPU/hr","Per month (730h)","The shape you actually buy"],
+      rows:[
+        ["MI300X — 192GB HBM3, 5.3 TB/s","$6.00","$4,380","8-GPU bare-metal shape, $48.00/hr ($35,040/mo)"],
+        ["MI355X — 288GB HBM3e, 8.0 TB/s","$8.60","$6,278","8-GPU bare-metal shape, $68.80/hr ($50,224/mo)"],
+        ["H200 on the same list — for a like-for-like read","$10.00","$7,300","8-GPU bare-metal shape, $80.00/hr ($58,400/mo)"]
+      ],
+      after:"Two honest observations. First, like-for-like on one provider’s list, AMD is cheaper: on OCI, an MI300X GPU-hour costs 40% less than an H200 GPU-hour, and the MI355X — with double the H200’s memory and two-thirds more bandwidth — still costs less per GPU-hour than Oracle’s H200. Second, the buying shape is different: OCI sells these as 8-GPU bare-metal machines, so the real entry ticket is the shape total, not the single-GPU rate. Specialist clouds rent the H200 one card at a time from $3.59/hr; that door does not exist for AMD silicon on any price list we verified this week." }
+  ],
+  costTitle:"What the maths actually says",
+  costBody:"If your model fits on one H200, rent the H200. A 70B model at 8-bit needs roughly 70GB of weights — comfortably inside 141GB with room for KV cache. At the cheapest verified rates you pay $3.59/hr for the H200 against $6.00/hr for the cheapest verified AMD card. Per GPU-hour, per month, and per GB of memory ($0.025/GB/hr for the best H200 offer vs $0.031/GB/hr for OCI’s MI300X), the H200 wins every simple comparison. There is no honest way to make AMD cheaper for a workload a single H200 already holds. If your model does not fit on one H200, the comparison flips. Take a workload needing about 180GB — say a 70B model at full FP16 precision (≈140GB of weights) with a long-context KV cache on top. On NVIDIA you rent two H200s: 2 × $3.59 = $7.18/hr at the best verified rate. One MI300X holds it on a single card at $6.00/hr — about 16% less per hour, one card instead of two, and no tensor-parallel split to manage. At 288GB, one MI355X ($8.60/hr) replaces two H200s for anything up to that size and still undercuts two mid-priced H200s (2 × $5.29 Secure = $10.58/hr). Capacity is the AMD argument, and when capacity is the binding constraint, it is a real one. Bandwidth per dollar is closer than the headlines suggest. Dividing published peak bandwidth by the cheapest verified hourly rate: H200 ≈ 1.34 TB/s per $/hr, MI355X ≈ 0.93, MI300X ≈ 0.88. That is spec-sheet arithmetic, not a benchmark — real token throughput depends on the serving stack — but it shows why “AMD has more bandwidth” does not automatically mean “AMD is cheaper to run”: the H200’s low rental floor buys a lot of bandwidth per dollar.",
+  steps:[
+    { title:"Pick the H200 if your model fits in 141GB", body:"Most 70B-class serving at 8-bit or 4-bit does. You also start today at the lowest verified rate, on the CUDA stack your team probably already uses, with no porting project. Cheapest verified start: RunPod Community at $3.59/hr; the steadier tiers run $5.29–$6.31/hr." },
+    { title:"Pick the MI300X if your workload sits in the 141–192GB band", body:"Too big for one H200, wasteful on two — and your serving stack runs on ROCm (vLLM and SGLang both support it). One card at $6.00/hr on OCI beats two H200s at any verified rate above $3.00/hr each." },
+    { title:"Pick the MI355X if you need the biggest single-card memory on the rental market", body:"288GB — very large models, very long contexts, big KV caches — and you are buying at node scale anyway. At $8.60/hr per GPU on OCI it is the strongest memory-per-card offer we can verify." },
+    { title:"Don’t plan a rental around the MI325X", body:"As of Oct 28, 2026 there is no published self-serve price for it on the lists we verified. If your heart is set on that exact card, you are in talk-to-a-sales-team territory, and any quote you get is a negotiation, not a market price." }
+  ],
+  alternatives:[
+    { title:"The honest part: you can barely rent an MI325X", body:"This guide is titled H200 vs MI325X because that is the comparison people search for. Here is what we found when we went looking for an MI325X rental price, checked Oct 27–28, 2026. No provider on our verified board publishes a self-serve MI325X rental price — not one. Every AMD figure in this guide therefore runs on the MI300X and MI355X, the AMD cards with real, checkable prices, and is labelled as such. The hyperscaler lists we verified don’t carry it either: Oracle’s official price list — the most complete public AMD list we found — prices the MI300X and MI355X and skips the MI325X entirely. And the card itself is a generation behind AMD’s flagship: the MI325X is a CDNA 3 part; AMD launched its CDNA 4 successor line, the MI350 series, on June 12, 2025, and the MI355X is the card hyperscalers are building new capacity around. The MI325X mostly lives in enterprise clusters bought outright, not in hourly rental catalogues. So if a page quotes you a precise “MI325X rental price” to two decimal places, ask where it was read and on what date. We couldn’t find one on any provider’s own published pages — and rather than invent one, we have compared the H200 against the AMD cards you can genuinely rent today. If a verifiable MI325X rate appears, this page will carry it, dated, like every other price we publish." },
+    { title:"The software question underneath all of this", body:"It is a real cost either way: the H200 runs the CUDA ecosystem your team probably already uses; the AMD cards run ROCm, which is open-source and much improved, but still the path more likely to need tuning time from your engineers. Price that time honestly — a cheaper GPU-hour that costs a week of porting is not cheaper." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"H200 rental prices are GPUJournal’s own board figures: read on each provider’s published pricing pages and banked daily (records Oct 19–30, 2026; the Oct 30 check carries RunPod Community $3.59, Hyperstack $3.99, RunPod Secure $5.29, Nebius $5.40, Verda $6.25 and CoreWeave $6.31, the last normalised from its published 8-GPU node rate of $50.44/hr). AMD and OCI H200 prices come from Oracle’s official Cloud Price List, read Oct 27, 2026, which publishes per-GPU hourly USD prices (MI300X $6.00, MI355X $8.60, H200 $10.00); Oracle sells these as 8-GPU bare-metal shapes, and the shape totals in this guide are Oracle’s per-GPU price × 8. Azure’s H200 figure ($84.80 per 8-GPU VM/hr, East US 2, = $10.60/GPU) comes from Microsoft’s official Retail Prices API, read Oct 28, 2026. Hardware specs are from NVIDIA’s H200 product page and AMD’s Instinct MI300X, MI325X and MI355X product pages (amd.com, nvidia.com), checked Oct 28, 2026; AMD’s “1.8× capacity, 1.3× bandwidth” platform claim is AMD’s own and is attributed to AMD where used. Monthly figures use 730 hours. The worked examples use the site’s standard weight arithmetic (parameters × bytes per parameter: FP16 = 2, 8-bit = 1) before KV cache and overheads — they are fit estimates, not benchmarks, and no throughput figure in this guide is presented as measured. The MI325X availability finding is dated Oct 28, 2026 and covers the providers and official lists named above; it will be re-checked as new lists are verified.",
+  exits:[
+    ["Compare prices — every H200 offer, checked daily","#/board"],
+    ["Work out the real cost","#/calculator"],
+    ["Price Watch","#/price-watch"]
+  ],
+  related:["gpu-rental-prices-rising-2026","verda-six-rises-october-2026","tensordock-pricing-explained"]
+},
+{
+  slug:"inference-metrics-gpu-cost", hubSlug:"inference-optimization",
+  title:"TTFT, TPOT, throughput, goodput — the inference metrics that decide your GPU bill",
+  excerpt:"Every explainer defines these four metrics and stops there. Definitions don’t pay rent. This page puts a price on each one: what a slow first token, a slow stream, and a flattering throughput average actually cost you at real, dated rental prices.",
+  publishedDate:"2026-10-30", readMinutes:8,
+  cta:[["Compare prices","#/board"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"TTFT", vram:"Time to first token", bestFit:"How long before the first token appears. It decides whether users wait — and how much you pay for prompt processing.", price:"—" },
+    { label:"TPOT", vram:"Time per output token", bestFit:"How long each following token takes. It decides how fast one user’s answer streams.", price:"—" },
+    { label:"Throughput", vram:"Tokens per second, total", bestFit:"Total tokens per second, all users together. It decides your cost per token — the number your bill is made of.", price:"—" },
+    { label:"Goodput", vram:"Throughput that meets your target", bestFit:"Throughput counting only requests fast enough to count. It decides your real cost per token, after the flattery is removed. The bill itself is one line: cost per million tokens = hourly price ÷ tokens per hour — everything below is about which metric sets the tokens per hour you actually get.", price:"—" }
+  ],
+  metricTitle:"The four metrics, in plain words",
+  metricBody:"When a model answers, two different kinds of work happen. First the GPU reads your whole prompt and works out what to say — that’s prefill. Then it writes the answer one token at a time — that’s decode. Each metric watches a different part of that process. TTFT (time to first token) is the time from sending your request to the first token coming back; it covers queueing plus prefill, so long prompts — big documents, agent histories — make it grow, and users feel it as “is this thing working?”. TPOT (time per output token) is how long each token after the first takes to arrive — one user’s reading speed: 20 ms per token = 50 tokens a second for that user; 120 ms per token = about 8 a second, which feels like a slow typewriter. NVIDIA reported 272.6 tokens/sec single-stream for its Nemotron Bolt E4B on an RTX 5070 (NVIDIA, Oct 23, 2026, company-reported) — that’s a TPOT of about 3.7 ms, the fast end of what one stream can feel like. Throughput is every token produced for every user at once — the number in vendor headlines, and the one that sets your cost per token, because you rent the GPU by the hour, so tokens per hour is what your money buys. Goodput is the honest version of throughput: throughput counting only the requests that met your latency targets — say, first token under half a second and TPOT under 50 ms. Tokens delivered too slowly to use are not output you can sell, serve, or ship; goodput counts them as what they are — waste you paid for. You don’t buy tokens; you buy GPU hours, and the metrics decide how many tokens each hour contains. Three formulas cover almost every inference bill: cost per 1M output tokens = hourly price ÷ (throughput in tokens/sec × 3,600) × 1,000,000; cost per request = hourly price ÷ (requests/sec × 3,600); one user’s stream speed = 1,000 ÷ TPOT in ms, in tokens/sec.",
+  datedTables:[
+    { heading:"Worked example 1 — the same work, priced two ways",
+      intro:"Stated assumptions (a worked example, not a benchmark): a 70B-class model served on one H100 SXM, producing 2,000 output tokens/sec in total. Hold the serving speed exactly the same and rent the card from two real offers on our board:",
+      cols:["Offer (checked Oct 30, 2026)","Hourly price","Tokens per hour","Cost per 1M tokens"],
+      rows:[
+        ["TensorDock — H100 SXM (8-GPU minimum at this rate)","$2.25/GPU/hr","7.2M","$0.31"],
+        ["RunPod Secure — H100 SXM","$3.99/GPU/hr","7.2M","$0.55"]
+      ],
+      after:"Same GPU, same model, same speed — the hourly gap flows straight through. RunPod Secure’s rate is 77% higher, so its cost per million tokens is 77% higher: $0.55 vs $0.31. When throughput is equal, the cheapest hour wins, full stop. Throughput is rarely equal, which is the next example." },
+    { heading:"Worked example 2 — when the pricier card is the cheaper token",
+      intro:"Stated assumptions (a worked example, not a benchmark): the same model, now served on a B200 that delivers 4,000 output tokens/sec — twice the H100’s throughput above. Rent it at RunPod Community’s verified B200 rate:",
+      cols:["Setup","Hourly price","Assumed throughput","Cost per 1M tokens"],
+      rows:[
+        ["H100 SXM — RunPod Secure","$3.99/hr","2,000 tok/s","$0.55"],
+        ["B200 — RunPod Community","$5.98/hr","4,000 tok/s","$0.42"]
+      ],
+      after:"The B200 hour costs 50% more and produces tokens about 25% cheaper — if it really doubles throughput on your model. That “if” is the whole game, and it is checkable before you rent: the B200 breaks even at roughly 3,000 tok/s (1.5× the H100 figure), because $5.98 ÷ $3.99 ≈ 1.5. Below that, the cheaper hour wins; above it, the faster card wins. Never argue about which GPU is “faster” — argue about tokens per second per dollar on your own workload, and measure it in the first rented hour. Requests work the same way: at 2,000 tok/s with an average 500-token reply, one H100 handles 4 requests/sec — 14,400 an hour. At RunPod Secure’s $3.99/hr that is about $0.28 per 1,000 requests. Long replies cost more per request at the same throughput; the formula above is the honest way to see it.", ctaAfter:true },
+    { heading:"Which metric matters for your workload",
+      cols:["Workload","Metric that decides the bill","Why"],
+      rows:[
+        ["Chat / live product","TTFT and TPOT, judged as goodput","Users feel the wait and the stream speed. A cheap hour that answers slowly is churn, not savings — price your tokens at the goodput rate, not the headline rate."],
+        ["Batch / offline jobs","Raw throughput, nothing else","Nobody watches a batch job run. Latency targets vanish, so cost per token is pure throughput per dollar — and providers know it: RunPod’s Batch Inference, made generally available Oct 28, 2026, sells exactly this at up to 30% off on-demand (20% off on H100/H200/B200/B300), with start times not guaranteed."],
+        ["Agents","TTFT, paid again at every step","An agent waits for the model dozens of times per task, often with a long history to re-read — prefill and TTFT dominate, and the honest unit is cost per completed task, not per token. A slow first token, multiplied by every step, is where agent bills quietly grow."]
+      ],
+    },
+    { heading:"Worked example 3 — the goodput trap, with numbers",
+      intro:"Stated assumptions (a worked example, not a benchmark): the same H100 SXM at RunPod Secure’s $3.99/hr, your latency target is TPOT under 50 ms, and you tune the same server two ways:",
+      cols:["Tuning","Headline throughput","Requests meeting the target","Goodput","Real cost per 1M tokens"],
+      rows:[
+        ["A — big batch","3,000 tok/s","60%","1,800 tok/s","$0.62"],
+        ["B — moderate batch","2,200 tok/s","98%","2,156 tok/s","$0.51"]
+      ],
+      after:"Tuning A wins every headline and loses the only comparison that matters. Its average is fast; its goodput — tokens delivered at a speed users accept — is lower, so each usable million tokens costs about 20% more. This is the goodput trap: averages hide the tail, and the tail is where your users live. Whenever a benchmark, a provider, or your own dashboard gives you a tokens-per-second figure, ask the follow-up: at what latency, and what share of requests met it?" }
+  ],
+  costTitle:"Batching: the trade you are always making",
+  costBody:"Serving one request at a time wastes most of a GPU — decode reads the model’s weights from memory for every token, so the card spends its time fetching, not computing. Serving many requests together (a bigger batch, more concurrency) lets one weight-read feed many tokens at once. Total throughput climbs steeply. That is real, and it is why throughput headlines are quoted at batch sizes you would never serve to a live user. The bill for that throughput arrives in the other two metrics. Every added stream shares the same GPU, so each stream slows: TPOT rises. And when requests queue behind a full batch, TTFT rises with them. A 200-token reply at a TPOT of 20 ms takes 4 seconds to stream; at 120 ms it takes 24. The provider’s dashboard calls both configurations “3,000 tokens a second”. Your users call one of them broken. So: raise concurrency until goodput peaks, not until throughput peaks — throughput keeps rising long after your latency targets start failing, and the setting that maximises throughput is almost never the setting that maximises saleable output. Quote your own numbers at your own batch size: any throughput figure without a batch size and a latency figure beside it is marketing, whoever publishes it. And split the workloads if you can — live traffic on a latency-tuned instance, bulk work on a throughput-tuned (or batch-priced) one. The two optima are different machines on purpose.",
+  steps:[
+    { title:"Decide your latency targets before you rent", body:"A TTFT and TPOT your users accept, written down. Without targets there is no goodput, and without goodput there is no honest cost per token." },
+    { title:"Price GPUs in tokens per dollar, not dollars per hour", body:"The hourly rate is half the equation. Our comparison board carries the verified half; the throughput half is yours to measure, in the first hour, on your model." },
+    { title:"Re-run the maths when prices move", body:"The break-even between two cards moves with their prices — and prices have been moving: in October 2026 alone we verified rises at Nebius, RunPod Secure and Verda (seven rises in eight days, Oct 23–30). A GPU choice that won in September can lose in November on price alone." },
+    { title:"Send batch work to batch pricing", body:"If the work can wait, it should not pay live-serving rates. That discount exists precisely because throughput-only work is cheaper to serve." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"The rental prices are GPUJournal’s own verified board prices, read on the providers’ own published pages and banked daily: TensorDock H100 SXM $2.25/GPU/hr (8-GPU minimum), RunPod Secure H100 SXM $3.99/hr and RunPod Community B200 $5.98/hr, all checked Oct 30, 2026 (full sweep Oct 19, 2026; daily snapshots since). Every throughput figure in the worked examples is an assumption chosen to make the arithmetic visible — 2,000 tok/s, 4,000 tok/s, the batch tunings — stated at the top of each example and never presented as a measured result; run the same formulas with your measured figures. The one measured figure quoted is NVIDIA’s own: 272.6 tokens/sec single-stream for Nemotron Bolt E4B on an RTX 5070, reported by NVIDIA on Oct 23, 2026 and labelled company-reported wherever we use it. RunPod’s Batch Inference discount (up to 30% off on-demand; 20% on H100/H200/B200/B300) is from RunPod’s own launch announcement, Oct 28, 2026. Definitions follow the standard serving vocabulary (TTFT, TPOT/inter-token latency, throughput, goodput as SLO-meeting throughput); the money arithmetic is ours.",
+  exits:[
+    ["Compare prices","#/board"],
+    ["Find a GPU for your model","#/find"],
+    ["Price Watch","#/price-watch"]
+  ],
+  related:["runpod-batch-inference-pricing","nemotron-bolt-e4b-small-gpu","tensordock-pricing-explained"]
+},
+{
+  slug:"aws-trainium-vs-inferentia-vs-renting-nvidia", hubSlug:"infrastructure",
+  title:"AWS Trainium vs Inferentia vs just renting NVIDIA by the hour",
+  excerpt:"AWS sells two chips of its own — Trainium for training, Inferentia for inference — and says they beat renting NVIDIA GPUs. Sometimes that’s true. It depends on whether you can commit, whether your models survive the move to AWS’s Neuron SDK, and whether you were going to stay inside AWS anyway. Here is the honest maths, profile by profile.",
+  publishedDate:"2026-10-30", readMinutes:9,
+  cta:[["Compare prices","#/board"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"A training run", vram:"16-chip node, days to weeks", bestFit:"Pick Trainium2 (Trn2), if your stack ports to Neuron — the cheapest big-node training hour inside AWS, level with the best open-market H100 rate before any throughput argument. 16 chips for $35.76/hr — $2.235/chip/hr.", price:"$35.76/hr per node" },
+    { label:"A steady inference service", vram:"24/7, a year or more", bestFit:"Pick Inferentia2 (Inf2) on a 1–3 year commitment — rental NVIDIA if you can’t commit. On-demand Inf2 is level with the cheapest rented L40S; the committed rates are where it pulls away: $0.76/hr on-demand → $0.30/hr on a 3-year term.", price:"$0.30/hr committed" },
+    { label:"Bursty / experimental", vram:"A few dozen hours a month", bestFit:"Rent NVIDIA by the hour — no reservation, no SDK port, no commitment; you pay only for the hours you actually run. H100 from $2.25/GPU/hr, only when running.", price:"From $2.25/GPU/hr" },
+    { label:"One warning", vram:"Chip-hours are not work", bestFit:"A Trainium or Inferentia chip-hour is not the same amount of finished work as an NVIDIA GPU-hour. AWS’s own claim is that Trn2 delivers 30–40% better price-performance than its GPU-based P5e/P5en instances — that is AWS’s claim about its own instances, not something we have measured, and it says nothing directly about the open rental market. We compare prices and fit; we do not pretend chip-hours are interchangeable units of work.", price:"—" }
+  ],
+  metricTitle:"What each chip actually is",
+  metricBody:"AWS Trainium is the training chip. Trainium (in EC2 Trn1 instances) and Trainium2 (Trn2) are AWS-designed accelerators built for training large models. A Trn1 node carries 16 Trainium chips with 512 GB of shared HBM and up to 3 petaflops of FP16/BF16 compute. A Trn2 node carries 16 Trainium2 chips with 1.5 TB of HBM3 (96 GB per chip), up to 20.8 FP8 petaflops, linked by NeuronLink and 3.2 Tbps of EFA networking; four Trn2 nodes combine into a 64-chip UltraServer. Both are built to scale out in EC2 UltraClusters — tens of thousands of chips. The catch, in one sentence: your training stack has to run on the AWS Neuron SDK, not CUDA. There is also an access catch: Trn1 can be rented plain on-demand, but Trn2, on AWS’s own pages, is sold through EC2 Capacity Blocks for ML — capacity you reserve in advance and pay for up front. There is no walk-up, pay-as-you-go Trn2 rate on AWS’s pricing pages; the single-chip trn2.3xlarge appears in AWS’s Capacity Block table only in Hyderabad, Melbourne and São Paulo. AWS Inferentia is the inference chip. Inferentia2 (EC2 Inf2 instances) is built only for serving models, not training them. Each chip carries 32 GB of HBM; the largest Inf2 instance packs 12 chips (384 GB) with NeuronLink between them for models that don’t fit on one chip, and the family reaches up to 2.3 petaflops per instance. AWS claims up to 40% better price performance than comparable EC2 instances — again, AWS’s claim, about EC2. Inf2 is sold on-demand and on 1-year and 3-year Reserved terms, and it too runs on the Neuron SDK: your model must compile for Neuron before it serves a single request. The NVIDIA route comes two ways. Inside AWS, NVIDIA arrives as EC2 GPU instances: P5 (H100), P5e/P5en (H200), P6 (B200/B300) for training-scale work, G5/G6/G6e (A10G, L4, L40S) for smaller inference. Outside AWS, the same NVIDIA GPUs rent by the hour from specialist providers — the market our price board tracks daily. Either way you get CUDA: the ecosystem almost every open-weight model, serving stack (vLLM, TensorRT-LLM, SGLang) and tutorial assumes by default. No port, no special SDK — in exchange, AWS’s own GPU instances are the most expensive way to rent an H100 we can price, as the ladder below shows.",
+  datedTables:[
+    { heading:"The price ladder — per accelerator, per hour",
+      intro:"AWS prices instances, not chips. Where AWS itself prints a per-accelerator figure on its Capacity Blocks pricing page, we use it; every other per-chip number below is an exact division, shown as such. Rental figures are the best verified on-demand offers on our board, checked Oct 30, 2026; AWS figures were read on AWS’s own pages on Oct 28, 2026.",
+      cols:["Accelerator","Where","Per accelerator / hr","Basis"],
+      rows:[
+        ["Trainium (Trn1)","AWS Capacity Blocks","$0.596","trn1.32xlarge $9.532/hr ÷ 16 chips (AWS prints $0.596)"],
+        ["Inferentia2 (Inf2)","AWS on-demand","$0.76","inf2.xlarge — 1 chip per instance, so the instance price is the chip price"],
+        ["L40S","Rental — RunPod Community","$0.79","Best verified offer, checked Oct 30, 2026"],
+        ["A100 80GB","Rental — Thunder Compute","$1.09","Best verified offer, checked Oct 30, 2026"],
+        ["Trainium (Trn1)","AWS on-demand","$1.34","trn1.2xlarge — 1 chip per instance"],
+        ["A100 (P4d)","AWS Capacity Blocks","$1.696","p4d.24xlarge $13.57/hr ÷ 8 GPUs (AWS prints $1.696)"],
+        ["Trainium2 (Trn2)","AWS Capacity Blocks","$2.235","trn2.48xlarge $35.7608/hr ÷ 16 chips (AWS prints $2.235)"],
+        ["H100 SXM","Rental — TensorDock","$2.25","Best verified offer (8-GPU minimum), checked Oct 30, 2026"],
+        ["H200","Rental — RunPod Community","$3.59","Best verified offer, checked Oct 30, 2026"],
+        ["H100 (P5)","AWS Capacity Blocks","$5.970","p5.48xlarge $47.757/hr ÷ 8 GPUs (AWS prints $5.970)"],
+        ["B200","Rental — RunPod Community","$5.98","Best verified offer, checked Oct 30, 2026"],
+        ["H200 (P5e)","AWS Capacity Blocks","$6.866","p5e.48xlarge $54.924/hr ÷ 8 GPUs (AWS prints $6.866)"],
+        ["B200 (P6)","AWS Capacity Blocks","$14.208","p6-b200.48xlarge $113.666/hr ÷ 8 GPUs (AWS prints $14.208)"]
+      ],
+      after:"AWS figures: Amazon EC2 Capacity Blocks for ML pricing page and the Trn1/Inf2 instance pages, read Oct 28, 2026. Capacity Block rates are reservation rates — charged up front when you book, at the rate prevailing at purchase; AWS’s page says the current rates are scheduled to be updated next in January 2027. They are not walk-up on-demand prices, and we have not presented them as such anywhere in this guide. Read the ladder carefully and it tells the whole story in one view: inside AWS, AWS’s silicon is dramatically cheaper per accelerator-hour than AWS’s own NVIDIA instances — a Trainium2 chip-hour costs about 37% of an H100 chip-hour on the same AWS pricing page. But against the open rental market, AWS’s NVIDIA prices are the expensive option — the same H100 rents from $2.25/hr — and AWS’s silicon lands roughly level with the rental market’s best rates, not below them. Which side of that comparison decides your bill depends on your profile.", ctaAfter:true },
+    { heading:"Profile 1 — the training run",
+      intro:"One 16-accelerator node, running flat out for a two-week run (336 node-hours). Assume the job genuinely fits each platform — the porting question is dealt with below, and it is a real one.",
+      cols:["Option","Rate","336 hours"],
+      rows:[
+        ["Trn1 — AWS Capacity Blocks","$9.532/node/hr","$3,202.75"],
+        ["Trn1 — AWS on-demand","$21.50/node/hr","$7,224.00"],
+        ["Trn2 — AWS Capacity Blocks","$35.7608/node/hr","$12,015.63"],
+        ["16× H100 SXM — TensorDock rental","$36.00/hr (16 × $2.25)","$12,096.00"],
+        ["16× H100 SXM — RunPod Community rental","$43.04/hr (16 × $2.69)","$14,461.44"],
+        ["16× H200 — RunPod Community rental","$57.44/hr (16 × $3.59)","$19,299.84"],
+        ["16× H100 — AWS P5 Capacity Blocks (2 nodes)","$95.514/hr (2 × $47.757)","$32,092.70"]
+      ],
+      after:"The honest reading: a Trn2 node-hour costs almost exactly the same as the cheapest rented H100 capacity ($35.76 vs $36.00) and far less than AWS’s own H100 nodes. But a two-week run only costs the same as the same two weeks of wall-clock if the job takes the same time on both — and that is precisely what we cannot promise from price pages. AWS claims Trn2 trains with 30–40% better price-performance than its P5e/P5en GPU instances; if that held against the rental H100s too, Trn2 would win this profile clearly. If your model hits a Neuron operator gap and trains 30% slower, the rental wins. The price pages can’t settle that — a one-day benchmark of your own model can, and at these run sizes it is worth doing before you book two weeks of anything. Note also that Trn1’s Capacity Block rate is the cheapest serious training capacity on this page by a wide margin — for jobs that fit the older chip, it is not close." },
+    { heading:"Profile 2 — the steady inference service",
+      intro:"One accelerator, serving around the clock for a month (730 hours), month after month. This is where commitment changes everything.",
+      cols:["Option","Rate","Per month (730 hrs)"],
+      rows:[
+        ["Inf2 — 3-year Reserved","$0.30/hr","$219.00"],
+        ["RTX 4090 — RunPod Community rental","$0.34/hr","$248.20"],
+        ["Inf2 — 1-year Reserved","$0.45/hr","$328.50"],
+        ["Inf2 — on-demand","$0.76/hr","$554.80"],
+        ["L40S — RunPod Community rental","$0.79/hr","$576.70"],
+        ["L40S — RunPod Secure rental","$1.09/hr","$795.70"]
+      ],
+      after:"On-demand, Inf2 and the cheapest rented L40S are level — $0.76 against $0.79 an hour buys you nothing by itself, and the L40S runs your existing CUDA serving stack today while the Inferentia chip needs the Neuron port first. The Inf2 case is the commitment: at the 3-year Reserved rate the same serving hour costs $0.30, well under half the rental floor — if the model still needs serving, on the same architecture, three years from now, and if it compiles and performs well on Neuron. Scale the model up and the picture tightens: AWS’s 12-chip inf2.48xlarge is $12.98/hr on-demand, against $9.48/hr for twelve L40S at the best rental rate — per raw accelerator-hour, big Inf2 on-demand is the more expensive option, and only its Reserved rates ($7.79/hr at 1 year, $5.19/hr at 3 years, from AWS’s Inf2 page) bring it back in front. Throughput per chip differs between all of these and is not measured here; treat these as capacity prices, not cost-per-request figures." },
+    { heading:"Profile 3 — bursty and experimental",
+      intro:"Forty accelerator-hours a month, in irregular bursts: a fine-tune here, an evaluation there, a weekend prototype.",
+      cols:["Option","Rate","40 hours"],
+      rows:[
+        ["L40S — RunPod Community rental","$0.79/hr","$31.60"],
+        ["Inf2 — on-demand (if already Neuron-ported)","$0.76/hr","$30.40"],
+        ["Trn1 — on-demand single chip (trn1.2xlarge)","$1.34/hr","$53.60"],
+        ["H100 SXM — RunPod Community rental","$2.69/hr","$107.60"],
+        ["H100 — AWS P5 (p5.4xlarge, Capacity Block rate)","$5.970/hr","$238.80"]
+      ],
+      after:"Bursty work is where the AWS silicon story mostly falls down — not on price, but on shape. Trn2 and the big Trn1 nodes are sold as advance reservations: you book the window, you pay up front, and an experiment you haven’t thought of yet can’t use them. Capacity Blocks are a planning tool, not a tap you turn on. The rental market is the opposite: an H100 in a few minutes, billed by the hour, gone when you stop it, running the CUDA stack your experiment already uses. The two honourable exceptions are in the table — Inf2 on-demand and the single-chip Trn1 are genuinely walk-up AWS silicon — but both still demand the Neuron port before the first experiment runs, which is a strange price to pay for work whose whole point is trying things quickly." }
+  ],
+  costTitle:"The hidden costs",
+  costBody:"The Neuron port is real work. Trainium and Inferentia do not run CUDA. Models move through the AWS Neuron SDK — compilation, operator coverage checks, and re-validation for every new model architecture you adopt. AWS says Neuron integrates natively with PyTorch, TensorFlow and JAX, and for mainstream models that path is well trodden. But every custom kernel, exotic quantisation scheme or day-one open-weight release is a question mark until you’ve compiled it. Budget engineering days, not minutes, and budget them again each time your model changes. Commitment is the discount — and the risk. The prices that make AWS silicon win are commitment prices: Capacity Blocks paid up front for a reserved window, Reserved Instances over one to three years. If the workload shrinks, changes architecture, or moves, the commitment doesn’t. Rental NVIDIA by the hour has no equivalent trap: the worst case is this month’s bill. Lock-in compounds. A model tuned for Neuron, training scripts built on Trainium, serving compiled for Inferentia — each one makes the next move away from AWS more expensive. That may be a price worth paying; pay it knowingly. The CUDA route runs, unchanged, at dozens of providers and on your own hardware. Data transfer is a quieter line item: AWS charges per gigabyte for data transferred out to the internet, on a tiered schedule published on its EC2 on-demand pricing page — a cost that grows exactly when an inference service succeeds. Against that, the big names on our rental board include data downloads in the price: RunPod, Lambda, CoreWeave and Hyperstack all showed free egress in our Oct 19, 2026 verification. Moving training data and checkpoints in and out of AWS is a line item; at most rental providers it isn’t. And availability has a geography: on AWS’s own Capacity Block table, Trn2 capacity lists in US East (Ohio) and Hyderabad, and the single-chip Trn2 only in Hyderabad, Melbourne and São Paulo. If your data has to live somewhere else, the silicon may simply not be there. The rental market’s constraint is the opposite one — the cheapest offers move, and availability at the floor price is never guaranteed.",
+  steps:[
+    { title:"Pick Trainium", body:"If you train repeatedly at node scale or beyond, you already live on AWS, your models are mainstream enough to compile cleanly on Neuron, and you can plan capacity ahead. Trn1’s Capacity Block rate is the cheapest training capacity in this guide; Trn2 is the current-generation pick, priced level with the best rented H100s before any throughput claim." },
+    { title:"Pick Inferentia", body:"If you serve the same models, at steady volume, for a year or more — and verify the Neuron port on your actual model before signing anything. The win lives in the 1-year and 3-year rates, not the on-demand one." },
+    { title:"Rent NVIDIA by the hour", body:"If your work is bursty, experimental, model-of-the-week, or simply not on AWS. You give up the commitment discounts and get back total flexibility: any model, the standard CUDA stack, any provider, stop any time. For a first training run or a new serving idea, that flexibility is usually worth more than the discount." },
+    { title:"Use AWS’s own NVIDIA instances", body:"Mainly when something other than price decides it — data already in AWS, compliance, an enterprise agreement. On price alone, they were the most expensive option in every profile above." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"Every AWS price in this guide was read on AWS’s own pages on Oct 28, 2026: the Amazon EC2 Capacity Blocks for ML pricing page (per-instance and per-accelerator effective hourly rates for Trn1, Trn2, P4d, P5, P5e, P5en, P6-B200), the Amazon EC2 Trn1 instance page (on-demand $1.34 / $21.50 / $24.78 and Reserved effective rates), the Amazon EC2 Trn2 instance page (chip and instance specifications; the page carries no on-demand price, consistent with Trn2’s Capacity Blocks availability), and the Amazon EC2 Inf2 instance page (on-demand $0.76 / $1.97 / $6.49 / $12.98 and Reserved rates). Where AWS prices per instance, we present the instance price; per-accelerator figures are AWS’s own printed per-accelerator rates, or exact divisions shown in the table — the multi-chip Inf2 instance prices are presented per instance only, because they do not divide exactly. Rental prices are GPUJournal’s verified board offers, checked Oct 30, 2026 and banked in our daily price-history snapshots; egress terms are from our Oct 19, 2026 storage-and-egress verification of the providers’ own pages. Performance claims (“up to 50% cost-to-train savings”, “30–40% better price performance”, “up to 40% better price performance”) are AWS’s own published claims about its own instances, labelled as such wherever they appear — we have not benchmarked these chips and this guide makes no throughput claims of its own. Not used, and why: AWS’s G5/G6/G6e on-demand prices (A10G, L4, L40S inside EC2) could not be read cleanly on an official AWS pricing page in this pass, so they are excluded from the maths rather than copied from third-party listings; the same applies to first-generation Inferentia (Inf1) pricing, which this guide does not quote. If we can verify those on AWS’s own pages, a future revision will add the EC2 G-series to Profile 2, where it belongs.",
+  exits:[
+    ["Compare prices","#/board"],
+    ["Work out the real cost","#/calculator"],
+    ["Price Watch","#/price-watch"]
+  ],
+  related:["h200-vs-mi325x-rental","gpu-rental-prices-rising-2026","inference-metrics-gpu-cost"]
 }
 ];
 var FIND_RANKED = {
