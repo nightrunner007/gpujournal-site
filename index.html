@@ -3526,6 +3526,7 @@ function viewBoard(modelId){
       pb.innerHTML = pickerHTML("cmp-b", "Provider B", cmpState.b, bRows, cmpFace(bFace));
       wirePicker("cmp-b", function(v){ cmpState.b = v; cmpRenderResult(); });
     };
+    cmpRenderPickers();
     cmpRenderResult();
   }
 }
