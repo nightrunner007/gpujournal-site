@@ -249,4 +249,7 @@
 <url><loc>https://gpujournal.ai/hub/infrastructure</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/guide/kimi-k3-1-pro-deploy-cost</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/guide/best-gpu-for-ai-inference-2026</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://gpujournal.ai/story/clover-35b-a3b-preview-open-diffusion-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/clover-35b-a3b-preview</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/story/google-project-suncatcher-tpu-first-response-orbit</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
