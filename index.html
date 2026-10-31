@@ -3626,7 +3626,7 @@ function viewHome(){
   setChrome("home", "");
   var stripIds = [["rtx-4090","nafnaf.ai"],["l40s","RunPod Community"],["h100-sxm","TensorDock"],["rtx-pro-6000","Nebius"],["b200","RunPod Community"],["h200","Hyperstack"]];
   var lead = NEWS[0];
-  var s = '<section class="hero"><h1>Every GPU price. <span class="accent">Checked.</span> One board.</h1>';
+  var s = '<section class="hero"><h1>GPUJournal — every GPU price. <span class="accent">Checked.</span> One board.</h1>';
   s += '<p class="lede">Two jobs, one page: we give you the prices for each and recommend the best GPU for your task — and the journal alongside explains what those prices mean, story by story. Read the headline, see the price it moves, click to launch. And because prices move, catching and reporting every change is our business — when a provider moves a price, the change is caught, dated and reported on Price Watch.</p>';
   s += '<div class="hero-actions"><a class="btn" href="#/board">Compare prices</a><a class="btn ghost" href="#/news">Read today\'s headlines</a><a class="btn ghost" href="#/price-watch">Every change we catch</a></div>';
   if (lead) s += '<p class="leadline"><span class="tag spot">Lead story</span> <a href="#/story/' + lead.slug + '">' + esc(lead.title) + '</a> <span class="checked">' + esc(lead.dateShort) + '</span></p>';
