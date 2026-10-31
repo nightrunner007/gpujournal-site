@@ -357,6 +357,7 @@ ul.ticks li b{color:var(--ink)}
 footer.site{border-top:1px solid var(--line);background:var(--bg2);margin-top:20px}
 footer.site .wrap{padding-top:26px;padding-bottom:34px}
 footer.site p{color:var(--ink2);max-width:680px}
+footer.site .fbrand{font-family:"Sora","IBM Plex Sans",system-ui,sans-serif;font-weight:700;font-size:19px;letter-spacing:.02em;color:var(--ink)}
 footer.site .flinks{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;font-size:14.5px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px}
 .controls input{width:auto;flex:1;min-width:180px;background:var(--panel);border:1px solid var(--line2);color:var(--ink);border-radius:8px;padding:10px 12px;font-size:15.5px;font-family:inherit}
@@ -736,13 +737,13 @@ body{text-rendering:optimizeLegibility}
 <main><div class="wrap" id="app"></div></main>
 <footer class="site">
   <div class="wrap">
-    <p><b style="color:var(--ink)">The promise:</b> we give you the prices for each, we recommend you the best GPU for whatever task you have, and you can simply click on anyone to launch them.</p>
-    <p class="small" style="margin-top:10px">GPUJournal is an independent GPU journal — checked cloud GPU prices, curated news and practical guides for people who rent GPUs.</p>
+    <p class="fbrand">GPUJournal</p>
+    <p style="margin-top:8px">An independent GPU journal — checked cloud GPU prices, curated news and practical guides for people who rent GPUs. We sell nothing.</p>
     <div class="flinks">
       <a href="#/board">Compare prices</a><a href="#/find">Find a GPU</a><a href="#/models">Models</a><a href="#/calculator">Work out the real cost</a>
-      <a href="#/guides">Guides</a><a href="#/news">News</a><a href="#/price-watch">Price Watch</a><a href="#/for-providers">For providers</a><a href="#/how-we-price">How we price</a>
+      <a href="#/price-watch">Price Watch</a><a href="#/news">News</a><a href="#/guides">Guides</a><a href="#/for-providers">For providers</a><a href="#/how-we-price">How we price</a>
     </div>
-    <p class="checked" style="margin-top:16px"><span id="footer-checked">Prices last checked</span> · Vast.ai is a live marketplace and updates hourly · <a href="#/how-we-price">How we price</a> · Corrections are published on that page, never quietly edited.</p>
+    <p class="checked" style="margin-top:16px"><span id="footer-checked">Prices last checked</span> · Corrections are published on <a href="#/how-we-price">How we price</a>, never quietly edited.</p>
   </div>
 </footer>
 <script>
