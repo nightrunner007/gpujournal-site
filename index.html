@@ -2783,6 +2783,92 @@ var ARTICLES = [
     ["Price Watch","#/price-watch"]
   ],
   related:["inference-metrics-gpu-cost","best-single-gpu-for-ai-inference-2026","h100-vs-l40s-vs-rtx-pro-6000"]
+},
+{
+  slug:"which-price-is-real", hubSlug:"gpu-pricing",
+  title:"One GPU, five “current” prices: how to tell which rental price is real",
+  excerpt:"Search for an H100 rental price and you will meet several different numbers, every one of them presented as current. In late October 2026 we counted five different on-demand prices for the same H100 on a single provider’s own pages — on the same day. This guide puts the stated figures next to the verified ones, names the five mechanisms that pile prices up around one GPU, and ends with the three-step check that separates a price from a claim.",
+  publishedDate:"2026-11-01", readMinutes:10,
+  cta:[["Compare prices","#/board"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"H100 SXM", vram:"Stated vs verified", bestFit:"Stated on Spheron’s own pages: $2.64, $2.65, $2.75 and $2.98/hr on-demand across pages stamped Oct 20–28, 2026 — and $4.20/hr on pages refreshed Oct 28; spot stated $2.21/hr (Oct 28), then $2.79/hr (Oct 29). Verified best offer: TensorDock $2.25/GPU/hr at an 8-GPU minimum — an $18.00/hr floor; cheapest single card, RunPod Community $2.69/hr. Five stated on-demand figures live at once on Oct 28 — a $1.56 spread; the highest stated figure sits 56% above the cheapest verified single-card price.", price:"$2.25/hr" },
+    { label:"B200", vram:"Stated vs verified", bestFit:"Stated on Spheron’s own pages: $9.80–$9.90/hr on-demand (Oct 20), $11.06 (Oct 21), $11.12 (Oct 22, still stated Oct 30) — and on Oct 31 its own pages disagreed again: $11.06 on most pages, $11.12 in its refresh post; spot stated at $5.31 and $6.12 on the same day (Oct 24). Verified best offer: RunPod Community $5.98/hr. The stated on-demand price runs $5.14/hr above the verified best offer — 86% more for the same card.", price:"$5.98/hr" },
+    { label:"H200", vram:"Stated vs verified", bestFit:"Stated on Spheron’s own pages: $7.09 and $5.54/hr on the same day (Oct 27); $4.80 and $5.51/hr inside a single refresh post (Oct 31). Verified best offer: RunPod Community $3.59/hr. Same-day stated figures $1.55 apart; the highest stated figure is nearly double the verified best offer.", price:"$3.59/hr" },
+    { label:"RTX 4090", vram:"The control row", bestFit:"No split in our record. The two prices you will meet most are both verified, and both sit on RunPod’s own pricing page — Community $0.34/hr (Best offer) and Secure $0.89/hr are different service tiers, not a disagreement. No gap to explain: two real prices, each labelled with what it buys. Multiplicity only becomes a problem when the labels and the dates go missing.", price:"$0.34/hr" }
+  ],
+  metricTitle:"Why one GPU has five prices",
+  metricBody:"Two words on this page carry exact meanings. Stated means a figure a site publishes, reported here exactly as stated, with its source and date — never as a verified price. Verified means read by us on the provider’s own current pricing page and re-checked on Oct 31, 2026. Five mechanisms produce the pile-up. None of them requires anyone to invent a number — pages are written at different times, updated on different schedules, and quoted figures age at different speeds. Each mechanism below is illustrated with figures we read first-hand, on the dates printed.",
+  datedTables:[
+    { heading:"1 · Pages refreshed at different times — the H100 on Spheron’s own pages",
+      intro:"A site with hundreds of pages does not update them all at once, so yesterday’s price survives on the pages nobody has touched yet. The H100 on Spheron’s own pages, read across eleven days:",
+      cols:["Date read","Stated on-demand (Spheron’s pages)","Stated spot"],
+      rows:[
+        ["Oct 20, 2026","$2.64, $2.65, $2.75 and $2.98/hr — four figures, different pages, the same day’s stamp","—"],
+        ["Through Oct 27","$2.64/hr","$1.84/hr"],
+        ["Oct 28, 2026","$4.20/hr on refreshed pages (its specs, slow-inference and multi-node guides and its pricing FAQ) — while the four older figures were still live on other pages: five stated on-demand prices at once","$2.21/hr"],
+        ["Oct 29, 2026","$4.20/hr on the refreshed pages, $2.64/hr still standing elsewhere","$2.79/hr"]
+      ],
+      after:"No single row of that table can honestly be quoted as “the” Spheron H100 price — and that is the point. A renter landing on any one page meets exactly one figure, presented as current, with no way to tell whether it is the newest or the oldest on the site." },
+    { heading:"2 · Spot and on-demand get mixed together",
+      intro:"Spot is the interruptible way to rent a card, and it normally prices below on-demand — so the two figures for one GPU can legitimately sit far apart. On Spheron’s own pages:",
+      cols:["GPU","Stated on-demand","Stated spot","Read"],
+      rows:[
+        ["B200","$11.12/hr","$5.31/hr — and $6.12/hr on another page the same day","Oct 24, 2026"],
+        ["RTX 6000 Ada","$0.78/hr","$0.93/hr — spot stated above on-demand, on a single page","Oct 22, 2026"]
+      ],
+      after:"Any summary that lifts one of those numbers without its label misprices the card by a factor of two. And sometimes the labels themselves invert — the RTX 6000 Ada row is the proof: on a single page, the interruptible price sits above the guaranteed one." },
+    { heading:"3 · A per-GPU price can hide a per-node minimum",
+      intro:"TensorDock’s H100 rate — $2.25 per GPU per hour — is the lowest verified per-GPU H100 price in our checks, and it is quoted at an eight-GPU minimum, which makes the real entry ticket $18.00 an hour:",
+      cols:["Route","Per-GPU price","What you must take","Real hourly floor"],
+      rows:[
+        ["TensorDock — H100 SXM","$2.25/GPU/hr","8 GPUs minimum","$18.00/hr"],
+        ["RunPod Community — H100 SXM","$2.69/hr","A single card","$2.69/hr"]
+      ],
+      after:"The figure is real; the shape is the story. We priced that shape in full in our TensorDock pricing guide, so this page only borrows its headline: a per-GPU number means nothing until you know how many GPUs you must take with it." },
+    { heading:"4 · Commitment prices get advertised as “starting at”",
+      intro:"Together AI’s Google ad, seen on Oct 31, 2026, offers “B200s starting at $6.79”. Read on Together’s own pricing page the same day, the B200 carries five labelled tiers:",
+      cols:["Together AI B200 tier","Per GPU/hr"],
+      rows:[
+        ["Preemptible","$4.09/hr"],
+        ["Reserved — 3–30 days","$7.99/hr"],
+        ["Reserved — 31–90 days","$7.79/hr"],
+        ["Reserved — 91–180 days","$6.79/hr"],
+        ["On-demand","$8.19/hr"]
+      ],
+      after:"The advertised figure is real — it is the three-to-six-month commitment tier. The table on Together’s page labels every tier honestly; the ad keeps the number and drops the basis. (Together AI is not on our price board yet — we read its pricing page first-hand for this guide, and its figures are reported as read there, not as board offers.)" },
+    { heading:"5 · Rivals get quoted from old snapshots",
+      intro:"A comparison is only as current as its stalest figure. Spheron’s pricing FAQ, stated on Spheron’s own pages, quotes its rivals at figures dated May 2026. The verified figures, read on each provider’s own pricing page (checked Oct 24, 2026, and unchanged at our Oct 31 check):",
+      cols:["Provider — B200","Quoted in Spheron’s FAQ (May 2026)","Verified on the provider’s own page"],
+      rows:[
+        ["RunPod","$5.89/hr","$7.99/hr"],
+        ["Lambda","$4.99–$5.29/hr","$6.69/hr"],
+        ["Nebius","$5.50/hr","$8.50/hr"]
+      ],
+      after:"The quotes understate the real prices by $2.10, $1.40–$1.70 and $3.00 an hour. Whether the effect is intended is not something a price page can prove; the arithmetic is what a renter budgets on, and the arithmetic is five months old.",
+      ctaAfter:true }
+  ],
+  costTitle:"When five prices are all honest",
+  costBody:"Multiplicity itself is not the offence, and this page would mislead if it pretended otherwise. RunPod sells the same RTX 4090 at two verified prices — $0.34/hr on Community and $0.89/hr on Secure — because they are different service tiers with different guarantees, both current, both on the provider’s own pricing page. Together AI’s pricing page labels all five of its B200 tiers correctly; the failure there happened in the advertisement, not the table. Our reading, labelled as interpretation: a price becomes unreliable at the moment it travels — into a search result, a comparison table or an AI answer — without its basis and its date. Strip those away, and even a figure that was true somewhere misleads everywhere else.",
+  steps:[
+    { title:"Go to the provider’s own pricing page", body:"Not the comparison site, not the advertisement, not the blog post: the page the provider itself sells from. If the figure you were quoted does not appear there, it is not a price anyone has to honour." },
+    { title:"Find the basis before the number", body:"On-demand or spot? Per GPU or per node? A minimum of one card, or eight? Pay-as-you-go, or a reserved term of months? The basis is part of the price — a figure quoted without it is half a fact." },
+    { title:"Look for the date", body:"When was the figure read, stamped or updated? A dated figure can be checked again tomorrow and corrected in the open. A figure with no date is asking to be trusted forever. No date, no trust. Applied to the title of this guide, the check takes under a minute: of the five H100 prices in the verdict, not one of the stated figures survives all three steps — they come from a comparison site’s pages (step 1), with their refresh dates scattered across eleven days (step 3). The verified figures do survive it, because each one names its provider, its basis and its check date." }
+  ],
+  alternatives:[
+    { title:"Providers’ own pages only", body:"Board prices are read on each provider’s own current pricing page — never on its marketing or comparison pages, and never copied from another aggregator." },
+    { title:"Both-sides dated evidence before anything changes", body:"A board figure moves only when we hold the old figure and the new one, each read on the provider’s own page, each with its date." },
+    { title:"Stated figures are published as stated", body:"Where a provider’s own pages disagree with each other, the honest publishable fact is the disagreement itself, dated and sourced — which is why Spheron’s prices appear on GPUJournal only in stated form, and why Spheron has no verified prices on our board." },
+    { title:"Every check is stamped, and corrections are published", body:"The board carries the date it was last checked, and when we get a figure wrong the correction goes on the record — never a quiet edit. Check today’s prices in the live comparison: it carries one verified figure per GPU and provider — the provider named first, the minimum printed next to the price, the check date stamped on the page." }
+  ],
+  licenceTitle:"How we know",
+  licenceBody:"Every stated Spheron figure in this guide was read on Spheron’s own pages (spheron.network) between Oct 20 and Oct 31, 2026, and is carried in our Price Watch with its read date: the H100 on-demand set ($2.64, $2.65, $2.75, $2.98, all stamped Oct 20, 2026; $4.20 on pages refreshed Oct 28); H100 spot ($1.84 through Oct 27; $2.21 read Oct 28; $2.79 read Oct 29); B200 on-demand ($9.80–$9.90 stated Oct 20; $11.06 stated Oct 21; $11.12 stated Oct 22 and still stated Oct 30; $11.06 on most pages vs $11.12 in its refresh post, read Oct 31); B200 spot ($5.31 and $6.12, both stated Oct 24); H200 ($7.09 and $5.54, both stated Oct 27; $4.80 and $5.51 in one refresh post, read Oct 31); RTX 6000 Ada spot $0.93 above on-demand $0.78 on one page stamped Oct 22; and the pricing FAQ’s rival quotes, dated May 2026 on Spheron’s pages. Together AI’s tiers were read on together.ai/pricing on Oct 31, 2026, and its “starting at $6.79” advertisement was seen the same day. The verified column is our board check of Oct 31, 2026: TensorDock H100 SXM $2.25/GPU/hr at an 8-GPU minimum (terms read on TensorDock’s own H100 page, Oct 29, 2026); RunPod Community H100 SXM $2.69, B200 $5.98, H200 $3.59, RTX 4090 $0.34; RunPod Secure RTX 4090 $0.89, B200 $7.99; Lambda B200 $6.69; Nebius B200 $8.50. The gap arithmetic: $4.20 vs $2.69 is 56% above; $11.12 vs $5.98 is $5.14/hr, or 86%, above; $7.09 is 1.97× $3.59 (“nearly double”); $7.09 − $5.54 = $1.55; the FAQ gaps are $7.99 − $5.89 = $2.10, $6.69 − $5.29/$4.99 = $1.40–$1.70, and $8.50 − $5.50 = $3.00. Two things this guide deliberately does not claim: that any stated figure is what a checkout on Spheron’s own platform would charge — we cannot verify that, and the inability is the finding — and that any provider intends to mislead. Pages age at different speeds; the dated record is what we publish.",
+  exits:[
+    ["Compare prices — every verified offer, checked daily","#/board"],
+    ["Work out the real cost","#/calculator"],
+    ["Price Watch — every change, dated on both sides","#/price-watch"]
+  ],
+  related:["tensordock-pricing-explained","verda-six-rises-october-2026","gpu-rental-prices-rising-2026"]
 }
 ];
 var FIND_RANKED = {
