@@ -2888,7 +2888,109 @@ var ARTICLES = [
     ["Price Watch — every change, dated on both sides","#/price-watch"]
   ],
   related:["tensordock-pricing-explained","verda-six-rises-october-2026","gpu-rental-prices-rising-2026"]
-}
+},
+{
+  slug:"nemotron-3-5-transcribe-self-host", hubSlug:"model-deployment",
+  title:"Nemotron 3.5 Transcribe: self-host it or pay for the API?",
+  excerpt:"NVIDIA’s open transcription model — 40 languages, speaker labels, translation, released Oct 28, 2026 — can be rented two ways: by the minute from a hosted API, or by the hour on a GPU you run yourself. The hosted price is public and tiny. The self-host price depends on one number nobody has independently measured yet — how fast the downloadable stack really runs — so this guide costs both routes honestly: the API at its published rate, self-hosting at a clearly printed planning assumption, and NVIDIA’s own published best case shown for what it is.",
+  publishedDate:"2026-11-02", readMinutes:14,
+  cta:[["Compare prices for this model — ranked for Nemotron 3.5 Transcribe","#/board?model=nemotron-3-5-transcribe"],["Find a GPU","#/find"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"Hosted API — DeepInfra", vram:"Published rate", bestFit:"$0.00200 per minute of audio, read on DeepInfra’s own model page on Nov 1, 2026 — $120 per 1,000 hours of audio. Low or spiky volume, no setup, results in minutes. But speaker labels are not in the API yet — DeepInfra lists them as coming soon.", price:"$0.12/hr of audio" },
+    { label:"Self-host — RTX 5090", vram:"NVFP4 build", bestFit:"RunPod Community $0.69/hr. The cheapest card on NVIDIA’s own supported list. At the planning assumption below, an hour of audio costs about 17× less than the API. Steady batch work: call archives, meeting libraries, media back-catalogues.", price:"$0.0069/hr of audio" },
+    { label:"Self-host — L40S", vram:"FP8 build", bestFit:"RunPod Community $0.79/hr. A 48GB data-centre card on NVIDIA’s supported list, at near-5090 money, at the same planning assumption.", price:"$0.0079/hr of audio" },
+    { label:"Self-host — A100 80GB", vram:"BF16 build", bestFit:"Thunder Compute $1.09/hr. The full-precision reference build on the 80GB shape NVIDIA’s own quick start uses, at the same planning assumption.", price:"$0.0109/hr of audio" },
+    { label:"Self-host — RTX PRO 6000", vram:"Any build", bestFit:"RunPod Community $1.69/hr. $0.0169/hr of audio at the planning assumption — and $0.0008–$0.0015 at NVIDIA’s own published throughput figures (below). The only card NVIDIA publishes serving numbers for: the pick if you want the maker’s measured stack, not an assumption.", price:"$0.0169/hr of audio" }
+  ],
+  metricTitle:"What it needs: one card, and not the cheapest one on the board",
+  metricBody:"Two numbers on this page carry exact meanings, and both are printed wherever they are used. The planning assumption: the open-source serving stack processes audio at 100× real-time — 100 seconds of audio per second of card time. NVIDIA’s published peak for its optimized build is 2,238× on one RTX PRO 6000, and NVIDIA itself says the downloadable open-source stack is expected to run roughly two times slower than that build; we plan at 100× to leave room for long files, speaker labels and unbatched work. Sensitivities at 50× and 200× are in the cost table. An assumption is not a benchmark — nobody has published an independent throughput measurement for this model yet. Memory sizing follows our standard method — total parameters × bytes per parameter, plus about 20% headroom — and matches the sizing on this model’s catalogue page. Nemotron 3.5 Transcribe is one open-weight checkpoint (nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B) that takes a recording of up to one hour plus a plain-language instruction and returns a transcript shaped by that instruction: verbatim or cleaned-up text, speaker tags for up to eight speakers, word-level timestamps, translation between English and 31 languages, or answers to questions about the recording, across 40 languages. The checkpoint holds 34 billion parameters in total, including its audio and speaker encoders, but only about 4.3 billion are active per token — which is why one GPU can carry it. It is an offline model: finished recordings, not live streams. The accuracy headline is NVIDIA’s own and is labelled that way throughout: NVIDIA reports a 5.33% average word error rate on the Hugging Face Open ASR English leaderboard — first among open-weight models — and its card’s results table (captured Oct 12, 2026) shows a 4.71% mean across the nine English sets, 4.62% multilingual and 10.98% on long-form. No independent reproduction of those figures had been published when we checked.",
+  datedTables:[
+    { heading:"The three builds, sized",
+      intro:"By our standard method, the three builds size out as follows:",
+      cols:["Build","Weights, roughly","Card class it needs"],
+      rows:[
+        ["BF16 (reference)","~68 GB","One 80GB card"],
+        ["FP8","~34 GB","A 48GB card"],
+        ["NVFP4","~17 GB","A 24GB card, by memory alone"]
+      ],
+      after:"Memory alone is not the whole test, because NVIDIA publishes a hardware compatibility table on the model card — the list of GPUs its runtimes are actually built and tested for. That table, read Nov 1, 2026, is the next one." },
+    { heading:"NVIDIA’s own compatibility table — and the card that is not on it",
+      intro:"The GPUs NVIDIA’s runtimes are built and tested for, with the cheapest verified rental for each (checked Oct 31, 2026):",
+      cols:["GPU (NVIDIA’s table)","Builds supported","Cheapest verified rental"],
+      rows:[
+        ["RTX 5090 (32GB)","NVFP4 only","RunPod Community $0.69/hr"],
+        ["L40S (48GB)","FP8","RunPod Community $0.79/hr"],
+        ["A100 80GB","BF16","Thunder Compute $1.09/hr"],
+        ["RTX PRO 6000 Blackwell (96GB)","BF16, FP8, NVFP4","RunPod Community $1.69/hr"],
+        ["H100 / H200","BF16, FP8","RunPod Community H100 SXM $2.69/hr"]
+      ],
+      after:"The smallest sensible rented card is the RTX 5090. Its 32GB holds the ~17GB NVFP4 build with room to spare, it is on NVIDIA’s supported list (vLLM, Transformers and GGML runtimes), and at $0.69/hr it is the cheapest supported route on the board. The honest catch sits one row below it in price: the RTX 4090, at $0.34/hr on RunPod Community, is the cheapest card we list and its 24GB would hold the NVFP4 build by memory — but the 4090 is NOT in NVIDIA’s compatibility table, and its Ada-generation hardware has no native FP4 path in the official runtimes. Community builds may close that gap in time; today, planning a deployment on the 4090 means planning on unsupported ground. We do not recommend it as the plan." },
+    { heading:"What an hour of audio costs",
+      intro:"The API side is a single published number: DeepInfra — one of the hosts NVIDIA’s launch names, serving the model through an OpenAI-compatible speech-to-text endpoint — lists $0.00200 per minute of audio on its own model page (read Nov 1, 2026): $0.12 per hour of audio, $120 per 1,000 hours, $1,200 per 10,000 hours. Requests can run to 60 minutes; transcription, word and segment timestamps, contextual prompts and translation into English are live today. The self-host columns are arithmetic on the printed assumption:",
+      cols:["Self-host route","Card price","Per hour of audio at 100× (assumption)","At 50×","At 200×","Per 1,000 hours of audio at 100×"],
+      rows:[
+        ["RTX 5090 (NVFP4)","$0.69/hr","$0.0069","$0.0138","$0.0035","$6.90"],
+        ["L40S (FP8)","$0.79/hr","$0.0079","$0.0158","$0.0040","$7.90"],
+        ["A100 80GB (BF16)","$1.09/hr","$0.0109","$0.0218","$0.0055","$10.90"],
+        ["RTX PRO 6000 (any build)","$1.69/hr","$0.0169","$0.0338","$0.0085","$16.90"],
+        ["H100 SXM (BF16/FP8)","$2.69/hr","$0.0269","$0.0538","$0.0135","$26.90"],
+        ["Hosted API (DeepInfra)","—","$0.12 at the published rate — no assumption involved","$0.12","$0.12","$120.00"]
+      ],
+      after:"Read the self-host columns as arithmetic on an assumption, not as measurements: at 100× real-time, one hour of audio takes 36 seconds of card time, so 1,000 hours of audio is 10 card-hours. If the real stack runs at half that speed on your audio, the 50× column is your cost; at double, the 200× column. Even the slowest column beats the API rate on every card — the gap is wide enough that the assumption would have to be wrong by more than an order of magnitude before the ranking flipped.",
+      ctaAfter:true },
+    { heading:"The break-even: it’s about the card’s month, not the minute",
+      intro:"Rent by the hour and shut the card down between batches, and self-hosting is cheaper per hour of audio from the first batch — the only real minimum order is your own setup time (downloading a 17–68GB checkpoint and standing up vLLM with the NeMo Speech plugin). The break-even that matters is the other rental shape: a card kept for a full month (730 hours) whether or not audio is flowing. Against the API’s $0.12 per hour of audio, a month of card has to process this much audio before it has paid for itself:",
+      cols:["Card kept for a month","Month cost (730 hrs)","Break-even vs the API"],
+      rows:[
+        ["RTX 5090 at $0.69/hr","$503.70","~4,200 hours of audio a month — about 140 hours a day, under 6% of what the card could process at the planning rate"],
+        ["L40S at $0.79/hr","$576.70","~4,800 hours a month"],
+        ["A100 80GB at $1.09/hr","$795.70","~6,600 hours a month"],
+        ["RTX PRO 6000 at $1.69/hr","$1,233.70","~10,300 hours a month"],
+        ["H100 SXM at $2.69/hr","$1,963.70","~16,400 hours a month"]
+      ],
+      after:"Below those volumes, the API wins on money alone — and wins outright on everything operational: no setup, no idle card, no stack to patch. Above them, self-hosting wins on money and on three things the API cannot sell you at any price today: speaker labels (in the open model now; DeepInfra lists them as coming soon in its API), your audio never leaving your own machine (DeepInfra states zero data retention, which is a policy promise rather than an architecture), and fine-tuning — the NeMo Speech toolkit adapts the model to your vocabulary and accents, which no hosted endpoint offers. One more honest line in the API’s favour: a 10,000-hour archive costs $1,200 there, against $69 of card time on a 5090 at the planning assumption — but the $69 route also costs the days of engineering to build and babysit the pipeline. Price your own time before you call it cheaper." }
+  ],
+  costTitle:"The serving reality: a published recipe, and a faster build you can’t download yet",
+  costBody:"The open serving path is real and documented on the model card. NVIDIA’s quick start serves the checkpoint on one H100 80GB with vLLM 0.32.0 plus the NeMo Speech plugin (VLLM_PLUGINS=nemo_speechlm), exposing an OpenAI-compatible endpoint — code written against OpenAI-style chat and audio APIs ports over with small changes. SGLang-Omni 0.2.0 is listed for H100 and the RTX PRO 6000, Hugging Face Transformers runs it in-process, and GGML covers the RTX 5090 and RTX PRO 6000, including native Windows. The card’s own configuration turns on native multi-token prediction for speed, with an optional DFlash2 draft model for speculative decoding. Then the caveat, in NVIDIA’s own words on the same card: its fastest published serving numbers come from the Nemotron Transcribe NIM, NVIDIA’s optimized container build — and “these serving optimizations are not yet part of the open-source release”. NVIDIA says the open-source vLLM integration that shipped on release day “is intended for model development and is expected to be roughly two times slower”. So the stack you can download today is the development-grade one, by the maker’s own description; the optimized build sits behind NVIDIA’s NIM route and its own terms. Budget on the open stack; treat anything faster as a bonus. NVIDIA’s own published figures, for the one card it measured: on the model card’s Efficiency section, NVIDIA reports that its optimized NIM build on one RTX PRO 6000 transcribes up to 2,238 seconds of audio per second (NVFP4 with DFlash2 speculative decoding), and returns a 30-second transcript in 0.13 seconds. Priced at the verified $1.69/hr, that peak works out to about $0.0008 per hour of audio — $0.76 per 1,000 hours. At the roughly-two-times-slower speed NVIDIA states for the open-source stack (~1,119×), it is about $0.0015 per hour of audio, $1.51 per 1,000 hours. Both figures are the maker’s, the first is an “up to” peak, and the NIM build behind it is not the downloadable one. We show them because they are published and checkable — not as the basis for a budget.",
+  steps:[
+    { title:"Count your monthly audio hours first", body:"Under roughly 4,000 hours of audio a month — or any volume you can’t be bothered to operate — pay DeepInfra’s $0.12 an hour and spend your time elsewhere. The break-even table above gives the exact line for each card kept for a full month; rent-by-the-hour with the card shut down between batches has no break-even to cross at all." },
+    { title:"Check the feature list, not just the price", body:"If who-said-what is the whole point of your project, the route is already settled: speaker labels are in the open model today and listed as coming soon in DeepInfra’s API. The same goes for keeping audio on your own machine, or fine-tuning on your vocabulary and accents — no hosted endpoint sells those today." },
+    { title:"Self-host on the smallest supported card", body:"Rent an RTX 5090 at $0.69/hr and run the NVFP4 build yourself — not the cheaper RTX 4090, which fits by memory but is not on NVIDIA’s supported list. Download the checkpoint, stand up vLLM 0.32.0 with the NeMo Speech plugin per NVIDIA’s quick start, and test the maker’s accuracy figures on your own recordings before you budget around them." }
+  ],
+  alternatives:[
+    { title:"Watch out — the cheapest card is not a supported card", body:"The RTX 4090 ($0.34/hr) fits the NVFP4 build by memory but is absent from NVIDIA’s compatibility table. The cheapest supported route is the RTX 5090 at $0.69/hr." },
+    { title:"Watch out — every accuracy figure is the maker’s", body:"The 5.33% leaderboard average and the card’s results table are NVIDIA-reported and labelled that way wherever we use them. No independent throughput or accuracy benchmark for this model had been published when we checked — including for the 2,238× serving peak." },
+    { title:"Watch out — the fast stack is not the free stack", body:"NVIDIA’s published serving peak comes from its NIM build, whose optimizations are “not yet part of the open-source release” (NVIDIA’s words). The downloadable vLLM path is described by NVIDIA as a development integration, expected to run roughly two times slower." },
+    { title:"Watch out — it is not a live-captioning model", body:"Offline only, recordings up to one hour per request. Speaker labels cover 13 of the 40 languages; translation covers 31 languages to or from English; question-answering about a recording was evaluated in English only. Check the card’s language matrix against your audio before committing." },
+    { title:"Good to know — the API’s feature list is shorter than the model’s", body:"On DeepInfra today: transcription, timestamps, contextual prompts and translation into English — speaker attribution is listed as coming soon. NVIDIA itself publishes no per-minute price for a hosted version of this model — its build.nvidia.com route is a free trial, not a priced production API — and Baseten and Simplismart, the other hosts NVIDIA’s launch names, publish no per-minute price either. DeepInfra’s is the only public per-minute figure to budget against." }
+  ],
+  licenceTitle:"The licence: OpenMDW-1.1 — commercial use allowed, conditions attached",
+  licenceBody:"The model is released under the OpenMDW License Agreement, version 1.1 (OpenMDW-1.1), and the model card states plainly: “This model is ready for commercial or non-commercial use.” The licence text itself (read in full, Nov 1, 2026) grants permission “to deal in the Model Materials without restriction” across copyright, patent, database and trade-secret rights; imposes no restrictions on outputs — transcripts you produce are yours to use; and requires that if you distribute the model materials, you keep a copy of the licence and the copyright notices with them. Two clauses deserve a careful read before a commercial launch: your rights terminate if you sue someone claiming the model materials infringe a patent or copyright (unless you were sued first), and the materials come “as is” with no warranty — clearing any third-party rights in what you feed it is expressly your responsibility. This is a plain-words summary, not legal advice; the licence is short and linked from the model card.",
+  honestyTitle:"How we know",
+  honestyVerified:[
+    "Model facts — 34B total / ~4.3B active parameters including the encoders; 65,536-token context; recordings up to one hour; BF16, FP8 and NVFP4 builds; 40 transcription languages, 31 translation languages, speaker labels in 13 — from NVIDIA’s model card for nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B on Hugging Face, read Nov 1, 2026, the same card our catalogue entry and Oct 28, 2026 story are built from",
+    "The hardware compatibility table — A100 80GB BF16; H100/H200 BF16/FP8; L40S 48GB FP8; RTX 5090 NVFP4 only; RTX PRO 6000 Blackwell BF16/FP8/NVFP4; RTX 4090 absent — and the quick start (vLLM 0.32.0 + NeMo Speech plugin on one H100 80GB), read on that card, Nov 1, 2026",
+    "The serving figures — up to 2,238 seconds of audio per second for the NIM build on one RTX PRO 6000 (NVFP4 + DFlash2), a 30-second transcript in 0.13 seconds, the statement that those optimizations are not yet in the open-source release, and the expectation that the open-source integration runs roughly two times slower — NVIDIA’s own statements on the card, labelled maker-reported wherever this guide uses them",
+    "Accuracy figures — 5.33% average WER as NVIDIA reports it for the Hugging Face Open ASR English leaderboard, and the card’s results table captured Oct 12, 2026 (English nine-set mean 4.71%, multilingual 4.62%, long-form 10.98%) — NVIDIA-reported throughout",
+    "The hosted price — DeepInfra’s own model page, read Nov 1, 2026: $0.00200 per minute of audio; its launch post on DeepInfra’s blog gives the same rate ($0.12 per hour), the 60-minute request limit, the feature list, the coming-soon status of speaker attribution and the zero-data-retention statement — all DeepInfra’s own claims, reported as theirs",
+    "The licence summary — from the OpenMDW-1.1 licence file shipped in the model’s Hugging Face repository, read in full Nov 1, 2026",
+    "GPU prices — our board check of Oct 31, 2026 (banked snapshot 2026-10-31): RunPod Community RTX 5090 $0.69/hr, L40S $0.79/hr, RTX PRO 6000 $1.69/hr, H100 SXM $2.69/hr, RTX 4090 $0.34/hr; Thunder Compute A100 80GB $1.09/hr. The arithmetic: cost per hour of audio = card price ÷ real-time factor; at the printed 100× planning assumption, 1,000 hours of audio = 10 card-hours (5090 $6.90; L40S $7.90; A100 $10.90; RTX PRO 6000 $16.90; H100 SXM $26.90), at 50× the figures double and at 200× they halve. NVIDIA-figure costs: $1.69 ÷ 2,238 = $0.00076 ≈ $0.0008 per hour of audio ($0.76 per 1,000 hours); $1.69 ÷ 1,119 ≈ $0.0015 ($1.51 per 1,000 hours), where 1,119× is 2,238× halved per NVIDIA’s own “roughly two times slower” statement. Month = 730 hours; break-evens are month cost ÷ $0.12 (5090 $503.70 → 4,198 ≈ 4,200 hours; L40S $576.70 → 4,806 ≈ 4,800; A100 $795.70 → 6,631 ≈ 6,600; RTX PRO 6000 $1,233.70 → 10,281 ≈ 10,300; H100 SXM $1,963.70 → 16,364 ≈ 16,400)"
+  ],
+  honestyUnverified:[
+    "Any independent throughput or accuracy measurement of this model — none published that we could find; every speed and accuracy figure on this page is NVIDIA’s",
+    "A public per-minute price at Baseten or Simplismart — neither publishes one that we could find, so neither is printed as a price here",
+    "Any priced NVIDIA-hosted API for this model — NVIDIA publishes none; its own route is a free trial",
+    "The 100× planning figure is an assumption chosen by us, labelled wherever it is used — it is not a measurement, ours or anyone’s"
+  ],
+  honestyNote:"Nothing else on this page is estimated.",
+  exits:[
+    ["Compare prices for this model — ranked for Nemotron 3.5 Transcribe","#/board?model=nemotron-3-5-transcribe"],
+    ["Nemotron 3.5 Transcribe — fits and prices by GPU","#/model/nemotron-3-5-transcribe"],
+    ["Find a GPU","#/find"]
+  ],
+  related:["mistral-large-4-deploy-cost","kimi-k3-1-pro-deploy-cost","runpod-batch-inference-pricing"]
+},
 ];
 var FIND_RANKED = {
   inference: [
