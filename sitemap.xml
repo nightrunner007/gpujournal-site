@@ -217,6 +217,7 @@
 <url><loc>https://gpujournal.ai/story/carbon-x-dna-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/model/carbon-x</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/kimi-k3-1-pro-weights-nov-4</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://gpujournal.ai/model/tencent-hy4</loc><lastmod>2026-11-04</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/kimi-k3-1-pro</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/nanbeige-4-3-33b-open-agent-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/model/nanbeige-4-3-33b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -266,5 +267,7 @@
 <url><loc>https://gpujournal.ai/story/marvell-lumentum-acquisition-nov-2</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/runpod-serverless-price-rise-nov-2</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/nebius-spot-ceiling-removed-nov-2</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/story/verda-ninth-rise-nov-4</loc><lastmod>2026-11-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/story/tencent-hy4-launch-nov-4</loc><lastmod>2026-11-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/amd-helios-live-data-center-doubles-nov-3</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
