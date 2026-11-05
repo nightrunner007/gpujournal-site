@@ -3232,6 +3232,221 @@ var ARTICLES = [
   ],
   related:["best-gpu-for-ai-inference-2026","h200-vs-mi325x-rental","which-price-is-real"]
 },
+{
+  "slug": "mi355x-vs-b300-inference-cost",
+  "hubSlug": "gpu-pricing",
+  "title": "MI355X vs B300: inference cost per token, priced from the board",
+  "excerpt": "Spheron's comparison of these two 288GB cards, published Nov 3, 2026, prices its verdicts from modelled rates — including MI355X rates no provider actually sells at. This page re-runs the same question from prices read on the providers' own pages and checked on Nov 5, 2026: TensorWave's published $2.95/GPU/hr MI355X rate and Oracle's $8.60 list price, against a B300 board that starts at $7.40/GPU/hr. The silicon is tied — same 288GB of HBM3e, same 8 TB/s of bandwidth on both makers' spec sheets. The rental market is not tied at all, and in this comparison the entry tickets matter more than the chips.",
+  "publishedDate": "2026-11-05",
+  "readMinutes": 11,
+  "cta": [
+    [
+      "Compare prices",
+      "#/board"
+    ],
+    [
+      "Find a GPU",
+      "#/find"
+    ]
+  ],
+  "ctaClosing": true,
+  "tldr": [
+    {
+      "label": "MI355X",
+      "vram": "288GB",
+      "bestFit": "The cheapest frontier tokens we can price — with two catches printed in the open. TensorWave publishes $2.95/GPU/hr, but only on an 8-GPU bare-metal node, so the real entry ticket is $23.60/hr, and the buying route is contact sales; Oracle's list price is $8.60/GPU/hr, a $68.80/hr 8-GPU shape. At the printed assumed speed of 4,000 tok/s (see below) that is $0.20 per 1M tokens at TensorWave's rate and $0.60 at Oracle's. Rent it if you take whole nodes and your stack runs on ROCm.",
+      "price": "$0.20 per 1M tokens at the published node rate (assumed speed)"
+    },
+    {
+      "label": "B300",
+      "vram": "288GB",
+      "bestFit": "The card you can actually book today. The board's best verified rate is a single self-serve card; RunPod Secure, re-read on Nov 5, 2026, is $8.99/hr, and Together AI's on-demand cluster rate, also re-read Nov 5, is $9.99/hr. At the same assumed 4,000 tok/s that is $0.51 per 1M tokens at the best rate and $0.62 at RunPod Secure. Rent it if you need capacity this week, one card at a time, on the CUDA stack your team already runs.",
+      "price": "$0.51 per 1M tokens at the best verified rate (assumed speed)"
+    }
+  ],
+  "metricTitle": "The assumption set — read this before quoting any cost per token",
+  "metricBody": "Cost per token is an hourly price divided by a speed. The prices on this page are verified; the speeds are assumptions, chosen once, printed here, and applied identically to both cards so the comparison is fair. They are not benchmark results, and no cost figure on this page should be quoted as one. The workload: a 70B-class open model at FP8 (about 70GB of weights), continuous batching at roughly 32 concurrent sequences, output tokens only — a job both 288GB cards hold easily, with most of their memory left for KV cache. The formula, the same one used across this site: cost per 1M output tokens = hourly price ÷ (assumed tokens/sec × 3,600) × 1,000,000. The assumed speed is set the way our other inference guides set it — roughly in line with memory bandwidth, the thing that limits batched decode. Both makers publish 8 TB/s of peak bandwidth for these cards, the same figure as NVIDIA's B200, which our inference guides anchor at 4,000 tok/s; so both cards are assumed at 4,000 tok/s here. Worked check: $2.95 ÷ (4,000 × 3,600) × 1,000,000 = $0.205, printed as $0.20. Real published benchmarks do exist, and they are reported in this guide attributed to their sources — MLPerf Inference v6.0 (MLCommons, published Apr 1, 2026) put an 8-GPU MI355X node at 100,282 tok/s against 115,730 tok/s for an 8-GPU B300 node on the Llama 2 70B Server scenario, as reported in Spheron's Nov 3, 2026 post from AMD's MLPerf submission — but they were measured on the submitters' own stacks, not on rented machines, so they are context, not inputs to the price maths. The sensitivity is the same as everywhere on this site: if your stack delivers half the assumed speed on both cards, every cost on this page doubles and the order does not change. What changes the order is one card beating its assumption while the other misses — which is why the first rented hour on either card should be a measurement, not a commitment.",
+  "datedTables": [
+    {
+      "heading": "The spec sheet — a tie at the top",
+      "intro": "Sources: AMD's Instinct MI355X product page (amd.com) and NVIDIA's Blackwell Ultra material (nvidia.com and NVIDIA's developer blog), checked Nov 5, 2026. Peak figures are the makers' published spec-sheet numbers, not measured throughput on any provider's machines.",
+      "cols": [
+        "GPU",
+        "Memory",
+        "Peak bandwidth",
+        "Architecture",
+        "Peak FP4 (maker figures)",
+        "Max power"
+      ],
+      "rows": [
+        [
+          "AMD MI355X",
+          "288GB HBM3e",
+          "8 TB/s",
+          "CDNA 4 — ROCm",
+          "10.1 PFLOPS (MXFP4)",
+          "1,400W"
+        ],
+        [
+          "NVIDIA B300",
+          "288GB HBM3e",
+          "8 TB/s",
+          "Blackwell Ultra — CUDA",
+          "15 PFLOPS (NVFP4, dense)",
+          "Up to 1,400W"
+        ]
+      ],
+      "after": "On the two numbers that decide most inference bills — how much a card holds and how fast it streams weights — these chips are identical on paper. The differences sit one layer down: NVIDIA publishes the higher peak FP4 figure (in its own NVFP4 format; AMD's is MXFP4, and cross-vendor FLOPS in different 4-bit formats are not a like-for-like speed test), AMD's card is direct-liquid-cooled only at 1,400W, and the two run entirely different software ecosystems, ROCm against CUDA. None of that is in the hourly rate — which is where this comparison is actually decided."
+    },
+    {
+      "heading": "The B300 rental market, verified",
+      "intro": "The B300 is rented the way mainstream NVIDIA cards are rented: per card, self-serve, from a spread of providers. Board rows are from our daily check of Nov 5, 2026 (banked snapshot 2026-11-05); Together AI's row was re-read on its own pricing page on Nov 5, 2026. Cost per 1M tokens uses the printed assumed speed of 4,000 tok/s throughout (hourly price ÷ 14.4). Monthly figures elsewhere in this guide use 730 hours.",
+      "cols": [
+        "Provider",
+        "Per GPU/hr",
+        "Cost per 1M tokens (assumed speed)",
+        "Terms to know"
+      ],
+      "rows": [
+        [
+          "Hyperstack",
+          "$7.40",
+          "$0.51",
+          "Single-GPU VMs — the board's Best offer. Carried in recent daily checks; see How we know"
+        ],
+        [
+          "RunPod Secure",
+          "$8.99",
+          "$0.62",
+          "Self-serve Secure Cloud tier; re-read Nov 5, 2026"
+        ],
+        [
+          "Nebius",
+          "$9.50",
+          "$0.66",
+          "Excl. VAT; re-read Nov 5, 2026"
+        ],
+        [
+          "Together AI",
+          "$9.99",
+          "$0.69",
+          "GPU clusters table, on-demand — re-read Nov 5, 2026. Its preemptible tier is $4.99/hr ($0.35 per 1M at the assumed speed) if you can accept interruption"
+        ],
+        [
+          "Verda",
+          "$11.57",
+          "$0.80",
+          "Rose through Verda's nine-rise run to Nov 4, 2026; re-read Nov 5, 2026"
+        ],
+        [
+          "Oracle OCI",
+          "$15.00",
+          "$1.04",
+          "Oracle's list price — sold as an 8-GPU bare-metal shape, $120.00/hr the shape"
+        ]
+      ],
+      "after": "Same GPU, a 2× spread between the cheapest verified self-serve offer and hyperscaler list — the first thing to get right when you rent a B300. One stated figure for contrast, labelled as stated and never used in our maths: Spheron's own post of Nov 3, 2026 lists B300 on Spheron at $11.52/hr as of Nov 5, 2026 — a rate stated on the seller's own pages, which we report the way we report all Spheron prices: as their claim, not as a verified board price.",
+      "ctaAfter": true
+    },
+    {
+      "heading": "The MI355X side: the prices that actually exist",
+      "intro": "AMD's flagship rents through far fewer doors, and both verified doors sell the same shape: a whole 8-GPU node. Both pages were re-read first-hand on Nov 5, 2026. Cost per 1M tokens uses the same printed assumed speed of 4,000 tok/s (hourly price ÷ 14.4).",
+      "cols": [
+        "Provider",
+        "Per GPU/hr",
+        "Cost per 1M tokens (assumed speed)",
+        "The shape you actually buy"
+      ],
+      "rows": [
+        [
+          "TensorWave",
+          "$2.95",
+          "$0.20",
+          "8-GPU bare-metal node — $23.60/hr the node ($17,228/mo). Published rate on TensorWave's MI355X product page; the page does not label it on-demand and states no term; the site's buying route is contact sales"
+        ],
+        [
+          "Oracle OCI",
+          "$8.60",
+          "$0.60",
+          "8-GPU bare-metal shape BM.GPU.MI355X.8 — $68.80/hr the shape ($50,224/mo). Oracle's global list price, per GPU per hour"
+        ]
+      ],
+      "after": "Two honest observations. First, there is no single-card MI355X rental on any price list we have verified — if you want this chip, you are buying nodes, and the honest comparison is node against node. Second, the roughly $2.50/GPU/hr MI355X rate behind the year's biggest AMD cost-per-token claims is not a rate any provider publishes: the closest real published figure is TensorWave's $2.95, and it comes with the node and the sales call attached. Spheron, for its part, does not carry the MI355X at all — its Nov 3 post says so — so its comparison is priced from other people's listings and modelled rates, a point it is open about and we simply underline."
+    }
+  ],
+  "costTitle": "The worked maths — and what survives of the 45% claim",
+  "costBody": "Start with the claim this guide answers. The widely shared MI355X cost-per-token advantages — up to about 40–45% better tokens per dollar — are built on modelled hourly rates: SemiAnalysis's InferenceX, the benchmark behind most of them, turns its measured throughput into dollars using its own TCO model rates (about $1.50/hr for MI355X against $2.26/hr for B300, per its chip pages), not rates anyone rents at. Priced instead at verified rental rates, with both cards at the same bandwidth-anchored assumed speed, the picture splits by which door you walk through. At TensorWave's published rate, MI355X tokens cost $0.20 per 1M against $0.51 at the B300's best verified rate — about 60% cheaper per token, a bigger edge than the headlines, but one you can only collect at node scale, through a sales process, on ROCm. Like-for-like on one provider's own list, Oracle prices the MI355X at $8.60 against its own B300 at $15.00 — $0.60 against $1.04 per 1M tokens, about 42% cheaper per GPU-hour for the same 288GB and the same published bandwidth. And where real throughput measurements are paired with real rates, the edge narrows hard: Spheron's Nov 3 post, re-running Kimi K3 at verified on-demand rates, found 13.8 tokens/sec per dollar for MI355X against 13.1 for B300 — a 6% AMD edge, not 45% — because on that workload the B300's measured per-chip throughput is higher. All three statements are true at once; they answer different questions. The node maths changes nothing per token and everything per invoice: an 8-GPU node at the assumed speed produces 32,000 tok/s on either chip, so the per-token figures hold — what changes is the smallest cheque, $23.60/hr at TensorWave against $7.40/hr for one B300 card at Hyperstack. If your workload is one card's worth of serving, the B300 is the only side of this comparison you can buy in that size at all.",
+  "steps": [
+    {
+      "title": "Pick the MI355X at TensorWave if you serve at node scale and already run on ROCm",
+      "body": "Published $2.95/GPU/hr on 8-GPU bare-metal nodes ($23.60/hr, $17,228/mo) — the cheapest frontier-class tokens we can price, at $0.20 per 1M tokens under the printed assumptions. Budget the sales conversation into your timeline: the rate is published, but the page labels no on-demand term and the route in is 'get in touch with our team', so treat the timeline as days, not minutes."
+    },
+    {
+      "title": "Pick the MI355X at Oracle if you want AMD inside a hyperscaler contract",
+      "body": "Oracle's list is the one true published on-demand MI355X rate we can verify: $8.60/GPU/hr as the BM.GPU.MI355X.8 shape, $68.80/hr ($50,224/mo). On the same list Oracle's B300 is $15.00/GPU/hr, so if your organisation already buys from Oracle, the AMD shape is the cheaper 288GB door by about 42% per GPU-hour."
+    },
+    {
+      "title": "Pick the B300 if you need to start today, scale by the card, or stay on CUDA",
+      "body": "Self-serve from $7.40/hr at Hyperstack and $8.99/hr at RunPod Secure, re-read Nov 5, 2026 — live in minutes, one card at a time ($0.51–$0.62 per 1M tokens at the assumed speed). You pay more per token than the TensorWave node rate and you buy immediacy, elasticity and the TensorRT-LLM/vLLM ecosystem with it. For bursty or interruptible work, Together AI's preemptible B300 at $4.99/hr ($0.35 per 1M, re-read Nov 5, 2026) undercuts every on-demand figure in this guide."
+    },
+    {
+      "title": "Don't build a plan on a $2.50 MI355X rate — or on any single benchmark",
+      "body": "No provider publishes $2.50/GPU/hr for this card; the verified floor is TensorWave's $2.95 with its node and sales caveats, and the only list on-demand rate is Oracle's $8.60. And the measured record cuts both ways by model and interactivity target — MLPerf v6.0 has the B300 node ahead on Llama 2 70B Server throughput, InferenceX has model families on each side — so rent one hour of each stack you are seriously considering and measure your own model before committing a node-month to either."
+    }
+  ],
+  "alternatives": [
+    {
+      "title": "Watch out: the 8-GPU minimum is the real MI355X price",
+      "body": "Every verified MI355X figure in this guide is a per-GPU rate on an 8-GPU bare-metal node. The smallest MI355X bill that exists is $23.60/hr at TensorWave or $68.80/hr at Oracle — there is no $2.95 hour of MI355X to buy. Comparing $2.95 against a single-card B300 price without the node totals is exactly how this comparison gets mis-sold, including in some of the coverage this guide answers."
+    },
+    {
+      "title": "Watch out: a published rate is not always a self-serve rate",
+      "body": "TensorWave publishes its $2.95/GPU/hr openly, which puts it ahead of quote-only sellers — but its product page does not call the rate on-demand, states no minimum term, and the buying route is contact sales. Whether it is true pay-as-you-go, and at what commitment, is a question for that conversation, and we label it a published rate rather than a verified on-demand rate for exactly that reason. Oracle's $8.60, by contrast, is a list price anyone can read — at nearly three times the per-GPU figure."
+    },
+    {
+      "title": "The software reality: ROCm vs CUDA, stated plainly",
+      "body": "The B300 runs the CUDA ecosystem — TensorRT-LLM, vLLM, SGLang and two decades of kernels and profiling tools. The MI355X runs AMD's open-source ROCm stack: vLLM and SGLang both serve on it, AMD's AITER kernels posted the MLPerf v6.0 results cited in this guide, and standard LLM serving is genuinely competitive. What ROCm does not give you is TensorRT-LLM, and custom CUDA kernels do not port themselves. Price your engineers' time honestly on both sides: a cheaper GPU-hour that costs a week of porting is not cheaper, and a CUDA team that never tests ROCm is paying the NVIDIA premium by habit rather than by measurement."
+    },
+    {
+      "title": "The counterweight: why the B300 still wins most rentals",
+      "body": "Strip the price floor away and the B300 leads this comparison on almost everything else a renter feels: it is bookable today from at least five verified providers against the MI355X's two node-only doors; MLPerf v6.0's Llama 2 70B Server scenario measured the B300 node about 15% ahead on throughput (115,730 vs 100,282 tok/s, both 8-GPU nodes, as reported from the official submissions); NVIDIA publishes the higher peak FP4 figure; and the CUDA ecosystem removes the porting question entirely. The MI355X case is narrower and real: at the published rates that actually exist, its tokens can cost far less — if your work fits the way AMD capacity is sold."
+    }
+  ],
+  "licenceTitle": "How we know",
+  "licenceBody": "B300 board prices are GPUJournal's own: read on each provider's published pricing pages and banked daily (snapshot 2026-11-05, checked Nov 5, 2026 — RunPod Secure $8.99, Nebius $9.50 and Verda $11.57 re-read first-hand that day; Verda's figure is the after-side of its ninth rise, on Nov 4, 2026). Hyperstack's $7.40 is the board's carried figure: Hyperstack's pricing table has been unreadable in our fetches for over a week of daily checks, so it is carried from the last readable check and flagged here and on the board, not presented as re-verified on Nov 5. Together AI's B300 rates (on-demand $9.99, preemptible $4.99) were re-read on together.ai/pricing on Nov 5, 2026. TensorWave's MI355X rate ($2.95/GPU/hr, 8-GPU bare-metal standard node, $23.60/hr derived) was re-read on TensorWave's own MI355X product page on Nov 5, 2026 — the figure stands unchanged from our Oct 31, 2026 verification; the page states no on-demand label or term and shows a contact-sales route. Oracle's prices come from Oracle's official Cloud Price List: the USD figures (MI355X $8.60, B300 $15.00, per GPU per hour) were read on Oct 27, 2026, and corroborated unchanged on Nov 5, 2026 on Oracle's own Swedish price-list edition, which publishes the same list at Oracle's fixed conversion (MI355X 82.96334 kr, B300.8 144.7035 kr, against H100/H200 at 96.469 kr = $10.00); shape totals are Oracle's per-GPU price × 8, by Oracle's own rule. Hardware facts are the makers' published specifications, checked Nov 5, 2026: AMD's MI355X product page (288GB HBM3e, 8 TB/s, CDNA 4, 10.1 PFLOPS MXFP4, 1,400W, launched Jun 12, 2025) and NVIDIA's Blackwell Ultra material (B300 288GB HBM3e, up to 8 TB/s, up to 1,400W). Spheron's post 'MI355X vs B300: AMD vs NVIDIA Inference Cost Per Token' (spheron.network, Nov 3, 2026) was read on Nov 5, 2026; every figure taken from it — including its stated Spheron B300 rate of $11.52/hr, its InferenceX and MLPerf reporting, and its Kimi K3 re-run at verified rates (13.8 vs 13.1 tok/s per dollar, via Beri.net's survey) — is labelled stated or attributed wherever used, and none of its figures is presented as verified by us. InferenceX's modelled rates (about $1.50/hr MI355X, $2.26/hr B300) are SemiAnalysis's TCO model figures from its chip pages, cited as the basis of the claims this guide examines. Every throughput figure in our own maths is the printed assumption of 4,000 tok/s per card, set out in full above; monthly figures use 730 hours.",
+  "honestyTitle": "What we verified — and what we could not",
+  "honestyVerified": [
+    "Every rental price in the tables, read on the provider's own published pages and dated above — TensorWave and Together AI re-read Nov 5, 2026; Oracle corroborated on Oracle's own list Nov 5, 2026; the B300 board rows banked in the Nov 5, 2026 daily check",
+    "Both cards' headline hardware facts (288GB HBM3e, 8 TB/s) on AMD's and NVIDIA's own pages, checked Nov 5, 2026",
+    "That no single-card MI355X rental appears on any provider price list we have verified — both verified routes sell 8-GPU nodes only"
+  ],
+  "honestyUnverified": [
+    "A measured head-to-head of the two cards on identical rented stacks — none exists that we could find. The published measurements (MLPerf v6.0, InferenceX) come from the submitters' and benchmarkers' own setups and are reported attributed, never folded into our price maths",
+    "Whether TensorWave's published $2.95/GPU/hr is true pay-as-you-go on-demand, and on what minimum term — its page states neither",
+    "Hyperstack's B300 price re-read on Nov 5, 2026 — its pricing table was unreadable in the day's fetch, as it has been for over a week of daily checks; the $7.40 board figure is carried and flagged, not re-verified",
+    "The 4,000 tok/s figure is an assumption chosen by us, anchored on published memory bandwidth the same way across this site — it is not a measurement, ours or anyone's"
+  ],
+  "honestyNote": "Nothing else on this page is estimated.",
+  "exits": [
+    [
+      "Compare prices — every B300 offer, checked daily",
+      "#/board"
+    ],
+    [
+      "Find a GPU",
+      "#/find"
+    ],
+    [
+      "B300 — prices and providers",
+      "#/gpu/b300"
+    ]
+  ],
+  "related": [
+    "best-gpu-for-ai-inference-2026",
+    "inference-metrics-gpu-cost",
+    "h200-vs-mi325x-rental"
+  ]
+}
 ];
 var FIND_RANKED = {
   inference: [
