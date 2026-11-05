@@ -219,6 +219,7 @@
 <url><loc>https://gpujournal.ai/story/kimi-k3-1-pro-weights-nov-4</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/model/tencent-hy4</loc><lastmod>2026-11-04</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/kimi-k3-1-pro</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/ripple-65b-preview</loc><lastmod>2026-11-05</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/nanbeige-4-3-33b-open-agent-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/model/nanbeige-4-3-33b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/coreweave-denmark-copenhagen-expansion</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
@@ -272,4 +273,5 @@
 <url><loc>https://gpujournal.ai/story/amd-helios-live-data-center-doubles-nov-3</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/guide/best-gpu-for-video-generation-2026</loc><lastmod>2026-11-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/kimi-k3-1-pro-weights-released-nov-4</loc><lastmod>2026-11-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/story/ripple-65b-preview-open-weights-nov-4</loc><lastmod>2026-11-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
