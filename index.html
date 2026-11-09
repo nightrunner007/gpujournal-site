@@ -800,7 +800,9 @@ var PROVIDER_URL = {
   "Vast.ai":"https://vast.ai/pricing","Thunder Compute":"https://www.thundercompute.com/pricing",
   "Hyperstack":"https://www.hyperstack.cloud/","Nebius":"https://nebius.com/prices",
   "Verda":"https://verda.com/gpu-instances","TensorDock":"https://marketplace.tensordock.com",
-  "nafnaf.ai":"https://nafnaf.ai","Spheron":"https://www.spheron.network/pricing"
+  "nafnaf.ai":"https://nafnaf.ai","Spheron":"https://www.spheron.network/pricing",
+  "Oracle OCI":"https://www.oracle.com/cloud/compute/gpu/pricing/","Microsoft Azure":"https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/",
+  "Google Cloud":"https://cloud.google.com/compute/gpus-pricing"
 };
 var COMPANY = {
   "RunPod":{slug:"runpod",tiers:["RunPod Secure","RunPod Community"],blurb:"A GPU cloud with two tiers: Secure Cloud in vetted datacentres, and Community Cloud on independent hosts.",
@@ -844,7 +846,19 @@ var COMPANY = {
   "Spheron":{slug:"spheron",tiers:["Spheron"],blurb:"A GPU cloud whose hourly rate includes NVMe storage and bandwidth — no separate storage bill.",
     watch:[],
     info:["Spheron publishes no single GPU price its own pages agree on, so no verified Spheron price is listed. The storage terms below are current."],
-    storage:{rate:0,label:"Included in the hourly GPU rate — not billed separately"},egress:{rate:0,label:"Free — $0 data egress"}}
+    storage:{rate:0,label:"Included in the hourly GPU rate — not billed separately"},egress:{rate:0,label:"Free — $0 data egress"}},
+  "Oracle OCI":{slug:"oracle-oci",tiers:["Oracle OCI"],blurb:"Oracle's cloud. Its GPU prices sit on one global list priced per GPU; most GPU shapes are bare-metal servers, and the per-GPU figure is Oracle's own list maths.",
+    watch:["You rent the whole bare-metal server — most shapes hold 8 GPUs, and the GB200, GB300 and L40S shapes hold 4. The node total is the real commitment."],
+    info:["Oracle's list also prices preemptible instances at half these rates."],
+    storage:{rate:null,label:"Not publicly stated"},egress:{rate:null,label:"Not publicly stated"}},
+  "Microsoft Azure":{slug:"microsoft-azure",tiers:["Microsoft Azure"],blurb:"Microsoft's cloud. GPU VMs are priced per whole VM; where a VM's price divides exactly by its GPU count, we show the per-GPU figure with the whole-VM total beside it.",
+    watch:["You rent the whole VM, not one card — most of the GPU VMs listed here hold 8 GPUs."],
+    info:["Rates are Microsoft's East US on-demand Linux prices; the H200 VM's price is its East US 2 meter — no East US meter exists.","Azure publishes no self-serve on-demand price for B200 or GB200 VMs — they sell through capacity reservations — so no Azure price for them appears here."],
+    storage:{rate:null,label:"Not publicly stated"},egress:{rate:null,label:"Not publicly stated"}},
+  "Google Cloud":{slug:"google-cloud",tiers:["Google Cloud"],blurb:"Google's cloud. Its accelerator VMs are priced per whole VM; a per-GPU figure appears only where Google's own tables divide exactly, or where a 1-GPU VM size is published.",
+    watch:["You rent the whole VM, not one card — the B200 VM holds 8 GPUs and the GB200 VM holds 4."],
+    info:["Rates are Google's on-demand list prices for Iowa (us-central1), read from its own published pricing tables.","Google publishes no per-GPU rate for its H100 or H200 VMs — whole-VM prices only — so they are not shown as per-GPU offers."],
+    storage:{rate:null,label:"Not publicly stated"},egress:{rate:null,label:"Not publicly stated"}}
 };
 function companyOf(tier){ for (var k in COMPANY) if (COMPANY[k].tiers.indexOf(tier)>=0) return k; return tier; }
 function provRec(tier){ return COMPANY[companyOf(tier)]; }
@@ -855,27 +869,27 @@ function provRec(tier){ return COMPANY[companyOf(tier)]; }
    Pure context (new, small, marketplace-style, region) goes in info, in the calm note style. */
 var GPUS = [
  {id:"b300",name:"B300",vram:"288GB",arch:"Blackwell",year:"2025",good:"The largest training and serving jobs — frontier-class memory and bandwidth.",notgood:"Very costly for small jobs — best value only on big work.",fits:"Frontier model training; the very largest models at full precision.",hist:null,
-  offers:[["Hyperstack",7.40,"On-demand","",""],["RunPod Secure",8.99,"On-demand","",""],["Nebius",9.50,"On-demand","",""],["Verda",11.69,"On-demand","",""]]},
+  offers:[["Hyperstack",7.40,"On-demand","",""],["RunPod Secure",8.99,"On-demand","",""],["Nebius",9.50,"On-demand","",""],["Verda",11.69,"On-demand","",""],["Oracle OCI",15.00,"On-demand","8-GPU node — $120.00 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"b200",name:"B200",vram:"192GB",arch:"Blackwell",year:"2024",good:"Big training jobs and heavy serving — the strongest all-round card on this board.",notgood:"Frontier training money. If your job fits on anything cheaper, a B200 is budget burned for a spec sheet.",fits:"Large-model training and fine-tuning; 70B+ serving at full precision.",hist:null,
-  offers:[["RunPod Community",5.98,"On-demand","",""],["Hyperstack",6.00,"On-demand","",""],["Lambda",6.69,"On-demand","",""],["RunPod Secure",7.99,"On-demand","",""],["Nebius",8.50,"On-demand","",""],["CoreWeave",8.60,"On-demand","8-GPU node — $68.80 per node","You rent the whole 8-GPU node, not one card."],["Verda",9.138,"On-demand","",""]]},
+  offers:[["RunPod Community",5.98,"On-demand","",""],["Hyperstack",6.00,"On-demand","",""],["Lambda",6.69,"On-demand","",""],["RunPod Secure",7.99,"On-demand","",""],["Nebius",8.50,"On-demand","",""],["CoreWeave",8.60,"On-demand","8-GPU node — $68.80 per node","You rent the whole 8-GPU node, not one card."],["Verda",9.138,"On-demand","",""],["Oracle OCI",14.00,"On-demand","8-GPU node — $112.00 per node","You rent the whole 8-GPU node, not one card."],["Google Cloud",18.5265,"On-demand","8-GPU node — $148.21 per node","You rent the whole 8-GPU VM, not one card."]]},
  {id:"h200",name:"H200",vram:"141GB",arch:"Hopper",year:"2024",good:"70B+ serving and serious fine-tunes — H100 speed with far more memory.",notgood:"More card than most jobs need; the main trap is paying for it on small work.",fits:"70B models at FP16 on one card; large fine-tunes with room to spare.",hist:{label:"RunPod Secure — verified checks",pts:[["Oct 13",4.59],["Oct 19",5.29]]},
-  offers:[["RunPod Community",3.59,"On-demand","",""],["Hyperstack",3.99,"On-demand","",""],["RunPod Secure",5.29,"On-demand","",""],["Nebius",5.40,"On-demand","",""],["Verda",6.44,"On-demand","",""],["CoreWeave",6.31,"On-demand","8-GPU node — $50.44 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",3.59,"On-demand","",""],["Hyperstack",3.99,"On-demand","",""],["RunPod Secure",5.29,"On-demand","",""],["Nebius",5.40,"On-demand","",""],["Verda",6.44,"On-demand","",""],["CoreWeave",6.31,"On-demand","8-GPU node — $50.44 per node","You rent the whole 8-GPU node, not one card."],["Oracle OCI",10.00,"On-demand","8-GPU node — $80.00 per node","You rent the whole 8-GPU node, not one card."],["Microsoft Azure",10.60,"On-demand","8-GPU node — $84.80 per node","You rent the whole 8-GPU VM, not one card."]]},
  {id:"h100-sxm",name:"H100 SXM",vram:"80GB",arch:"Hopper",year:"2022",good:"High-throughput serving and training — FP8 and the fastest memory in the Hopper family.",notgood:"Pays off only when the card stays busy; on bursty work you pay H100 rent for idle silicon.",fits:"Busy serving fleets; FP8 inference; multi-GPU training over NVLink.",hist:null,
-  offers:[["TensorDock",2.25,"On-demand","8-GPU minimum — $18.00/hr for 8 GPUs",""],["RunPod Community",2.69,"On-demand","",""],["Thunder Compute",3.20,"On-demand","",""],["Hyperstack",3.20,"On-demand","",""],["RunPod Secure",3.99,"On-demand","",""],["Lambda",3.99,"On-demand","",""],["Verda",4.938,"On-demand","",""]]},
+  offers:[["TensorDock",2.25,"On-demand","8-GPU minimum — $18.00/hr for 8 GPUs",""],["RunPod Community",2.69,"On-demand","",""],["Thunder Compute",3.20,"On-demand","",""],["Hyperstack",3.20,"On-demand","",""],["RunPod Secure",3.99,"On-demand","",""],["Lambda",3.99,"On-demand","",""],["Verda",4.938,"On-demand","",""],["Microsoft Azure",12.29,"On-demand","8-GPU node — $98.32 per node","You rent the whole 8-GPU VM, not one card."]]},
  {id:"h100",name:"H100",vram:"80GB",arch:"Hopper (HGX)",year:"2022",good:"The same high-throughput Hopper serving and training, from providers that sell the HGX card without splitting variants.",notgood:"Pays off only when kept busy — avoid it for bursty development work.",fits:"High-throughput serving and training where the provider sells HGX nodes.",hist:null,
-  offers:[["Nebius",4.50,"On-demand","Listed as HGX — no variant split","",""],["CoreWeave",6.16,"On-demand","8-GPU node — $49.24 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["Nebius",4.50,"On-demand","Listed as HGX — no variant split","",""],["CoreWeave",6.16,"On-demand","8-GPU node — $49.24 per node","You rent the whole 8-GPU node, not one card."],["Oracle OCI",10.00,"On-demand","Listed as HGX — no variant split · 8-GPU node — $80.00 per node","You rent the whole 8-GPU node, not one card."]]},
  {id:"h100-pcie",name:"H100 PCIe",vram:"80GB",arch:"Hopper",year:"2022",good:"Single-card work where NVLink would sit unused — same silicon, lower price.",notgood:"No NVLink, and lower power than the SXM — slower when cards must work together.",fits:"Single-card serving and fine-tuning on a budget.",hist:null,
   offers:[["RunPod Community",1.99,"On-demand","",""],["Hyperstack",2.50,"On-demand","",""],["RunPod Secure",2.89,"On-demand","",""]]},
  {id:"h100-nvlink",name:"H100 NVLink",vram:"80GB",arch:"Hopper",year:"2022",good:"Hyperstack's own label for its NVLink-linked PCIe-form H100 — priced between its PCIe and SXM cards.",notgood:"One provider's label, published alongside its plainer “H100 PCIe” — check which card you are actually booking.",fits:"Single or paired H100 work on Hyperstack.",hist:null,
   offers:[["Hyperstack",2.60,"On-demand","Hyperstack's own “H100 NVLink (PCIe)” label","",""]]},
  {id:"h100-nvl",name:"H100 NVL",vram:"94GB",arch:"Hopper",year:"2023",good:"94GB of HBM — the H100 for models that nearly fit on 80GB.",notgood:"Sold as linked pairs, not as a lone card.",fits:"Models in the 80–94GB gap; paired-card serving.",hist:null,
-  offers:[["RunPod Community",2.59,"On-demand","","Sold as linked pairs, not as a lone card."],["RunPod Secure",3.19,"On-demand","","Sold as linked pairs, not as a lone card."]]},
+  offers:[["RunPod Community",2.59,"On-demand","","Sold as linked pairs, not as a lone card."],["RunPod Secure",3.19,"On-demand","","Sold as linked pairs, not as a lone card."],["Microsoft Azure",6.98,"On-demand","1-GPU VM",""],["Microsoft Azure",6.98,"On-demand","2-GPU node — $13.96 per node","You rent the whole 2-GPU VM, not one card."]]},
  {id:"a100-80gb",name:"A100 80GB",vram:"80GB",arch:"Ampere",year:"2020",good:"The honest workhorse — proven, plentiful, and the safe pair of hands for older stacks.",notgood:"An older generation — no FP8, so the newer speed tricks for serving don't apply.",fits:"32B–70B work in INT8/INT4; stacks that predate FP8.",hist:null,
-  offers:[["Thunder Compute",1.09,"On-demand","",""],["RunPod Community",1.19,"On-demand","PCIe variant","",""],["Hyperstack",1.35,"On-demand","PCIe variant","",""],["RunPod Community",1.39,"On-demand","SXM variant","",""],["Hyperstack",1.40,"On-demand","NVLink variant","",""],["TensorDock",1.50,"On-demand","Managed Containers product","",""],["RunPod Secure",1.79,"On-demand","PCIe & SXM at this rate","",""],["Verda",2.316,"On-demand","",""],["CoreWeave",2.70,"On-demand","8-GPU node — $21.60 per node","You rent the whole 8-GPU node, not one card."],["Lambda",2.79,"On-demand","",""]]},
+  offers:[["Thunder Compute",1.09,"On-demand","",""],["RunPod Community",1.19,"On-demand","PCIe variant","",""],["Hyperstack",1.35,"On-demand","PCIe variant","",""],["RunPod Community",1.39,"On-demand","SXM variant","",""],["Hyperstack",1.40,"On-demand","NVLink variant","",""],["TensorDock",1.50,"On-demand","Managed Containers product","",""],["RunPod Secure",1.79,"On-demand","PCIe & SXM at this rate","",""],["Verda",2.316,"On-demand","",""],["CoreWeave",2.70,"On-demand","8-GPU node — $21.60 per node","You rent the whole 8-GPU node, not one card."],["Lambda",2.79,"On-demand","",""],["Microsoft Azure",3.673,"On-demand","1-GPU VM",""],["Oracle OCI",4.00,"On-demand","8-GPU node — $32.00 per node","You rent the whole 8-GPU node, not one card."],["Google Cloud",4.51729,"On-demand","Attachable-GPU rate","Google bills the host VM this GPU attaches to on top of this rate."]]},
  {id:"a100-40gb",name:"A100 40GB",vram:"40GB",arch:"Ampere",year:"2020",good:"Entry-price A100 — fits 32B-class work in INT4 with honest KV-cache budgeting.",notgood:"The 40GB fills up quickly on larger models.",fits:"Smaller models and learning workloads on Ampere.",hist:null,
-  offers:[["Verda",1.657,"On-demand","",""],["Lambda",1.99,"On-demand","",""]]},
+  offers:[["Verda",1.657,"On-demand","",""],["Lambda",1.99,"On-demand","",""],["Oracle OCI",3.05,"On-demand","8-GPU node — $24.40 per node","You rent the whole 8-GPU node, not one card."],["Google Cloud",4.425248914,"On-demand","1-GPU VM",""]]},
  {id:"l40s",name:"L40S",vram:"48GB",arch:"Ada Lovelace",year:"2023",good:"7B–32B serving and image work — sub-$1/hr with datacenter manners. Our all-rounder.",notgood:"70B at FP16 does not fit, and no flag fixes that. Weak at double-precision maths; no NVLink.",fits:"32B in FP16 or 70B in INT4; image generation; everyday serving.",hist:null,
-  offers:[["RunPod Community",0.79,"On-demand","",""],["RunPod Secure",1.09,"On-demand","",""],["Nebius",1.55,"On-demand","“From” price — varies by instance size","“From” price — the exact rate varies by instance size."],["Verda",1.939,"On-demand","",""],["CoreWeave",2.25,"On-demand","8-GPU node — $18.00 per node","You rent the whole 8-GPU node, not one card."]]},
+  offers:[["RunPod Community",0.79,"On-demand","",""],["RunPod Secure",1.09,"On-demand","",""],["Nebius",1.55,"On-demand","“From” price — varies by instance size","“From” price — the exact rate varies by instance size."],["Verda",1.939,"On-demand","",""],["CoreWeave",2.25,"On-demand","8-GPU node — $18.00 per node","You rent the whole 8-GPU node, not one card."],["Oracle OCI",3.50,"On-demand","4-GPU node — $14.00 per node","You rent the whole 4-GPU node, not one card."]]},
  {id:"l40",name:"L40",vram:"48GB",arch:"Ada Lovelace",year:"2022",good:"The L40S's slower sibling — the same 48GB for lighter serving and image work.",notgood:"Weak at double-precision maths — not the card for scientific computing. No NVLink.",fits:"Lighter 48GB serving and rendering-adjacent work.",hist:null,
   offers:[["Thunder Compute",0.79,"On-demand","",""],["Hyperstack",1.00,"On-demand","",""]]},
  {id:"rtx-4090",name:"RTX 4090",vram:"24GB",arch:"Ada Lovelace",year:"2022",good:"Prototyping and image generation for almost nothing — the cheapest useful card on the board.",notgood:"24GB fills up fast on big models. No NVLink, so two cards can't pool memory — and it is a gaming card at heart.",fits:"7B–14B models; image generation; development and prototyping.",hist:{label:"nafnaf.ai — verified checks",pts:[["Oct 13",0.48],["Oct 19",0.20]]},
@@ -883,7 +897,7 @@ var GPUS = [
  {id:"rtx-5090",name:"RTX 5090",vram:"32GB",arch:"Blackwell",year:"2025",good:"Fast 32GB experiments on a budget — 32B in INT4 fits.",notgood:"No NVLink, so two cards can't pool memory. A consumer card — driver and ECC behaviour matter for production serving.",fits:"Fast experiments; 32B INT4; image and video generation.",hist:null,
   offers:[["RunPod Community",0.69,"On-demand","",""],["RunPod Secure",1.19,"On-demand","",""]]},
  {id:"rtx-pro-6000",name:"RTX PRO 6000",vram:"96GB",arch:"Blackwell",year:"2025",good:"70B on ONE card — the most VRAM per dollar on this board. Our sleeper pick.",notgood:"No NVLink scale-out; strong all-round, but the Max-Q version (listed separately) runs slower.",fits:"70B quantized or FP8 on a single card; big-context serving.",hist:null,
-  offers:[["RunPod Community",1.69,"On-demand","",""],["Nebius",1.80,"On-demand","",""],["RunPod Secure",2.49,"On-demand","",""],["CoreWeave",2.50,"On-demand","High-Memory variant · 8-GPU node — $20.00 per node","You rent the whole 8-GPU node, not one card."],["Verda",2.725,"On-demand","",""]]},
+  offers:[["RunPod Community",1.69,"On-demand","",""],["Nebius",1.80,"On-demand","",""],["RunPod Secure",2.49,"On-demand","",""],["CoreWeave",2.50,"On-demand","High-Memory variant · 8-GPU node — $20.00 per node","You rent the whole 8-GPU node, not one card."],["Verda",2.725,"On-demand","",""],["Oracle OCI",4.50,"On-demand","8-GPU node — $36.00 per node","You rent the whole 8-GPU node, not one card."],["Google Cloud",5.1749195,"On-demand","1-GPU VM",""]]},
  {id:"rtx-pro-6000-maxq",name:"RTX PRO 6000 Blackwell Max-Q",vram:"95GB",arch:"Blackwell (Max-Q)",year:"2025",good:"Nearly the full card's 96GB-class memory at a new-marketplace price.",notgood:"This is the Max-Q version: it runs at lower power and is slower than the full card.",fits:"70B-class work where memory matters more than raw speed.",hist:null,
   offers:[["nafnaf.ai",0.751667,"On-demand","","","New marketplace — small inventory for now: 2 GPUs listed."]]},
  {id:"gh200",name:"GH200",vram:"96GB",arch:"Grace Hopper",year:"2023",good:"CPU and GPU on one coherent fabric — a specialist pick for workloads built for it.",notgood:"Its processor is ARM, not the usual x86 — some software needs changes to run on it.",fits:"Memory-bandwidth-bound work designed for Grace Hopper.",hist:null,
@@ -891,9 +905,9 @@ var GPUS = [
  {id:"rtx-a6000",name:"RTX A6000",vram:"48GB",arch:"Ampere",year:"2020",good:"48GB workstation card at the lowest hourly rate on this board.",notgood:"An older generation — no FP8, so the newer speed tricks for serving don't apply.",fits:"Workstation-class rendering and lighter AI work.",hist:null,
   offers:[["Thunder Compute",0.35,"On-demand","",""]]},
  {id:"gb300",name:"GB300",vram:"NVL72 rack",arch:"Blackwell Ultra",year:"2025",good:"Rack-scale systems for the largest training programmes.",notgood:"A whole 72-GPU rack — far more than ordinary hourly work needs, and not a card for small jobs.",fits:"Frontier training at rack scale.",hist:null,
-  offers:[["Verda",13.44,"On-demand","",""],["Nebius",null,"Quote only","Listed — quote only, no published price","",""]]},
+  offers:[["Verda",13.44,"On-demand","",""],["Nebius",null,"Quote only","Listed — quote only, no published price","",""],["Oracle OCI",18.00,"On-demand","4-GPU node — $72.00 per node","You rent the whole 4-GPU node, not one card."]]},
  {id:"gb200-nvl72",name:"GB200 NVL72",vram:"NVL72 rack",arch:"Blackwell",year:"2025",good:"Rack-scale systems for the largest training programmes.",notgood:"Quote only, and a whole rack — far more than ordinary hourly work needs.",fits:"Frontier training at rack scale.",hist:null,
-  offers:[["Nebius",null,"Quote only","Listed — quote only, no published price","",""]]}
+  offers:[["Nebius",null,"Quote only","Listed — quote only, no published price","",""],["Oracle OCI",16.00,"On-demand","4-GPU node — $64.00 per node","You rent the whole 4-GPU node, not one card."],["Google Cloud",18.6875,"On-demand","4-GPU node — $74.75 per node","You rent the whole 4-GPU VM — Google's own page notes an 18-VM minimum for this shape."]]}
 ];
 function gpuById(id){ for (var i=0;i<GPUS.length;i++) if (GPUS[i].id===id) return GPUS[i]; return null; }
 function offersOf(g){ return g.offers.map(function(o){ return {prov:o[0],price:o[1],kind:o[2],note:o[3]||"",watch:o[4]||"",info:o[5]||""}; }); }
@@ -940,8 +954,8 @@ var PHIST = {
 };
 /* Coverage totals as stated by the governing record (price-verification-2026-10-19.md):
    155 verified prices, 12 providers, 22 GPU variants, checked Oct 19, 2026. */
-var TOTAL_PRICES = 156;
-var TOTAL_PROVIDERS = 12;
+var TOTAL_PRICES = 176;
+var TOTAL_PROVIDERS = 15;
 var TOTAL_VARIANTS = 20;
 
 /* Verified price moves — only changes evidenced in the Oct 19 records. */
