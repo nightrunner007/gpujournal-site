@@ -1131,6 +1131,17 @@ var WATCH = [
    exists (credited under the image on the story page); otherwise the
    site's own abstract panels. */
 var NEWS = [
+{slug:"minimax-h3-image-weights-nov-10",art:"chip",img:"/assets/img/minimax-h3-image-nov-10.jpg",credit:"MiniMax via huggingface.co",
+  kicker:"Open weights \u00b7 MiniMax",
+  title:"MiniMax open-sources H3-Image: a 16-megapixel image model that serves on one GPU",
+  date:"Nov 10, 2026",dateShort:"Nov 10, 2026",
+  standfirst:"MiniMax published the weights of H3-Image on Nov 10, 2026: a 33.1-billion-parameter image generation and editing model that produces roughly 16-megapixel images \u2014 up to 4096\u00d74096 \u2014 directly, with no upscaler, in six sampling steps, and serves from a single GPU through vLLM-Omni or SGLang. It is released under MiniMax's own community licence, not a permissive one, and the full download is bigger than the headline checkpoint suggests.",
+  facts:[
+   "What shipped, from MiniMax's blog (Nov 10, 2026) and the official Hugging Face card (MiniMaxAI/MiniMax-H3-Image), both read first-hand: one checkpoint unifies text-to-image and image editing, accepts up to 16 reference images, and is distilled to six sampling steps with no classifier-free guidance. MiniMax claims 4K images in under 10 seconds \u2014 the maker's own figure, not measured by us \u2014 and says 4K-and-above API requests are 50% off for launch week. An optional prompt-expander model, MiniMax-H3-Image-PE (17.9 GB, NVFP4), shipped quietly alongside it.",
+   "The hardware maths, from the same card: the image checkpoint itself is 68.65 GB (66.28 GB transformer + 2.34 GB VAE), but its text encoder is NOT in the repository \u2014 it loads from the separate MiniMax-H3 release and adds 66.7 GB, so budget about 135 GB of downloads and memory for the full BF16 stack. The card lists NVIDIA H200, RTX PRO 6000 Blackwell and AMD Instinct MI350X as supported, gives a one-GPU start command for both vLLM-Omni and SGLang, and the serving recipes carry per-hardware configurations \u2014 on a 96 GB card the full BF16 stack plainly does not fit at once, so check the recipe for your card before renting. The licence is the MiniMax-H3-Image Community License Agreement, with a separate written-authorisation route described in the licence itself: read it before planning a commercial service."
+  ],
+  meaning:"For image workloads this changes the rental question. A flagship-class open image model that generates 16 megapixels natively and serves on one GPU means the default rental is a single high-memory card, not a node \u2014 and AMD's MI350X is a named day-one target alongside NVIDIA, which is still rare for a launch this size. The honest watch-outs are the two in the facts above: the real footprint is about twice the headline checkpoint once the text encoder is counted, and the community licence is MiniMax's own terms, not MIT or Apache. Teams that clear both can price this against per-image API bills from a single card's hourly rate on our board.",
+  exits:[["Compare GPU prices","#/board"],["All news","#/news"],["Price Watch","#/price-watch"]]},
 {slug:"anthropic-ipo-terms-nov-10",art:"chip",img:"/assets/img/anthropic-ipo-terms-nov-10.jpg",credit:"Anthropic via anthropic.com",
   kicker:"AI labs \u00b7 Anthropic",
   title:"Anthropic sets IPO terms at up to $1 trillion \u2014 and NVIDIA, Google, AMD and TSMC are buying $26 billion of it",
