@@ -1137,6 +1137,17 @@ var WATCH = [
    exists (credited under the image on the story page); otherwise the
    site's own abstract panels. */
 var NEWS = [
+{slug:"runway-praxis-1-open-weights-nov-11",art:"chip",img:"/assets/img/runway-praxis-1-open-weights-nov-11.png",credit:"Runway via runway.com",
+  kicker:"Open weights \u00b7 Runway",
+  title:"Runway open-sources Praxis-1: a 27B robot model that runs on one H100, under Apache 2.0",
+  date:"Nov 11, 2026",dateShort:"Nov 11, 2026",
+  standfirst:"Runway released the weights of Praxis-1 on Nov 11, 2026: a 27-billion-parameter world action model that predicts video and robot actions together, tops NVIDIA's RoboLab-120 leaderboard on Runway's own figures, and is released \u2014 weights, inference code and fine-tuning code \u2014 under Apache 2.0, including for commercial use. It runs out of the box on a single H100.",
+  facts:[
+   "What shipped, from Runway's own announcement (Nov 11, 2026), read first-hand: Praxis-1 is a 27B-parameter mixture-of-experts diffusion transformer, first introduced in September as Runway's first world action model, now open to every developer. Runway reports 46.2% success across 1,200 episodes on NVIDIA's RoboLab-120 benchmark, ahead of FLUX 3 Action at 42.9%, Cosmos3 Nano at 36.8% and \u03c00.5 at 28.0% \u2014 Runway's figures, data as of November 2026, not measured by us. The release is on GitHub, on Hugging Face with native LeRobot support, and in vLLM-Omni, with hosted inference on Reactor; launch partners Noble Machines, Standard Bots and Ultra have been running it on their own hardware, and fine-tuned on Google's RT-1 robot \u2014 which never appeared in its training data \u2014 it reaches 80.0% on SimplerEnv against the original RT-1 policy's 52.4% (Runway's figure).",
+   "The hardware maths, from Runway's research page: 27.2 billion parameters in total, 54.4 GB in BF16 \u2014 so the full model fits one 80 GB GPU \u2014 and packing the routed experts in NVFP4 shrinks the policy weights to 17.5 GB. Runway lists H100 and B200 data-centre GPUs, RTX 5090 and RTX PRO 6000 workstation cards, and Jetson Thor on the robot itself as running it out of the box. Three checkpoints are in the Hugging Face collection: the base model and DROID and bimanual YAM fine-tunes."
+  ],
+  meaning:"Most open-weight drops on this desk are language or image models; Praxis-1 is a frontier-class robot brain that a single rented H100 can run and fine-tune, under the most permissive licence there is \u2014 the exact opposite of this week's territorial community licences. For GPU renters it is a new, concrete workload to price: one 80 GB card for the BF16 model, a workstation card for the NVFP4 build, and LoRA fine-tuning without retraining the full model. Physical-AI teams no longer need a cluster, or a closed API, to work with the current RoboLab-120 leader.",
+  exits:[["Compare GPU prices","#/board"],["All news","#/news"],["Price Watch","#/price-watch"]]},
 {slug:"amd-epyc-venice-nov-10",art:"chip",img:"/assets/img/amd-epyc-venice-nov-10.jpg",credit:"AMD via newsroom.amd.com",
   kicker:"Hardware \u00b7 AMD",
   title:"AMD's 256-core EPYC \u2018Venice\u2019 is shipping \u2014 the host CPU built to feed GPU racks",
