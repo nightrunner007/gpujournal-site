@@ -1,0 +1,1 @@
+{"description":"Run the pre-render injector (functions/[[path]].js) on page routes only; static assets are served directly.","exclude":["/assets/*","/prerender.json","/sitemap.xml","/robots.txt","/favicon.ico","/*.txt","/index.html","/index-images.html","/pending-ai-flip/*"],"include":["/*"],"version":1}
