@@ -4100,8 +4100,10 @@ var FIND_RANKED = {
 </script>
 <script>
 /* ================= MODELS — the open-weight catalogue =================
-   Source: open-weight-model-catalogue-2026-10-20.md — 146 models across 21
-   labs, checked Oct 20, 2026 against the labs' own model cards and blogs.
+   Source: open-weight-model-catalogue-2026-10-20.md — 166 models across 33
+   labs. First compiled Oct 20, 2026; fully refreshed Nov 12, 2026 against
+   the labs' own model cards and blogs (audit: 2026-11-12-catalogue-audit.md
+   in the goal's hidden_files).
    Memory needs are computed here from each model's TOTAL parameters (an MoE
    must hold all its weights in memory, even the experts asleep on a token):
    FP16 = total × 2 bytes, 8-bit = × 1, 4-bit = × 0.5, rounded to whole GB.
@@ -4111,8 +4113,9 @@ var FIND_RANKED = {
    HONESTY GATES: status "u" = the size is NOT confirmed from the lab's own
    card — the model is listed with the facts that are verified, its needs
    read "Being verified", and it gets NO fit, NO ranking and NO Select a GPU
-   button. Status "s" = weights not downloadable yet (MiniMax M3.1 Flash,
-   weights land Oct 23) — facts and needs show, but no button yet.
+   button. Status "s" = weights not downloadable yet (Tencent Hy4 — hosted
+   API live, weights promised but not released) — facts and needs show,
+   but no button yet.
    Tuple: [id, name, lab, totalParams, active, context, licence, released,
            releaseSort, status, note] — licence is a LIC key or plain text. */
 var LIC = {
@@ -4186,7 +4189,7 @@ var MODELS_RAW = [
 ["glm-5-2","GLM-5.2","Z.ai — GLM",744,"40B","1M","mit","Jun 13, 2026","2026-06-13",""],
 ["glm-5-1","GLM-5.1","Z.ai — GLM",744,"40B","200K","mit","Apr 7, 2026","2026-04-07",""],
 ["glm-5","GLM-5","Z.ai — GLM",744,"40B","200K","mit","Feb 11, 2026","2026-02-11",""],
-["glm-4-7","GLM-4.7","Z.ai — GLM",null,null,null,null,null,"2025-12","u"],
+["glm-4-7","GLM-4.7","Z.ai — GLM",358.3,"32B","200K","mit","Dec 22, 2025","2025-12-22","","Z.ai's agentic coding flagship, released Dec 22, 2025. Its size was long carried here as unverified because Z.ai's own card never prints it; the checkpoint itself settles it — 358.3B total parameters by the weights' own safetensors count (92 layers, 160 routed experts with top-8 routing plus one shared expert, per its config), about 32B active per token, a 200K context (config maximum 202,752) and an MIT licence. Public and ungated on Hugging Face, in BF16 with an FP8 build alongside."],
 ["glm-4-6","GLM-4.6","Z.ai — GLM",357,"~32B","200K","mit","Sep 30, 2025","2025-09-30",""],
 ["glm-4-5","GLM-4.5","Z.ai — GLM",355,"32B","128K","mit","Jul 2025","2025-07",""],
 ["glm-4-5-air","GLM-4.5-Air","Z.ai — GLM",106,"12B","128K","mit","Jul 2025","2025-07",""],
@@ -4248,16 +4251,17 @@ var MODELS_RAW = [
 ["kimi-k2-instruct-0905","Kimi K2 Instruct (0905)","Moonshot AI — Kimi",1000,"32B","256K","modmit","Sep 2025","2025-09",""],
 ["kimi-k2","Kimi K2","Moonshot AI — Kimi",1000,"32B","128K","modmit","Jul 2025","2025-07",""],
 /* Tencent \u2014 Hunyuan */
-["tencent-hy4","Hy4","Tencent \u2014 Hunyuan",770,"49B",null,"Not yet stated \u2014 Tencent says the weights and system card will be released in the coming days; no licence published yet.","Nov 4, 2026","2026-11-04","","Tencent's flagship Hunyuan model, released Nov 4, 2026: a 770B-parameter MoE (49B active, in Tencent's launch figures) with vision and computer use for the first time in the line. Live today on Tencent Cloud TokenHub and in Tencent's apps at about $0.90 in / $2.70 out per 1M tokens (Tencent's own release); the open weights are promised in the coming days, so there is nothing to self-host yet. At 770B parameters even the 4-bit weights alone would be about 385GB \u2014 a multi-GPU job when they land."],
+["tencent-hy4","Hy4","Tencent \u2014 Hunyuan",770,"49B",null,"Not yet stated \u2014 Tencent says the weights and system card will be released in the coming days; no licence published yet.","Nov 4, 2026","2026-11-04","s","Tencent's flagship Hunyuan model, released Nov 4, 2026: a 770B-parameter MoE (49B active, in Tencent's launch figures) with vision and computer use for the first time in the line. Live today on Tencent Cloud TokenHub and in Tencent's apps at about $0.90 in / $2.70 out per 1M tokens (Tencent's own release); the open weights are promised in the coming days, so there is nothing to self-host yet. At 770B parameters even the 4-bit weights alone would be about 385GB \u2014 a multi-GPU job when they land."],
 /* NVIDIA */
 ["cosmos3-nano","Cosmos 3 Nano","NVIDIA",16,"16B","\u2014","OpenMDW 1.1 \u2014 commercial and non-commercial use permitted under its terms; read the terms before production use.","Nov 6, 2026","2026-11-06","","NVIDIA's Cosmos 3 world-model family at 16B parameters. Four post-trained open checkpoints were published on Hugging Face on Nov 5, 2026: Transfer-Auto (multi-view driving video + LiDAR generation), Sim-Auto (streaming driving simulation), Sim-Transfer (simulator controls to photorealistic video) and Sim-Bimanual (video prediction from two-arm robot actions). NVIDIA's technical material puts generation at 58 GiB of GPU memory in BF16, 44 GiB in FP8 and 31 GiB with FP8 plus offloading (NVIDIA-reported) \u2014 one 48\u201380GB card runs it; the weights alone are about 32GB in BF16."],
 /* Ricursive Intelligence */
 ["ripple-65b-preview","Ripple-65B Preview","Ricursive Intelligence",65,"65B","1M","Apache 2.0 \u2014 free use, modification, commercial use and redistribution; no separate agreement needed.","Nov 5, 2026","2026-11-05","","Ricursive Intelligence's first model, released Nov 4, 2026: a dense 65B-parameter Transformer pretrained from scratch on 12T tokens, with context up to 1M tokens and a self-reported 80.52 on Terminal-Bench 2.1 (Ricursive's figures, not independently reproduced). Checkpoints: BF16 instruct (about 130GB), NVFP4 and BF16 base, all Apache 2.0 and ungated on Hugging Face. At 65B the BF16 weights alone are about 130GB \u2014 two 80GB cards or one 141GB card; the NVFP4 build is the single-card route (Ricursive says it fits DGX Spark-class hardware)."],
 /* MiniMax */
-["minimax-m3-1-flash","MiniMax M3.1 Flash","MiniMax",428,"~23B","1M","MiniMax Community License \u2014 commercial use needs a visible \u2018Built with MiniMax M3.1-Flash\u2019 credit and, above $20M/yr revenue, written authorisation from MiniMax.","Oct 19, 2026","2026-10-19","s"],
+["minimax-m3-1-flash","MiniMax M3.1 Flash","MiniMax",428,"~23B","1M","MiniMax Community License \u2014 commercial use needs a visible \u2018Built with MiniMax M3.1-Flash\u2019 credit and, above $20M/yr revenue, written authorisation from MiniMax.","Oct 19, 2026","2026-10-19","","Launched on MiniMax's API on Oct 19, 2026; the downloadable weights landed on Hugging Face on Oct 23, 2026 \u2014 a multimodal MoE (text, image and video) shipped as an MXFP8 checkpoint and served by vLLM and SGLang. This entry carried the pre-release 'weights soon' flag until Nov 12, 2026 \u2014 retired now the weights are public and ungated."],
 ["minimax-m3","MiniMax M3","MiniMax",428,"~23B","1M","MiniMax Community License — attribution required; services over $20M/year revenue need written permission.","Jun 1, 2026","2026-06-01",""],
-["minimax-m2-7","MiniMax M2.7","MiniMax",null,"10B",null,null,null,"2026","u"],
+["minimax-m2-7","MiniMax M2.7","MiniMax",228.7,"10B","200K","MiniMax M2.7 Non-Commercial License — MIT-style terms for NON-COMMERCIAL use only: personal, academic and non-profit research use is free, but any commercial use is prohibited without separate prior written authorisation from MiniMax, and authorised commercial use must display 'Built with MiniMax M2.7'. This is not an open-source licence — read it before deploying.","Apr 2026","2026-04","","MiniMax's M2-line update, its weights public on Hugging Face as an FP8 checkpoint (the repository opened Apr 9, 2026). MiniMax does not print a total on the card; the checkpoint's own safetensors count is 228.7B parameters — the M2 architecture (256 experts, top-8; 200K context from its config), about 10B active per token. The licence is the catch: non-commercial only without written authorisation — see the licence line. Size and licence verified Nov 12, 2026; this entry previously showed 'being verified'."],
 ["minimax-m2","MiniMax M2","MiniMax",230,"10B","200K","Not yet confirmed — check the model's own card for its licence.","Oct 2025","2025-10",""],
+["minimax-h3-image","MiniMax H3-Image","MiniMax",33.1,null,null,"MiniMax-H3-Image Community License Agreement — the licence covers use ONLY outside its Excluded Territories: the European Union, the United Kingdom, South Korea and the United States are excluded, and use there is not authorised. Separate prior written authorisation from MiniMax is required if your annualised revenue exceeds $1M or you provide the model as a hosted service; commercial products must display 'MiniMax-H3-Image'; outputs may not be used to improve another AI model. Read it before deploying — for most Western renters the territory clause ends the conversation.","Nov 10, 2026","2026-11-10","","MiniMax's open image generation and editing model, released Nov 10, 2026: a 33.1B dense diffusion transformer that generates up to 16-megapixel images (4096x4096) natively in 6 sampling steps and edits with up to 16 reference images. The BF16 checkpoint is 68.65GB (transformer 66.28GB + VAE 2.34GB) and serves on one GPU via vLLM-Omni or SGLang — MiniMax's card lists the H200, RTX PRO 6000 Blackwell and AMD MI350X. Two watch-outs: the checkpoint ships WITHOUT its text encoder, which loads separately from the MiniMax-H3 repository (66.7GB), and the licence excludes the EU, UK, South Korea and the US entirely — see the licence line. An optional prompt-expander companion, MiniMax-H3-Image-PE (27B, NVFP4, 17.9GB), ships under the same licence."],
 /* OpenAI — gpt-oss */
 ["gpt-oss-120b","gpt-oss-120b","OpenAI — gpt-oss",117,"5.1B","128K","apache","Aug 5, 2025","2025-08-05","","gpt-oss ships natively in MXFP4, which is why the 120b fits a single 80GB card in practice. The figures here are the plain precision arithmetic applied to every model on this page."],
 ["gpt-oss-20b","gpt-oss-20b","OpenAI — gpt-oss",21,"3.6B","128K","apache","Aug 5, 2025","2025-08-05",""],
@@ -4312,6 +4316,7 @@ var MODELS_RAW = [
 ["unlimited-ocr-2","Unlimited-OCR-2","Baidu",3.34,null,null,"mit","Oct 27, 2026","2026-10-27","","A ~3.3B vision-language model for document parsing under MIT, built for very long documents: its SR-SWA mechanism holds a fixed ~512-token reference set, which Baidu says keeps per-step memory and latency nearly flat as page counts grow into the hundreds. Maker-reported scores: 84.6 on MPDocBench and 77.1 on its new MarathonDocBench — self-reported, not yet independently verified. About 6.9GB of BF16 weights — one small card; serving uses Transformers or a customised SGLang build and needs trust_remote_code=True."],
 /* NVIDIA */
 ["nemotron-3-5-transcribe","Nemotron 3.5 Transcribe","NVIDIA",34,"~4.3B","65K","OpenMDW-1.1 \u2014 NVIDIA\u2019s open model licence; the card states the model is ready for commercial or non-commercial use.","Oct 28, 2026","2026-10-28","","An open-weight speech model: transcription in 40 languages, translation between English and 31 languages, speaker labels for up to eight speakers and questions about recordings up to one hour long, all steered by plain-language prompts. 34B parameters in total including the audio encoder (a 30B-A3B hybrid Mamba-2\u2013Transformer MoE backbone plus speech and speaker encoders), 65,536-token context, BF16/FP8/NVFP4 builds. By our method: BF16 weights are roughly 68GB \u2014 one 80GB card (the card\u2019s own deployment line is 1\u00d7 H100 80GB); FP8 roughly 34GB \u2014 a 48GB card; NVFP4 roughly 17GB \u2014 a 24GB card. NVIDIA-reported scores (not independently verified): first among open-weight models on the Hugging Face Open ASR English leaderboard at 5.33% average WER, and Granary v2, its open training-data pipeline, was released alongside it. It is an offline model \u2014 not a live-streaming service."],
+["alpamayo-2-edge","Alpamayo 2 Edge","NVIDIA",2.65,null,null,"openmdw","Nov 10, 2026","2026-11-10","","NVIDIA's compact reasoning vision-language-action model for in-vehicle driving, released on Hugging Face on Nov 10, 2026: a 2.45B backbone (1.96B language model + 0.41B SigLIP2 vision encoder + 0.08B projector) built on the Cosmos 3 Edge / Nemotron line, plus a 0.2B diffusion action expert \u2014 2.65B of weights in total, in BF16. It writes Chain-of-Causation reasoning alongside its driving trajectories and was trained on roughly 115,000 hours of multi-camera driving video. The weights are OpenMDW-1.1; the code is Apache 2.0. NVIDIA tested it on one H100 80GB and recommends at least 16GB of GPU memory \u2014 an edge model for the car, not a datacentre model."],
 /* DiffuSpace */
 ["clover-35b-a3b-preview","Clover-35B-A3B-Preview","DiffuSpace",35,"~3B","128K","Apache-2.0 \u2014 open source, commercial use allowed; derived from Qwen3.6-35B-A3B, whose Apache-2.0 licence and copyright the card preserves.","Oct 30, 2026","2026-10-30","","The first scaled open diffusion language model: a 35B-total / ~3B-active mixture-of-experts model that generates text by block diffusion rather than token-by-token, built by DiffuSpace (the team behind HKU NLP\u2019s Dream 7B) on a Qwen3.6-35B-A3B backbone \u2014 40 layers, 256 routed experts (top-8) plus a shared expert, hybrid Gated DeltaNet / full-attention, 128K context, thinking mode. The shipped BF16 weights are about 69GB by the card\u2019s own figure \u2014 one 80GB card; an INT4 build is about 17.5GB by our method. Maker-reported, not independently verified: 73.6 SWE-bench Verified, 51.7 Terminal-Bench 2.1, 680 tokens/s on one GB300 and 515 tokens/s on one H200 on its own agent workloads. Serving via the maker\u2019s SGLang implementation (its recommended route) or llama.cpp; a Transformers path is also provided. Preview status: the maker warns very long generations can turn repetitive and ships tuned repetition controls."],
 /* Reflection */
@@ -4319,7 +4324,11 @@ var MODELS_RAW = [
 /* Nanbeige */
 ["nanbeige-4-3-33b","Nanbeige4.3-33B","Nanbeige",33.1,null,"512K","apache","Oct 2026","2026-10","","A 33B flagship teacher model for coding agents and office work, from the AI team backed by BOSS Zhipin. Maker-reported on its own card: Terminal-Bench 2.1 80.9 and DeepSWE 65.5, ahead of Qwen3.8-27B, though Qwen still leads SWE-Bench Pro and GDPval \u2014 no third-party reproduction yet. 524,288-token context, reasoning on by default, serves with vLLM / SGLang (trust_remote_code=True). Weights are about 66GB in BF16 \u2014 one 80GB card before KV cache; the card's own serving examples use 4-way tensor parallelism. A distilled Nanbeige4.3-3B is promised, undated."],
 /* Hugging Face — SmolLM */
-["smollm3-3b","SmolLM3-3B","Hugging Face — SmolLM",3,null,"64K (128K with YaRN)","apache","Jul 2025","2025-07",""]
+["smollm3-3b","SmolLM3-3B","Hugging Face — SmolLM",3,null,"64K (128K with YaRN)","apache","Jul 2025","2025-07",""],
+/* Runway */
+["praxis-1","Praxis-1","Runway",27.2,null,null,"apache","Nov 11, 2026","2026-11-11","","Runway's open world-action model for robots, weights released Nov 11, 2026: a 27.2B-parameter mixture-of-experts diffusion transformer (Runway's '27B') that predicts video and robot actions together, pretrained on web video. Everything is Apache 2.0 — weights, inference code and full + LoRA fine-tuning code — with native LeRobot support and a vLLM-Omni route. Three checkpoints: base, a DROID fine-tune and a bimanual YAM fine-tune. The BF16 weights are 54.4GB, so one 80GB card by our method; an NVFP4 build is 17.5GB. Runway reports 46.2% success on its RoboLab-120 suite — the maker's figures, not independently reproduced."],
+/* SenseTime — SenseNova */
+["sensenova-loop-9b-preview","SenseNova-Loop-9B-Preview","SenseTime — SenseNova",9,null,"262K","apache","Oct 30, 2026","2026-10-30","","SenseTime's looped-transformer multimodal model: 9B of stored weights that loop internally, so each pass computes like a model of about 14.6B parameters (the maker's framing) — the memory maths here prices the 9B you actually download. 262K training context, Apache 2.0, and single-GPU deployment examples on its card. It is a Preview: SenseTime's scores are vendor-reported only and no technical report has been published."]
 ];
 function sizeStrOf(p){
   if (p == null) return null;
@@ -4370,7 +4379,7 @@ function modelFitNote(m, r){
 }
 function modelStatusHTML(m){
   if (m.status === "u") return '<div class="infobox"><h3 style="margin-top:0">Being verified</h3><p style="color:var(--ink2);margin:0">We are still confirming ' + esc(m.name) + "&rsquo;s published size from " + esc(m.family) + "&rsquo;s own model card. Until it checks out, we show no memory figures and recommend no GPU for it — a wrong number here would send you to the wrong card, so we would rather say so plainly.</p></div>";
-  if (m.status === "s") return '<div class="infobox"><h3 style="margin-top:0">Weights land Oct 23</h3><p style="color:var(--ink2);margin:0">' + esc(m.name) + "&rsquo;s API is live, but its downloadable weights arrive on Oct 23, 2026 — nobody can self-host it before then. The GPU ranking for it appears here the day the weights land.</p></div>";
+  if (m.status === "s") return '<div class="infobox"><h3 style="margin-top:0">Weights not yet released</h3><p style="color:var(--ink2);margin:0">' + esc(m.name) + "&rsquo;s hosted API is live, but its downloadable weights have not been released yet — nobody can self-host it for now. The GPU ranking for it appears here the day the weights land.</p></div>";
   return "";
 }
 /* Minimum multi-GPU setup by memory arithmetic alone: the smallest build
@@ -4469,7 +4478,7 @@ function modelRowHTML(m){
   if (m.status === "u"){
     needs = '<span class="tag type">Being verified</span> <span>We are still confirming this model&rsquo;s published size from the lab&rsquo;s own model card — no memory figures and no GPU recommendation until it checks out.</span>';
   } else if (m.status === "s"){
-    needs = "Needs " + fmtGB(m.fp16) + "GB at full precision · from " + gbDisp(m.int4) + 'GB compressed &nbsp;·&nbsp; <b style="color:var(--ink)">Weights land Oct 23</b> — the API is live; the downloadable weights arrive Oct 23, 2026.';
+    needs = "Needs " + fmtGB(m.fp16) + "GB at full precision · from " + gbDisp(m.int4) + 'GB compressed &nbsp;·&nbsp; <b style="color:var(--ink)">Weights not yet released</b> — the hosted API is live; there is nothing to download and self-host yet.';
   } else {
     needs = "Needs " + fmtGB(m.fp16) + "GB at full precision · from " + gbDisp(m.int4) + "GB compressed";
     btn = '<a class="btn sm" href="#/board?model=' + m.id + '">Select a GPU</a>';
@@ -4514,7 +4523,7 @@ function viewModels(){
   var labs = [];
   MODELS.forEach(function(m){ if (labs.indexOf(m.family) < 0) labs.push(m.family); });
   var s = "<h1>Models</h1>";
-  s += '<p class="lede">Open-weight models — ' + MODELS.length + " models from " + labs.length + ' labs, checked Oct 20, 2026. Start from the model you want — we rank the GPUs that can run it.</p>';
+  s += '<p class="lede">Open-weight models — ' + MODELS.length + " models from " + labs.length + ' labs, checked Nov 12, 2026. Start from the model you want — we rank the GPUs that can run it.</p>';
   s += '<div class="controls" style="margin-top:18px"><input type="search" inputmode="search" enterkeyhint="search" id="models-q" placeholder="Search models — try glm, qwen 32, r1, gemma…" aria-label="Search models" /></div>';
   s += '<div id="models-results" hidden></div><div id="models-browse">';
   var latest = MODELS.filter(function(m){ return m.status !== "u" && m.rs; }).sort(function(a, b){ return a.rs < b.rs ? 1 : (a.rs > b.rs ? -1 : 0); }).slice(0, 12);
