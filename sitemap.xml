@@ -3,7 +3,7 @@
 <url><loc>https://gpujournal.ai/</loc><lastmod>2026-10-30</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
 <url><loc>https://gpujournal.ai/compare-prices</loc><lastmod>2026-10-30</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
 <url><loc>https://gpujournal.ai/find</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-<url><loc>https://gpujournal.ai/models</loc><lastmod>2026-10-30</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://gpujournal.ai/models</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
 <url><loc>https://gpujournal.ai/news</loc><lastmod>2026-10-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
 <url><loc>https://gpujournal.ai/price-watch</loc><lastmod>2026-10-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
 <url><loc>https://gpujournal.ai/calculator</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -86,7 +86,7 @@
 <url><loc>https://gpujournal.ai/model/glm-5-2</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/glm-5-1</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/glm-5</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://gpujournal.ai/model/glm-4-7</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/glm-4-7</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/glm-4-6</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/glm-4-5</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/glm-4-5-air</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -137,9 +137,9 @@
 <url><loc>https://gpujournal.ai/model/kimi-k2-thinking</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/kimi-k2-instruct-0905</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/kimi-k2</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://gpujournal.ai/model/minimax-m3-1-flash</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/minimax-m3-1-flash</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/minimax-m3</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://gpujournal.ai/model/minimax-m2-7</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/minimax-m2-7</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/minimax-m2</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/gpt-oss-120b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/gpt-oss-20b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -221,7 +221,7 @@
 <url><loc>https://gpujournal.ai/story/carbon-x-dna-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/model/carbon-x</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/kimi-k3-1-pro-weights-nov-4</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-<url><loc>https://gpujournal.ai/model/tencent-hy4</loc><lastmod>2026-11-04</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/tencent-hy4</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/kimi-k3-1-pro</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/ripple-65b-preview</loc><lastmod>2026-11-05</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/nanbeige-4-3-33b-open-agent-model</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
@@ -293,6 +293,10 @@
   <url><loc>https://gpujournal.ai/story/longcat-2-5-weights-nov-9</loc><lastmod>2026-11-09</lastmod></url>
   <url><loc>https://gpujournal.ai/story/edgevana-blackwell-700m-nov-9</loc><lastmod>2026-11-09</lastmod></url>
   <url><loc>https://gpujournal.ai/model/longcat-2-5</loc><lastmod>2026-11-09</lastmod></url>
+<url><loc>https://gpujournal.ai/model/minimax-h3-image</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/alpamayo-2-edge</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/praxis-1</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://gpujournal.ai/model/sensenova-loop-9b-preview</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://gpujournal.ai/story/telekom-munich-b300-expansion-nov-9</loc><lastmod>2026-11-09</lastmod></url>
   <url><loc>https://gpujournal.ai/story/anthropic-ipo-terms-nov-10</loc><lastmod>2026-11-10</lastmod></url>
   <url><loc>https://gpujournal.ai/story/verda-twelfth-rise-nov-10</loc><lastmod>2026-11-10</lastmod></url>
