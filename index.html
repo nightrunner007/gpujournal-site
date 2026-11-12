@@ -4100,7 +4100,7 @@ var FIND_RANKED = {
 </script>
 <script>
 /* ================= MODELS — the open-weight catalogue =================
-   Source: open-weight-model-catalogue-2026-10-20.md — 166 models across 33
+   Source: open-weight-model-catalogue-2026-10-20.md — 167 models across 33
    labs. First compiled Oct 20, 2026; fully refreshed Nov 12, 2026 against
    the labs' own model cards and blogs (audit: 2026-11-12-catalogue-audit.md
    in the goal's hidden_files).
@@ -4189,6 +4189,7 @@ var MODELS_RAW = [
 ["glm-5-2","GLM-5.2","Z.ai — GLM",744,"40B","1M","mit","Jun 13, 2026","2026-06-13",""],
 ["glm-5-1","GLM-5.1","Z.ai — GLM",744,"40B","200K","mit","Apr 7, 2026","2026-04-07",""],
 ["glm-5","GLM-5","Z.ai — GLM",744,"40B","200K","mit","Feb 11, 2026","2026-02-11",""],
+["glm-4-7-flash","GLM-4.7-Flash","Z.ai — GLM",31.2,"3B","200K","mit","Jan 19, 2026","2026-01-19","","Z.ai's lightweight MoE sibling to GLM-4.7, released Jan 19, 2026 — the model Z.ai bills as its 30B-A3B. The checkpoint itself counts 31.2B total parameters by its own safetensors total (47 layers, 64 routed experts with top-4 routing plus one shared expert, per its config), about 3B active per token, a 200K context (config maximum 202,752) and an MIT licence. Public and ungated on Hugging Face, in BF16."],
 ["glm-4-7","GLM-4.7","Z.ai — GLM",358.3,"32B","200K","mit","Dec 22, 2025","2025-12-22","","Z.ai's agentic coding flagship, released Dec 22, 2025. Its size was long carried here as unverified because Z.ai's own card never prints it; the checkpoint itself settles it — 358.3B total parameters by the weights' own safetensors count (92 layers, 160 routed experts with top-8 routing plus one shared expert, per its config), about 32B active per token, a 200K context (config maximum 202,752) and an MIT licence. Public and ungated on Hugging Face, in BF16 with an FP8 build alongside."],
 ["glm-4-6","GLM-4.6","Z.ai — GLM",357,"~32B","200K","mit","Sep 30, 2025","2025-09-30",""],
 ["glm-4-5","GLM-4.5","Z.ai — GLM",355,"32B","128K","mit","Jul 2025","2025-07",""],
