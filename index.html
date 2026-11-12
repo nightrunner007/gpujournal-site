@@ -1143,6 +1143,17 @@ var WATCH = [
    exists (credited under the image on the story page); otherwise the
    site's own abstract panels. */
 var NEWS = [
+{slug:"amd-mi450x-launch-nov-12",art:"chip",img:"/assets/img/amd-mi450x-launch-nov-12.jpg",credit:"AMD via amd.com",
+  kicker:"GPU hardware \u00b7 AMD",
+  title:"AMD launches Instinct MI450X: 288 GB of HBM4 for Helios \u2014 and an MLPerf claim 30% above Vera Rubin",
+  date:"Nov 12, 2026",dateShort:"Nov 12, 2026",
+  standfirst:"AMD added a second Helios GPU on Nov 12, 2026: the Instinct MI450X, with 288 GB of HBM4 against the MI455X's 432 GB but the same compute, bandwidth and connectivity \u2014 a cheaper-memory option for workloads that fit. Alongside it, AMD published its own MLPerf testing putting the MI455X at 21,333 tokens per second per GPU on DeepSeek-R1, up to 30% above NVIDIA Vera Rubin's latest published MLPerf offline result.",
+  facts:[
+   "What shipped, from AMD's own Newsroom release (Nov 12, 2026), read first-hand: the Instinct MI450X is a new GPU option for the AMD Helios rackscale platform. It carries 288 GB of HBM4 per GPU while delivering the same core compute, memory bandwidth and scale-up and scale-out connectivity as the MI455X, which keeps 432 GB for larger models, longer contexts and higher concurrency. Both run on the same Helios architecture and ROCm software stack, so Helios customers now pick their memory tier per workload instead of paying for 432 GB everywhere. AMD's product page lists the MI450X as CDNA 5 on a TSMC 2nm/3nm process with 320 billion transistors, 23.3 TB/s of peak HBM bandwidth, 40.3 PFLOPs of peak MXFP4 matrix throughput, 3.6 TB/s of UALoE scale-up bandwidth and direct liquid cooling, with a launch date of 11/12/2026.",
+   "The benchmark claim, labelled as AMD's own testing: AMD Performance Labs measured the MI455X on Helios at 21,333 tokens per second per GPU running DeepSeek-R1 in an MLPerf Inference Offline configuration in October 2026, and compares it with NVIDIA Vera Rubin NVL72's published MLPerf Inference v6.1 Closed Division result (entry 6.1-0106, retrieved from mlcommons.org on Nov 11, 2026) \u2014 up to 30% higher throughput on that comparison. AMD also calculates up to 20% higher HBM bandwidth and higher scale-up bandwidth than Vera Rubin from published specifications. These are AMD's figures and calculations, not measured by us, and system configurations vary."
+  ],
+  meaning:"Nobody rents a single MI450X \u2014 Helios is a rackscale system, and this launch matters to renters one step removed: the MI400 series is the hardware the next wave of AMD capacity at GPU providers will be built from, and a 288 GB tier gives those providers a lower-memory, lower-cost configuration to buy for inference fleets whose models fit inside it, alongside the 432 GB flagship. The MLPerf number is the other half of the story: AMD is publicly claiming inference leadership over Vera Rubin on a standard benchmark, on its own testing \u2014 the claim NVIDIA's published result will be re-run against as Helios systems reach customers. Watch for the first providers to list MI400-series capacity; that is when this becomes a price on the board.",
+  exits:[["Compare GPU prices","#/board"],["All news","#/news"],["Price Watch","#/price-watch"]]},
 {slug:"nvidia-ceo-transition-nov-12",art:"chip",img:"/assets/img/nvidia-ceo-transition-nov-12.jpg",credit:"NVIDIA via nvidianews.nvidia.com",
   kicker:"Industry \u00b7 NVIDIA",
   title:"Jensen Huang resigns as NVIDIA CEO \u2014 CFO Colette Kress takes over as interim chief",
