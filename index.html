@@ -4356,6 +4356,113 @@ var ARTICLES = [
   honestyNote:"Our reading — interpretation, not fact. Everything in this box is GPUJournal's judgement on the verified record above it; the record itself is in the tables and the method note. We sell nothing and take no commission from any route on this page. Every deployment guide in this field starts with memory and ends with price. This one has to start with a map. H3-Image is a genuinely strong open image model at a genuinely small rental — a measured one-card route at $1.69 an hour is remarkable for a 33.1B model that paints 16 megapixels in six steps. But the licence draws a border through the middle of the market: the four territories where most GPU renters sit are outside it, the outputs inherit the border, and the two commercial triggers — $1M of revenue, or any hosted service — catch exactly the readers most likely to build a business on it. None of that makes the release less important; it makes the honest guide the one that says “check the map first” and means it as step one, not small print. For readers inside the territory and under the triggers, the rental maths above is as friendly as this class of model gets. For everyone else, the API — or a differently-licensed model — is the deployment, and knowing that before the first invoice is the whole value of reading the licence first.",
   exits:[["Compare prices", "#/board"], ["MiniMax H3-Image in the model catalogue", "#/model/minimax-h3-image"], ["Our news story: MiniMax open-sources H3-Image", "#/story/minimax-h3-image-weights-nov-10"]],
   related:["deploy-inkling-2-small", "deploy-praxis-1-on-one-h100", "minimax-m31-flash-self-host"]
+},
+{
+  slug:"gpu-rental-cost", hubSlug:"gpu-pricing",
+  title:"How much does it cost to rent a GPU in the cloud?",
+  excerpt:"On the board we checked on Nov 14, 2026, the cheapest verified on-demand offers in the table below start at $0.34 an hour for an RTX 4090 and top out at $14.27 an hour for a GB300. That range is real, but it is not the whole answer. The lowest H100 SXM rate, TensorDock's $2.25 per GPU per hour, comes with an eight-GPU minimum — an $18.00 hourly commitment, not a $2.25 rental. This guide separates the sticker price from the amount you actually commit to, then adds the costs the hourly rate leaves out.",
+  publishedDate:"2026-11-14", readMinutes:13,
+  cta:[["Compare prices", "#/board"], ["Price Watch — every verified move", "#/price-watch"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"Cards under a dollar an hour", vram:"RTX 4090 · RTX A6000 · RTX 5090 · L40S · L40", bestFit:"RTX 4090 at $0.34, RTX A6000 at $0.35, RTX 5090 at $0.69, and L40S or L40 at $0.79 — the cheapest verified on-demand offers on the board checked Nov 14, 2026.", price:"from $0.34/GPU/hr" },
+    { label:"The A100 band", vram:"A100 80GB · A100 40GB", bestFit:"The A100 band starts just above a dollar an hour: A100 80GB at $1.09 and A100 40GB at $1.70.", price:"$1.09–$1.70/GPU/hr" },
+    { label:"The current data-centre flagships", vram:"H200 · B200 · B300 · GB300", bestFit:"The current data-centre flagships cost several dollars an hour: H200 at $3.59, B200 at $5.98, B300 at $7.40 and GB300 at $14.27.", price:"$3.59–$14.27/GPU/hr" },
+    { label:"The floor is not the bill", vram:"Minimums · nodes · VMs", bestFit:"Those are floors, not averages and not quotes for every buying shape. The lowest H100 SXM rate, TensorDock's $2.25 per GPU per hour, comes with an eight-GPU minimum — an $18.00 hourly commitment, not a $2.25 rental.", price:"$18.00/hr minimum commitment" }
+  ],
+  metricTitle:"The short answer",
+  metricBody:"For a single hourly budget, use three bands from the Nov 14 board. Cards start below a dollar an hour: RTX 4090 at $0.34, RTX A6000 at $0.35, RTX 5090 at $0.69, and L40S or L40 at $0.79. The A100 band starts just above a dollar: A100 80GB at $1.09 and A100 40GB at $1.70. The current data-centre flagships cost several dollars an hour: H200 at $3.59, B200 at $5.98, B300 at $7.40 and GB300 at $14.27. Those are floors, not averages and not quotes for every buying shape. A floor can belong to a community tier, carry a minimum, or describe one variant while a similarly named variant costs more. The rest of this guide is about not mistaking the floor for the bill.",
+  datedTables:[
+    { heading:"TL;DR — the cheapest verified offer for each card below (checked Nov 14, 2026)",
+      intro:"All guide-table prices are USD per GPU per hour and on-demand unless a row says otherwise — from GPUJournal's verified board snapshot, checked Nov 14, 2026.",
+      cols:["Provider", "GPU", "Cheapest verified price", "Basis", "Checked", "Read this before comparing"],
+      rows:[
+        ["RunPod Community", "RTX 4090", "$0.34/GPU/hr", "On-demand", "Nov 14, 2026", "Lowest-priced offer in this table."],
+        ["Thunder Compute", "RTX A6000", "$0.35/GPU/hr", "On-demand", "Nov 14, 2026", "Sole verified offer for this card in the snapshot."],
+        ["RunPod Community", "RTX 5090", "$0.69/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of two verified RTX 5090 offers."],
+        ["RunPod Community", "L40S", "$0.79/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of six verified L40S offers."],
+        ["Thunder Compute", "L40", "$0.79/GPU/hr", "On-demand", "Nov 14, 2026", "L40 is a separate card from L40S; the names are not interchangeable."],
+        ["Thunder Compute", "A100 80GB", "$1.09/GPU/hr", "On-demand", "Nov 14, 2026", "The snapshot carries this offer under the general A100 80GB label."],
+        ["RunPod Community", "A100 80GB PCIe", "$1.19/GPU/hr", "On-demand", "Nov 14, 2026", "PCIe variant, priced separately from SXM below."],
+        ["RunPod Community", "A100 80GB SXM", "$1.39/GPU/hr", "On-demand", "Nov 14, 2026", "SXM variant, priced separately from PCIe above."],
+        ["RunPod Community", "RTX PRO 6000", "$1.69/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of seven verified offers for the standard PRO 6000 label."],
+        ["Verda", "A100 40GB", "$1.70/GPU/hr", "On-demand", "Nov 14, 2026", "Verda rose for a 16th consecutive time in the Nov 14 check; recheck before buying."],
+        ["RunPod Community", "H100 PCIe", "$1.99/GPU/hr", "On-demand", "Nov 14, 2026", "Do not compare this directly with H100 SXM as if the variant were the same."],
+        ["TensorDock", "H100 SXM", "$2.25/GPU/hr", "On-demand", "Nov 14, 2026", "8-GPU minimum: the minimum commitment is $18.00/hr."],
+        ["RunPod Community", "H100 NVL", "$2.59/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest H100 NVL offer in the snapshot."],
+        ["RunPod Community", "H200", "$3.59/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of eight verified H200 offers."],
+        ["RunPod Community", "B200", "$5.98/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of nine verified B200 offers."],
+        ["CoreWeave", "GH200", "$6.50/GPU/hr", "On-demand", "Nov 14, 2026", "Sole verified offer; the snapshot identifies it as a 1-GPU instance."],
+        ["Hyperstack", "B300", "$7.40/GPU/hr", "On-demand", "Nov 14, 2026", "Cheapest of five verified B300 offers."],
+        ["Verda", "GB300", "$14.27/GPU/hr", "On-demand", "Nov 14, 2026", "Cheaper of the snapshot's two GB300 offers; Verda's rate is moving daily."]
+      ],
+      after:"No L4 or A10 price appears above because the Nov 14 snapshot contains no offer under either name. L40 and RTX A6000 are separate cards and are priced under their own names, not used as substitutes. No spot price appears in the table: every row above is an on-demand offer. The snapshot also carries offers labelled GB200 NVL72, H100 with no variant split, A100 80GB NVLink and H100 NVLink (PCIe); they are not separate rows in this table, and none of them changes a cheapest figure shown above."
+    },
+    { heading:"Why the same GPU can cost several times more",
+      intro:"The spread is not a rounding error. In the Nov 14 snapshot, the range on a single card runs to several times its floor, before the buying shapes are even considered:",
+      cols:["GPU", "Cheapest verified offer", "Highest offer in the snapshot", "Spread"],
+      rows:[
+        ["H100 SXM", "TensorDock — $2.25/GPU/hr (re-read Nov 14, 2026)", "Microsoft Azure — $12.29/GPU/hr (carried hyperscaler row, verified Oct 27–28, 2026)", "5.46 times the floor"],
+        ["H200", "RunPod Community — $3.59/GPU/hr", "Microsoft Azure — $10.60/GPU/hr (carried row, verified Oct 27–28, 2026)", "2.95 times"],
+        ["B200", "RunPod Community — $5.98/GPU/hr", "Google Cloud — $18.5265/GPU/hr, the exact published figure (carried row, verified Oct 27–28, 2026)", "3.10 times"]
+      ],
+      after:"Some of that spread is the provider and service tier. Some is the machine wrapped around the GPU. Some is a per-GPU figure divided out of a whole node or VM. The name of the card alone does not make two offers equivalent."
+    },
+    { heading:"What moves the price — the minimum setup: compare totals, not per-GPU stickers",
+      intro:"The most expensive misunderstanding in GPU rental is also the simplest: a per-GPU rate is not the amount leaving your account when the offer is sold as a node, a VM or a multi-GPU minimum. GPUJournal prices viable multi-GPU offers by their minimum setup total wherever the snapshot gives that total. Date note: the TensorDock and CoreWeave rows below were re-read on Nov 14, 2026. The Oracle OCI, Google Cloud and Microsoft Azure rows are snapshot rows carried from the board's Oct 27–28, 2026 verification; they are used here to show buying shape, not as fresh Nov 14 cheapest offers.",
+      cols:["Provider", "GPU", "Headline rate", "Buying shape in the snapshot", "Minimum hourly total"],
+      rows:[
+        ["TensorDock", "H100 SXM", "$2.25/GPU/hr", "8-GPU minimum at this rate", "$18.00/hr"],
+        ["CoreWeave", "H200", "$6.31/GPU/hr", "Per-GPU figure normalised from an 8-GPU node", "$50.44/hr"],
+        ["CoreWeave", "B200", "$8.60/GPU/hr", "Per-GPU figure normalised from an 8-GPU node", "$68.80/hr"],
+        ["Microsoft Azure", "H200", "$10.60/GPU/hr", "8-GPU VM; East US 2 meter", "$84.80/hr"],
+        ["Oracle OCI", "B200", "$14.00/GPU/hr", "8-GPU node", "$112.00/hr"],
+        ["Google Cloud", "B200", "$18.53/GPU/hr (rounded; exact published figure $18.5265)", "8-GPU VM", "$148.21/hr"],
+        ["Oracle OCI", "GB300", "$18.00/GPU/hr", "4-GPU node", "$72.00/hr"],
+        ["Google Cloud", "A100 80GB", "$4.52/GPU/hr (rounded; exact published figure $4.51729)", "Attachable-GPU rate", "Cannot be totalled from the GPU rate alone — the host VM is billed on top"]
+      ],
+      after:"TensorDock is the cleanest example. Its H100 SXM sticker is the lowest in the snapshot, and for a buyer who genuinely needs eight GPUs it may be the right comparison. For a buyer who needs one GPU, the meaningful TensorDock number is not $2.25; it is the $18.00 hourly floor. The next H100 SXM rate in the snapshot, RunPod Community's $2.69 per GPU per hour, is the cleaner per-GPU comparison when the eight-GPU commitment is not the shape you intend to buy."
+    },
+    { heading:"What an hour becomes over time",
+      intro:"An hourly rate feels small until the GPU stays on. The table below is simple arithmetic on selected Nov 14 per-GPU rates: 24 hours, one 168-hour week, and a 730-hour always-on month. It excludes storage, data transfer, host charges and every other extra in the next section.",
+      cols:["Provider", "GPU", "Hourly rate", "24 hours", "168 hours", "730 hours"],
+      rows:[
+        ["RunPod Community", "RTX 4090", "$0.34", "$8.16", "$57.12", "$248.20"],
+        ["RunPod Community", "L40S", "$0.79", "$18.96", "$132.72", "$576.70"],
+        ["Thunder Compute", "A100 80GB", "$1.09", "$26.16", "$183.12", "$795.70"],
+        ["RunPod Community", "H100 SXM", "$2.69", "$64.56", "$451.92", "$1,963.70"],
+        ["RunPod Community", "H200", "$3.59", "$86.16", "$603.12", "$2,620.70"],
+        ["RunPod Community", "B200", "$5.98", "$143.52", "$1,004.64", "$4,365.40"],
+        ["Verda", "GB300", "$14.27", "$342.48", "$2,397.36", "$10,417.10"]
+      ],
+      after:"Minimums scale the same way. TensorDock's $18.00 H100 SXM hourly floor becomes $432 over 24 hours, $3,024 over 168 hours and $13,140 over 730 hours — before any extra. That does not make the offer bad. It makes the commitment visible."
+    },
+    { heading:"The real bill beyond the sticker",
+      cols:["The extra", "What it does to the bill"],
+      rows:[
+        ["Idle time", "A GPU bought by the hour charges for the shape of your working day, not only for the minutes a job is productive. Setup, data loading, debugging, failed runs and a machine left running while you decide what to do next all consume rented time if the instance remains live. The 730-hour column above is the warning: an always-on habit turns a modest hourly rate into a monthly commitment."],
+        ["Storage", "Datasets, checkpoints, images and results need somewhere to live, and storage can remain after the GPU stops. Our Nov 14 snapshot verifies GPU rates, not a comparable set of storage prices, so this guide prints no storage fee. Add the provider's volume, disk and snapshot lines separately before calling a rate cheap."],
+        ["Data transfer and egress", "Moving training data in and checkpoints or generated results out can add a transfer bill, especially when the GPU region and the data's home differ. The snapshot does not verify comparable egress rates across these providers, so no transfer figure is printed here. “No figure in our table” does not mean “no charge on the invoice.”"],
+        ["The host around the GPU", "Some prices are not complete machine prices. Google Cloud's A100 80GB rate in the snapshot is explicitly an attachable-GPU rate with the host VM billed on top. Node and VM rows have the opposite trap: the total is real, but the divided per-GPU figure can make an eight-GPU commitment look like a one-GPU rental."],
+        ["Tax treatment", "Nebius's snapshot figures are marked “excl. VAT.” None of Nebius's rates leads the TL;DR table, but the warning generalises as a checking rule: do not compare a tax-exclusive quote with another provider's final payable amount without putting both on the same basis."],
+        ["Restart cost", "Interruptible work needs checkpoints and a restart plan. Even where the hourly rate is lower, a restart can buy setup and unfinished progress again. Our snapshot contains no spot rate, so it offers no honest way to total that trade-off here."]
+      ]
+    }
+  ],
+  costTitle:"What moves the price — the buying basis, the region, the provider type and the date",
+  costBody:"The buying basis: on-demand, spot or term. Every price in the TL;DR table is on-demand. That matters because on-demand is the flexible reference rate: it is the price shape our snapshot can compare across providers without hiding a duration or interruption condition inside the number. Spot and interruptible capacity are a different bargain. The Nov 14 snapshot contains no offer labelled spot, so this guide prints no spot price and does not borrow one from another page. If you price spot elsewhere, compare it only after adding the cost of checkpointing, restarting and losing unfinished work. A lower interruptible rate is not cheaper if the job has to buy the same hours twice. Term and reserved prices are also not on-demand prices. The snapshot used here contains no verified term or reserved figure, so none is mixed into the table. A term quote belongs in a comparison only with its duration, minimum spend and cancellation or expiry terms printed beside it. Leaving those terms out makes a commitment look like a discount with no cost. Region is part of the price. A regional meter is not a worldwide quote. The snapshot identifies Microsoft Azure's H200 figure as an East US 2 meter: $10.60 per GPU per hour (a carried hyperscaler row verified Oct 27–28, 2026), divided from an $84.80 eight-GPU VM. It does not present that figure as Azure's price in every region, and neither does this guide. Before comparing two offers, put the region in the row. A cheaper card in the wrong place can also create a second cost when data has to move to it or results have to move back. The snapshot does not give us a verified cross-region price table, so this guide does not invent one. Provider type changes the shape of the offer. The snapshot's provider labels describe different buying shapes. Hyperscalers — Oracle OCI, Google Cloud and Microsoft Azure in this snapshot — often price the GPU as part of a node or VM; Google Cloud's A100 80GB figure goes further and prices an attachable GPU while billing the host VM separately. Specialist GPU clouds — including CoreWeave, Nebius, Hyperstack, Verda, Thunder Compute and TensorDock — include both per-GPU offers and whole-node divisions, so the provider category alone still does not settle the comparison. RunPod Community supplies the cheapest verified offer for many cards in the TL;DR table, while RunPod Secure prices the same card family as a separate tier; on Nov 14, for example, H200 is $3.59 at RunPod Community and $5.29 at RunPod Secure. The lesson is not that one provider type is always cheaper. It is that the words around the number — Community, Secure, node, VM, attachable GPU, minimum — are part of the price. The date is part of the price. GPU prices are moving while you read. In the Nov 14 check, Verda rose for the 16th consecutive time, with all nine tracked cards up about 1% from Nov 13. Its GB300 has risen from $11.82 on Oct 19 to $14.27 on Nov 14 — 20.7% — in our dated record. That is why this guide prints the check date in every TL;DR row instead of presenting November's floor as a permanent market fact. It is also why stale comparison tables mislead. Vast.ai published a guide with this question as its title on Nov 13; our daily research note records that its competitor rows are stamped “checked July 20, 2026.” This guide does not reuse those rows. It answers from GPUJournal's Nov 14, 2026 snapshot.",
+  steps:[
+    { title:"Match the exact card and variant", body:"H100 PCIe, H100 SXM and H100 NVL are separate rows for a reason. So are A100 80GB PCIe and A100 80GB SXM, and L40 and L40S." },
+    { title:"Write the minimum total beside the per-GPU rate", body:"If the shape is eight GPUs, a node or a VM, budget the whole-shape total — TensorDock's $18.00, CoreWeave's $50.44, or Microsoft Azure's $84.80 (a carried row verified Oct 27–28, 2026) — not the divided sticker." },
+    { title:"Keep the basis, region and date in the row", body:"On-demand is not spot; a term is not on-demand; East US 2 is not every region; Nov 14 is not July 20." },
+    { title:"Price the finished stretch, then add what the sticker excludes", body:"Start with 24, 168 or 730 hours, then add the host, storage and transfer lines from the actual provider quote. If one of those lines is missing, the comparison is not finished." }
+  ],
+  licenceTitle:"How we check",
+  licenceBody:"GPUJournal's Nov 14, 2026 snapshot contains 87 offers. Its source note records first-hand Nov 14 re-reads for Verda, RunPod Secure, Nebius, CoreWeave, Thunder Compute, TensorDock and Hyperstack, with RunPod Community corroborated in part and the remaining Community figures carried in the same board check. The hyperscaler rows used for buying-shape examples were carried from the board's earlier Oct 27–28, 2026 verification and were not re-read in the Nov 14 pass; the guide uses them to explain node and VM totals, not as the cheapest current offer for any card. Prices are read from providers' own published pages and banked by date. A change is reported in Price Watch only when the before and after figures are both in our records. Live board: Compare prices. Verified changes: Price Watch. What is deliberately not priced. Lambda is not in the tables: the Nov 14 research note says its current rates are login-gated and its public page prints announced Nov 16 rates, which are not yet in effect and are therefore not presented as current prices. nafnaf is not priced: the snapshot's carried figures sit behind a “No GPUs available right now” note, so they are not verified live offers for this guide. Spheron's stated marketplace figures are omitted, not treated as verified prices. SaladCloud figures mentioned in the daily research note are not used in the cheapest table because they are not offers in the banked snapshot's offer list and the note does not define the “High” tier as the same on-demand basis used above.",
+  honestyTitle:"Our reading",
+  honestyNote:"Our reading — interpretation, not fact. The Nov 14 board does not describe one GPU market with one sensible average. It describes several markets sharing card names: community and specialist per-GPU floors, whole-node capacity divided back into per-GPU figures, regional hyperscaler VMs, and at least one attachable-GPU rate whose host is extra. The renter's advantage comes from matching the buying shape to the job, not from finding the smallest number on a page. A $2.25 rate with an $18.00 floor can be excellent for eight GPUs and irrelevant for one. A $14.27 GB300 can be a short evaluation or a $10,417.10 always-on month. The honest question is never only “what is the hourly rate?” It is “what exactly am I committing to, for how long, and what else will be billed?”",
+  exits:[["Compare prices", "#/board"], ["Price Watch — every verified move", "#/price-watch"]],
+  related:["true-cost-of-renting-a-gpu", "which-price-is-real", "gpu-rental-prices-rising-2026"]
 }
 ];
 var FIND_RANKED = {
