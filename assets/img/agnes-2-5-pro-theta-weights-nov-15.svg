@@ -1,0 +1,306 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2400" height="1360" viewBox="0 0 2400 1360" role="img" aria-labelledby="chart-title chart-description">
+<title id="chart-title">LLM Benchmark Evaluation — eight benchmarks, five models</title>
+<desc id="chart-description">Agnes model: agnes-2.5-pro-theta. Publisher-reported scores. Other series are Nemotron 3.5 Super VL 120B, Qwen3.8-27B, GLM-5.3-Flash, and DeepSeek-V4.1-Flash-1017. SciCode uses subproblem-level scoring. All axes start at zero. Missing results are shown as not reported.</desc>
+<metadata>{"title":"LLM Benchmark Evaluation","date":"2026-11-15","models":[{"id":"agnes","label":"Agnes","detail":"agnes-2.5-pro-theta","color":"#3549B6","source":"Publisher-reported evaluation scores","svg":"&lt;svg width=\"48\" height=\"48\" viewBox=\"0 0 48 48\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"&gt;\n  &lt;rect width=\"48\" height=\"48\" rx=\"8\" fill=\"#3248AF\"/&gt;\n  &lt;path d=\"M12.6071 39.9943C11.4172 39.9345 10.6573 39.7701 10.0192 39.4344C8.64556 38.7112 8.00057 37.2427 8 34.835C8 33.5065 8.20362 32.0067 8.57219 30.6306C8.73827 30.009 8.74681 30.0038 8.93621 30.3808C9.23254 30.9727 9.82407 31.8475 10.2103 32.2664C10.9281 33.0447 11.7386 33.5547 12.6924 33.8289C13.2959 34.002 14.5569 34.0183 15.2678 33.8614C17.0367 33.4717 19.1867 32.3262 21.2764 30.6597C25.0366 27.6606 29.3747 22.5367 31.6322 18.4281C31.8705 17.9948 32.0798 17.7055 32.3579 17.4255C33.2077 16.5693 34.6899 15.9408 35.927 15.9123C36.4253 15.9013 36.4878 15.9123 36.7324 16.0593C37.2062 16.3439 37.4024 16.8551 37.3 17.5359C37.267 17.7543 37.163 18.4426 37.0685 19.0659C36.8865 20.2689 36.4287 23.4591 35.8656 27.4457C35.4902 30.1061 35.4908 30.0433 35.8326 30.3007C35.9657 30.4012 36.0669 30.4203 36.4173 30.4116C37.1635 30.3936 38.2249 30.1764 39.2384 29.8354C39.7196 29.6733 39.8925 29.6716 39.9881 29.8278C40.0745 29.969 39.6764 30.7584 39.2555 31.2789C38.66 32.0166 37.6635 32.7252 36.7079 33.0918C36.0248 33.3532 35.6813 33.6459 35.46 34.1542C35.294 34.5364 35.2792 34.8867 35.3855 35.9224C35.4646 36.6886 35.4708 36.943 35.4191 37.198C35.3122 37.726 35.0693 38.1745 34.7093 38.5108C34.0916 39.087 33.446 39.1155 32.8931 38.5915C32.6258 38.3377 32.5587 38.1326 32.4802 37.3304C32.2203 34.6607 31.2135 32.4801 29.7324 31.3799C29.5391 31.2365 29.3667 31.0605 29.3491 30.9884C29.3036 30.8031 29.3679 30.5882 29.485 30.5336C29.5402 30.508 30.0333 30.4726 30.5805 30.4546C31.5269 30.4238 31.5918 30.4139 31.9057 30.2565C32.3119 30.0532 32.7367 29.6286 32.9108 29.2528C32.9967 29.0675 33.2628 27.8604 33.6837 25.746C34.5227 21.537 34.769 20.3131 34.8412 19.9953C34.8736 19.8513 34.9009 19.6956 34.9021 19.6485C34.9026 19.6015 34.5944 20.1376 34.2167 20.8393C32.1253 24.726 29.7859 28.3239 27.5711 31.0605C25.9353 33.0807 23.7392 35.2643 22.0864 36.5126C20.1741 37.9572 18.2989 38.9406 16.4179 39.4855C16.1204 39.5715 15.7547 39.6789 15.6046 39.7248C15.1114 39.8741 13.3562 40.0321 12.6071 39.9943ZM33.9932 13.8479C32.5655 13.4738 31.61 12.0414 31.8176 10.5874C32.0132 9.21832 32.9932 8.22328 34.339 8.02869C36.1346 7.76845 37.7494 9.31591 37.6134 11.166C37.5543 11.9705 37.267 12.5804 36.6767 13.1555C35.9554 13.8578 34.9857 14.1081 33.9932 13.8479Z\" fill=\"#FEFEFE\"/&gt;\n&lt;/svg&gt;\n"},{"id":"nvidia","label":"Nemotron 3.5","detail":"Super VL · 120B","color":"#B8D895","source":"NVIDIA model card","svg":"&lt;svg height=\"1em\" style=\"flex:none;line-height:1\" viewBox=\"0 0 24 24\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\"&gt;&lt;title&gt;Nvidia&lt;/title&gt;&lt;path d=\"M10.212 8.976V7.62c.127-.01.256-.017.388-.021 3.596-.117 5.957 3.184 5.957 3.184s-2.548 3.647-5.282 3.647a3.227 3.227 0 01-1.063-.175v-4.109c1.4.174 1.681.812 2.523 2.258l1.873-1.627a4.905 4.905 0 00-3.67-1.846 6.594 6.594 0 00-.729.044m0-4.476v2.025c.13-.01.259-.019.388-.024 5.002-.174 8.261 4.226 8.261 4.226s-3.743 4.69-7.643 4.69c-.338 0-.675-.031-1.007-.092v1.25c.278.038.558.057.838.057 3.629 0 6.253-1.91 8.794-4.169.421.347 2.146 1.193 2.501 1.564-2.416 2.083-8.048 3.763-11.24 3.763-.308 0-.603-.02-.894-.048V19.5H24v-15H10.21zm0 9.756v1.068c-3.356-.616-4.287-4.21-4.287-4.21a7.173 7.173 0 014.287-2.138v1.172h-.005a3.182 3.182 0 00-2.502 1.178s.615 2.276 2.507 2.931m-5.961-3.3c1.436-1.935 3.604-3.148 5.961-3.336V6.523C5.81 6.887 2 10.723 2 10.723s2.158 6.427 8.21 7.015v-1.166C5.77 16 4.25 10.958 4.25 10.958h-.002z\" fill=\"#74B71B\" fill-rule=\"nonzero\"&gt;&lt;/path&gt;&lt;/svg&gt;"},{"id":"qwen","label":"Qwen3.8","detail":"27B","color":"#D4C9ED","source":"NVIDIA baseline, Qwen model card, Artificial Analysis","svg":"&lt;svg height=\"1em\" style=\"flex:none;line-height:1\" viewBox=\"0 0 24 24\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\"&gt;&lt;title&gt;Qwen&lt;/title&gt;&lt;path d=\"M19.713 2.825h-5.907c0-.251-.066-.503-.196-.728L12.819.728A1.46 1.46 0 0 0 11.559 0h-1.58c-.52 0-1 .275-1.26.728l-2.42 4.19a1.45 1.45 0 0 0 0 1.453l.791 1.37c.26.448.74.727 1.26.727h11.36c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451l-.79-1.37a1.46 1.46 0 0 0-1.26-.728zM.195 9.905l2.951 5.115a1.46 1.46 0 0 0-.531.531l-.791 1.37a1.45 1.45 0 0 0 0 1.452l.79 1.37c.26.448.74.727 1.26.727h4.84c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451L5.086 7.083a1.46 1.46 0 0 0-1.26-.728h-1.58c-.52 0-1 .276-1.26.728l-.79 1.37a1.45 1.45 0 0 0 0 1.452m15.888 13.367 2.951-5.115c.217.125.469.196.728.196h1.582c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451l-2.42-4.191a1.46 1.46 0 0 0-1.259-.728h-1.582c-.52 0-1 .276-1.259.728l-5.678 9.838a1.45 1.45 0 0 0 0 1.452l.79 1.37c.26.448.74.727 1.26.727h1.582c.52 0 1-.275 1.26-.728z\" fill=\"#082dff\"&gt;&lt;/path&gt;&lt;/svg&gt;"},{"id":"zai","label":"GLM-5.3","detail":"Flash","color":"#E1CCCE","source":"NVIDIA baseline, Artificial Analysis","svg":"&lt;svg fill=\"currentColor\" fill-rule=\"evenodd\" height=\"1em\" style=\"flex:none;line-height:1\" viewBox=\"0 0 24 24\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\"&gt;&lt;title&gt;Z.ai&lt;/title&gt;&lt;path d=\"M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2L9.264 22H0L14.736 2H24z\"&gt;&lt;/path&gt;&lt;/svg&gt;"},{"id":"deepseek","label":"DeepSeek V4.1","detail":"Flash · 1017","color":"#C8D9F1","source":"NVIDIA source baseline, ISTA-DASLab baseline, Artificial Analysis","svg":"&lt;svg height=\"1em\" style=\"flex:none;line-height:1\" viewBox=\"0 0 24 24\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\"&gt;&lt;title&gt;DeepSeek&lt;/title&gt;&lt;path d=\"M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z\" fill=\"#4D6BFE\"&gt;&lt;/path&gt;&lt;/svg&gt;"}],"benchmarks":[{"title":"IFBench","category":"INSTRUCTION FOLLOWING","y_max":100,"values":[82.6,70.86,80.07,64.4,76.33],"markers":{"0":""}},{"title":"AA-LCR","category":"LONG CONTEXT","y_max":100,"values":[84.7,68.62,72.63,76.69,80.41],"note":"User score: v1.1; competitor versions need alignment.","markers":{}},{"title":"GPQA Diamond","category":"SCIENTIFIC REASONING","y_max":100,"values":[92.9,89.52,88.92,92.17,92.77],"markers":{"0":""}},{"title":"SciCode","category":"SCIENTIFIC CODING","y_max":70,"values":[56.0,47.13,47.93,53.44,57.58],"note":"Subproblem scoring. User: v1.0.1; protocol alignment pending.","markers":{},"scoring_level":"Subproblem-level"},{"title":"LiveCodeBench v6","category":"CODE GENERATION","y_max":100,"values":[90.5,88.22,90.3,80.6,89.71],"markers":{"0":"","4":""}},{"title":"SWE-bench Pro","category":"SOFTWARE ENGINEERING","y_max":80,"values":[64.1,51.78,61.7,59.7,null],"markers":{"0":""}},{"title":"HLE-Diamond","category":"FRONTIER REASONING","y_max":30,"values":[16.8,8.8,15.3,18.2,25.3],"markers":{}},{"title":"GDP.pdf","category":"DOCUMENT REASONING","y_max":20,"values":[16.2,8.0,16.4,15.4,17.2],"markers":{}}],"sources":{"nvidia":"https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-BF16#benchmarks","qwen_nvidia":"https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4#evaluation","glm_nvidia":"https://huggingface.co/nvidia/GLM-5.3-Flash-NVFP4#evaluation","deepseek_nvidia":"https://huggingface.co/nvidia/DeepSeek-V4.1-Flash-1017-NVFP4#evaluation","qwen_official":"https://huggingface.co/Qwen/Qwen3.8-27B#benchmark-results","deepseek_lcb":"https://huggingface.co/ISTA-DASLab/DeepSeek-V4.1-Flash-1017-GSQ-RCO-GGUF#results","aa_nvidia":"https://artificialanalysis.ai/models/comparisons/nemotron-3-5-super-vl-vs-claude-haiku-5-5-high","aa_qwen":"https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-low-vs-qwen3-8-27b","aa_glm":"https://artificialanalysis.ai/models/comparisons/glm-5-3-flash-vs-gpt-5-6-luna-high","aa_deepseek":"https://artificialanalysis.ai/models/comparisons/deepseek-v4-1-flash-1017-vs-deepseek-v4-1-flash","agnes_logo":"https://huggingface.co/Agnes-AI/Agnes-2.5-Pro-Alpha/resolve/main/assets/agnes_logo.svg","brand_icons":"https://github.com/lobehub/lobe-icons"},"icon_license":"MIT License\n\nCopyright (c) 2023 LobeHub\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n","evaluation_note":"Agnes scores are publisher-reported. Comparator scores and source links are retained; evaluation protocols may differ.","show_footer":false,"value_mode":"user_provided"}</metadata>
+<defs>
+<linearGradient id="agnes-bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E72E4"/><stop offset="1" stop-color="#3346AE"/></linearGradient>
+<filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#18213C" flood-opacity=".10"/></filter>
+<symbol id="logo-agnes" viewBox="0 0 48 48">
+  <rect width="48" height="48" rx="8" fill="#3248AF"/>
+  <path d="M12.6071 39.9943C11.4172 39.9345 10.6573 39.7701 10.0192 39.4344C8.64556 38.7112 8.00057 37.2427 8 34.835C8 33.5065 8.20362 32.0067 8.57219 30.6306C8.73827 30.009 8.74681 30.0038 8.93621 30.3808C9.23254 30.9727 9.82407 31.8475 10.2103 32.2664C10.9281 33.0447 11.7386 33.5547 12.6924 33.8289C13.2959 34.002 14.5569 34.0183 15.2678 33.8614C17.0367 33.4717 19.1867 32.3262 21.2764 30.6597C25.0366 27.6606 29.3747 22.5367 31.6322 18.4281C31.8705 17.9948 32.0798 17.7055 32.3579 17.4255C33.2077 16.5693 34.6899 15.9408 35.927 15.9123C36.4253 15.9013 36.4878 15.9123 36.7324 16.0593C37.2062 16.3439 37.4024 16.8551 37.3 17.5359C37.267 17.7543 37.163 18.4426 37.0685 19.0659C36.8865 20.2689 36.4287 23.4591 35.8656 27.4457C35.4902 30.1061 35.4908 30.0433 35.8326 30.3007C35.9657 30.4012 36.0669 30.4203 36.4173 30.4116C37.1635 30.3936 38.2249 30.1764 39.2384 29.8354C39.7196 29.6733 39.8925 29.6716 39.9881 29.8278C40.0745 29.969 39.6764 30.7584 39.2555 31.2789C38.66 32.0166 37.6635 32.7252 36.7079 33.0918C36.0248 33.3532 35.6813 33.6459 35.46 34.1542C35.294 34.5364 35.2792 34.8867 35.3855 35.9224C35.4646 36.6886 35.4708 36.943 35.4191 37.198C35.3122 37.726 35.0693 38.1745 34.7093 38.5108C34.0916 39.087 33.446 39.1155 32.8931 38.5915C32.6258 38.3377 32.5587 38.1326 32.4802 37.3304C32.2203 34.6607 31.2135 32.4801 29.7324 31.3799C29.5391 31.2365 29.3667 31.0605 29.3491 30.9884C29.3036 30.8031 29.3679 30.5882 29.485 30.5336C29.5402 30.508 30.0333 30.4726 30.5805 30.4546C31.5269 30.4238 31.5918 30.4139 31.9057 30.2565C32.3119 30.0532 32.7367 29.6286 32.9108 29.2528C32.9967 29.0675 33.2628 27.8604 33.6837 25.746C34.5227 21.537 34.769 20.3131 34.8412 19.9953C34.8736 19.8513 34.9009 19.6956 34.9021 19.6485C34.9026 19.6015 34.5944 20.1376 34.2167 20.8393C32.1253 24.726 29.7859 28.3239 27.5711 31.0605C25.9353 33.0807 23.7392 35.2643 22.0864 36.5126C20.1741 37.9572 18.2989 38.9406 16.4179 39.4855C16.1204 39.5715 15.7547 39.6789 15.6046 39.7248C15.1114 39.8741 13.3562 40.0321 12.6071 39.9943ZM33.9932 13.8479C32.5655 13.4738 31.61 12.0414 31.8176 10.5874C32.0132 9.21832 32.9932 8.22328 34.339 8.02869C36.1346 7.76845 37.7494 9.31591 37.6134 11.166C37.5543 11.9705 37.267 12.5804 36.6767 13.1555C35.9554 13.8578 34.9857 14.1081 33.9932 13.8479Z" fill="#FEFEFE"/>
+</symbol>
+<symbol id="logo-nvidia" viewBox="0 0 24 24"><title>Nvidia</title><path d="M10.212 8.976V7.62c.127-.01.256-.017.388-.021 3.596-.117 5.957 3.184 5.957 3.184s-2.548 3.647-5.282 3.647a3.227 3.227 0 01-1.063-.175v-4.109c1.4.174 1.681.812 2.523 2.258l1.873-1.627a4.905 4.905 0 00-3.67-1.846 6.594 6.594 0 00-.729.044m0-4.476v2.025c.13-.01.259-.019.388-.024 5.002-.174 8.261 4.226 8.261 4.226s-3.743 4.69-7.643 4.69c-.338 0-.675-.031-1.007-.092v1.25c.278.038.558.057.838.057 3.629 0 6.253-1.91 8.794-4.169.421.347 2.146 1.193 2.501 1.564-2.416 2.083-8.048 3.763-11.24 3.763-.308 0-.603-.02-.894-.048V19.5H24v-15H10.21zm0 9.756v1.068c-3.356-.616-4.287-4.21-4.287-4.21a7.173 7.173 0 014.287-2.138v1.172h-.005a3.182 3.182 0 00-2.502 1.178s.615 2.276 2.507 2.931m-5.961-3.3c1.436-1.935 3.604-3.148 5.961-3.336V6.523C5.81 6.887 2 10.723 2 10.723s2.158 6.427 8.21 7.015v-1.166C5.77 16 4.25 10.958 4.25 10.958h-.002z" fill="#74B71B" fill-rule="nonzero"></path></symbol>
+<symbol id="logo-qwen" viewBox="0 0 24 24"><title>Qwen</title><path d="M19.713 2.825h-5.907c0-.251-.066-.503-.196-.728L12.819.728A1.46 1.46 0 0 0 11.559 0h-1.58c-.52 0-1 .275-1.26.728l-2.42 4.19a1.45 1.45 0 0 0 0 1.453l.791 1.37c.26.448.74.727 1.26.727h11.36c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451l-.79-1.37a1.46 1.46 0 0 0-1.26-.728zM.195 9.905l2.951 5.115a1.46 1.46 0 0 0-.531.531l-.791 1.37a1.45 1.45 0 0 0 0 1.452l.79 1.37c.26.448.74.727 1.26.727h4.84c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451L5.086 7.083a1.46 1.46 0 0 0-1.26-.728h-1.58c-.52 0-1 .276-1.26.728l-.79 1.37a1.45 1.45 0 0 0 0 1.452m15.888 13.367 2.951-5.115c.217.125.469.196.728.196h1.582c.52 0 1-.275 1.26-.728l.79-1.37a1.45 1.45 0 0 0 0-1.451l-2.42-4.191a1.46 1.46 0 0 0-1.259-.728h-1.582c-.52 0-1 .276-1.259.728l-5.678 9.838a1.45 1.45 0 0 0 0 1.452l.79 1.37c.26.448.74.727 1.26.727h1.582c.52 0 1-.275 1.26-.728z" fill="#082dff"></path></symbol>
+<symbol id="logo-zai" viewBox="0 0 24 24"><title>Z.ai</title><path d="M12.105 2L9.927 4.953H.653L2.83 2h9.276zM23.254 19.048L21.078 22h-9.242l2.174-2.952h9.244zM24 2L9.264 22H0L14.736 2H24z"></path></symbol>
+<symbol id="logo-deepseek" viewBox="0 0 24 24"><title>DeepSeek</title><path d="M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z" fill="#4D6BFE"></path></symbol>
+</defs>
+<style>text{font-family:Arial,Helvetica,sans-serif} .ink{fill:#1A1D25} .muted{fill:#737B8B} .value{font-size:21px;font-variant-numeric:tabular-nums} .axis{font-size:15px;fill:#A1A7B3} .foot{font-size:20px;fill:#727988}</style>
+<rect width="2400" height="1360" fill="white"/>
+<use xlink:href="#logo-agnes" x="72" y="62" width="72" height="72"/>
+<text x="164" y="110" font-size="54" fill="#1A1D25" font-weight="700" text-anchor="start" >LLM Benchmark Evaluation</text>
+<text x="74" y="166" font-size="24" fill="#737B8B" font-weight="400" text-anchor="start" >5 models  /  8 benchmarks  /  Higher is better</text>
+<text x="2328" y="88" font-size="17" fill="#737B8B" font-weight="700" text-anchor="end" letter-spacing="2.5">MODEL COMPARISON</text>
+<text x="2328" y="122" font-size="21" fill="#737B8B" font-weight="400" text-anchor="end" >2026-11-15</text>
+<rect x="74" y="211" width="51" height="51" rx="12" fill="#3549B6" fill-opacity=".20"/>
+<use xlink:href="#logo-agnes" x="83" y="220" width="33" height="33"/>
+<text x="140" y="231" font-size="23" fill="#1A1D25" font-weight="700" text-anchor="start" >Agnes</text>
+<text x="140" y="259" font-size="20" fill="#737B8B" font-weight="400" text-anchor="start" >agnes-2.5-pro-theta</text>
+<rect x="140" y="272" width="42" height="5" rx="2.5" fill="#3549B6"/>
+<rect x="510" y="211" width="51" height="51" rx="12" fill="#B8D895" fill-opacity=".20"/>
+<use xlink:href="#logo-nvidia" x="519" y="220" width="33" height="33"/>
+<text x="576" y="231" font-size="23" fill="#1A1D25" font-weight="700" text-anchor="start" >Nemotron 3.5</text>
+<text x="576" y="259" font-size="20" fill="#737B8B" font-weight="400" text-anchor="start" >Super VL · 120B</text>
+<rect x="576" y="272" width="42" height="5" rx="2.5" fill="#B8D895"/>
+<rect x="970" y="211" width="51" height="51" rx="12" fill="#D4C9ED" fill-opacity=".20"/>
+<use xlink:href="#logo-qwen" x="979" y="220" width="33" height="33"/>
+<text x="1036" y="231" font-size="23" fill="#1A1D25" font-weight="700" text-anchor="start" >Qwen3.8</text>
+<text x="1036" y="259" font-size="20" fill="#737B8B" font-weight="400" text-anchor="start" >27B</text>
+<rect x="1036" y="272" width="42" height="5" rx="2.5" fill="#D4C9ED"/>
+<rect x="1380" y="211" width="51" height="51" rx="12" fill="#E1CCCE" fill-opacity=".20"/>
+<use xlink:href="#logo-zai" x="1389" y="220" width="33" height="33"/>
+<text x="1446" y="231" font-size="23" fill="#1A1D25" font-weight="700" text-anchor="start" >GLM-5.3</text>
+<text x="1446" y="259" font-size="20" fill="#737B8B" font-weight="400" text-anchor="start" >Flash</text>
+<rect x="1446" y="272" width="42" height="5" rx="2.5" fill="#E1CCCE"/>
+<rect x="1810" y="211" width="51" height="51" rx="12" fill="#C8D9F1" fill-opacity=".20"/>
+<use xlink:href="#logo-deepseek" x="1819" y="220" width="33" height="33"/>
+<text x="1876" y="231" font-size="23" fill="#1A1D25" font-weight="700" text-anchor="start" >DeepSeek V4.1</text>
+<text x="1876" y="259" font-size="20" fill="#737B8B" font-weight="400" text-anchor="start" >Flash · 1017</text>
+<rect x="1876" y="272" width="42" height="5" rx="2.5" fill="#C8D9F1"/>
+<line x1="74" y1="311" x2="2326" y2="311" stroke="#E7E9F0"/>
+<g id="benchmark-1" aria-label="IFBench">
+<text x="74" y="361" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">INSTRUCTION FOLLOWING</text>
+<text x="74" y="400" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >IFBench</text>
+<text x="611" y="398" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="113" y1="726.00" x2="603" y2="726.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="101" y="731.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="113" y1="591.50" x2="603" y2="591.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="101" y="596.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >50</text>
+<line x1="113" y1="457.00" x2="603" y2="457.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="101" y="462.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >100</text>
+<path d="M 129.50 726 V 512.81 Q 129.50 503.81 138.50 503.81 H 185.50 Q 194.50 503.81 194.50 512.81 V 726 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 82.6%</title></path>
+<text x="162.0" y="490.80600000000004" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">82.6</text>
+<rect x="139.00" y="516.81" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="145.0" y="522.806" width="34" height="34"/>
+<path d="M 227.50 726 V 544.39 Q 227.50 535.39 236.50 535.39 H 283.50 Q 292.50 535.39 292.50 544.39 V 726 Z" fill="#B8D895"><title>Nemotron 3.5: 70.9%</title></path>
+<text x="260.0" y="522.3866" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">70.9</text>
+<rect x="237.00" y="548.39" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="243.0" y="554.3866" width="34" height="34"/>
+<path d="M 325.50 726 V 519.61 Q 325.50 510.61 334.50 510.61 H 381.50 Q 390.50 510.61 390.50 519.61 V 726 Z" fill="#D4C9ED"><title>Qwen3.8: 80.1%</title></path>
+<text x="358.0" y="497.61170000000004" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">80.1</text>
+<rect x="335.00" y="523.61" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="341.0" y="529.6117" width="34" height="34"/>
+<path d="M 423.50 726 V 561.76 Q 423.50 552.76 432.50 552.76 H 479.50 Q 488.50 552.76 488.50 561.76 V 726 Z" fill="#E1CCCE"><title>GLM-5.3: 64.4%</title></path>
+<text x="456.0" y="539.764" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">64.4</text>
+<rect x="433.00" y="565.76" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="439.0" y="571.764" width="34" height="34"/>
+<path d="M 521.50 726 V 529.67 Q 521.50 520.67 530.50 520.67 H 577.50 Q 586.50 520.67 586.50 529.67 V 726 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 76.3%</title></path>
+<text x="554.0" y="507.67229999999995" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">76.3</text>
+<rect x="531.00" y="533.67" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="537.0" y="539.6723" width="34" height="34"/>
+<text x="113" y="803" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–100 scale</text>
+</g>
+<g id="benchmark-2" aria-label="AA-LCR">
+<text x="647" y="361" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">LONG CONTEXT</text>
+<text x="647" y="400" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >AA-LCR</text>
+<text x="1184" y="398" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="686" y1="726.00" x2="1176" y2="726.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="674" y="731.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="686" y1="591.50" x2="1176" y2="591.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="674" y="596.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >50</text>
+<line x1="686" y1="457.00" x2="1176" y2="457.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="674" y="462.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >100</text>
+<path d="M 702.50 726 V 507.16 Q 702.50 498.16 711.50 498.16 H 758.50 Q 767.50 498.16 767.50 507.16 V 726 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 84.7%</title></path>
+<text x="735.0" y="485.15700000000004" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">84.7</text>
+<rect x="712.00" y="511.16" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="718.0" y="517.157" width="34" height="34"/>
+<path d="M 800.50 726 V 550.41 Q 800.50 541.41 809.50 541.41 H 856.50 Q 865.50 541.41 865.50 550.41 V 726 Z" fill="#B8D895"><title>Nemotron 3.5: 68.6%</title></path>
+<text x="833.0" y="528.4122" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">68.6</text>
+<rect x="810.00" y="554.41" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="816.0" y="560.4122" width="34" height="34"/>
+<path d="M 898.50 726 V 539.63 Q 898.50 530.63 907.50 530.63 H 954.50 Q 963.50 530.63 963.50 539.63 V 726 Z" fill="#D4C9ED"><title>Qwen3.8: 72.6%</title></path>
+<text x="931.0" y="517.6253" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">72.6</text>
+<rect x="908.00" y="543.63" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="914.0" y="549.6253" width="34" height="34"/>
+<path d="M 996.50 726 V 528.70 Q 996.50 519.70 1005.50 519.70 H 1052.50 Q 1061.50 519.70 1061.50 528.70 V 726 Z" fill="#E1CCCE"><title>GLM-5.3: 76.7%</title></path>
+<text x="1029.0" y="506.7039" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">76.7</text>
+<rect x="1006.00" y="532.70" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="1012.0" y="538.7039" width="34" height="34"/>
+<path d="M 1094.50 726 V 518.70 Q 1094.50 509.70 1103.50 509.70 H 1150.50 Q 1159.50 509.70 1159.50 518.70 V 726 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 80.4%</title></path>
+<text x="1127.0" y="496.6971" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">80.4</text>
+<rect x="1104.00" y="522.70" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="1110.0" y="528.6971" width="34" height="34"/>
+<text x="686" y="803" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–100 scale</text>
+</g>
+<g id="benchmark-3" aria-label="GPQA Diamond">
+<text x="1220" y="361" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">SCIENTIFIC REASONING</text>
+<text x="1220" y="400" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >GPQA Diamond</text>
+<text x="1757" y="398" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="1259" y1="726.00" x2="1749" y2="726.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="1247" y="731.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="1259" y1="591.50" x2="1749" y2="591.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1247" y="596.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >50</text>
+<line x1="1259" y1="457.00" x2="1749" y2="457.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1247" y="462.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >100</text>
+<path d="M 1275.50 726 V 485.10 Q 1275.50 476.10 1284.50 476.10 H 1331.50 Q 1340.50 476.10 1340.50 485.10 V 726 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 92.9%</title></path>
+<text x="1308.0" y="463.099" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">92.9</text>
+<rect x="1285.00" y="489.10" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="1291.0" y="495.099" width="34" height="34"/>
+<path d="M 1373.50 726 V 494.19 Q 1373.50 485.19 1382.50 485.19 H 1429.50 Q 1438.50 485.19 1438.50 494.19 V 726 Z" fill="#B8D895"><title>Nemotron 3.5: 89.5%</title></path>
+<text x="1406.0" y="472.1912" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">89.5</text>
+<rect x="1383.00" y="498.19" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="1389.0" y="504.1912" width="34" height="34"/>
+<path d="M 1471.50 726 V 495.81 Q 1471.50 486.81 1480.50 486.81 H 1527.50 Q 1536.50 486.81 1536.50 495.81 V 726 Z" fill="#D4C9ED"><title>Qwen3.8: 88.9%</title></path>
+<text x="1504.0" y="473.8052" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">88.9</text>
+<rect x="1481.00" y="499.81" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="1487.0" y="505.8052" width="34" height="34"/>
+<path d="M 1569.50 726 V 487.06 Q 1569.50 478.06 1578.50 478.06 H 1625.50 Q 1634.50 478.06 1634.50 487.06 V 726 Z" fill="#E1CCCE"><title>GLM-5.3: 92.2%</title></path>
+<text x="1602.0" y="465.0627" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">92.2</text>
+<rect x="1579.00" y="491.06" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="1585.0" y="497.0627" width="34" height="34"/>
+<path d="M 1667.50 726 V 485.45 Q 1667.50 476.45 1676.50 476.45 H 1723.50 Q 1732.50 476.45 1732.50 485.45 V 726 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 92.8%</title></path>
+<text x="1700.0" y="463.44870000000003" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">92.8</text>
+<rect x="1677.00" y="489.45" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="1683.0" y="495.44870000000003" width="34" height="34"/>
+<text x="1259" y="803" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–100 scale</text>
+</g>
+<g id="benchmark-4" aria-label="SciCode">
+<text x="1793" y="361" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">SCIENTIFIC CODING</text>
+<text x="1793" y="400" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >SciCode</text>
+<text x="2330" y="398" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="1832" y1="726.00" x2="2322" y2="726.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="1820" y="731.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="1832" y1="591.50" x2="2322" y2="591.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1820" y="596.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >35</text>
+<line x1="1832" y1="457.00" x2="2322" y2="457.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1820" y="462.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >70</text>
+<path d="M 1848.50 726 V 519.80 Q 1848.50 510.80 1857.50 510.80 H 1904.50 Q 1913.50 510.80 1913.50 519.80 V 726 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 56.0%</title></path>
+<text x="1881.0" y="497.79999999999995" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">56.0</text>
+<rect x="1858.00" y="523.80" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="1864.0" y="529.8" width="34" height="34"/>
+<path d="M 1946.50 726 V 553.89 Q 1946.50 544.89 1955.50 544.89 H 2002.50 Q 2011.50 544.89 2011.50 553.89 V 726 Z" fill="#B8D895"><title>Nemotron 3.5: 47.1%</title></path>
+<text x="1979.0" y="531.8861428571429" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">47.1</text>
+<rect x="1956.00" y="557.89" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="1962.0" y="563.8861428571429" width="34" height="34"/>
+<path d="M 2044.50 726 V 550.81 Q 2044.50 541.81 2053.50 541.81 H 2100.50 Q 2109.50 541.81 2109.50 550.81 V 726 Z" fill="#D4C9ED"><title>Qwen3.8: 47.9%</title></path>
+<text x="2077.0" y="528.8118571428572" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">47.9</text>
+<rect x="2054.00" y="554.81" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="2060.0" y="560.8118571428572" width="34" height="34"/>
+<path d="M 2142.50 726 V 529.64 Q 2142.50 520.64 2151.50 520.64 H 2198.50 Q 2207.50 520.64 2207.50 529.64 V 726 Z" fill="#E1CCCE"><title>GLM-5.3: 53.4%</title></path>
+<text x="2175.0" y="507.6377142857143" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">53.4</text>
+<rect x="2152.00" y="533.64" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="2158.0" y="539.6377142857143" width="34" height="34"/>
+<path d="M 2240.50 726 V 513.73 Q 2240.50 504.73 2249.50 504.73 H 2296.50 Q 2305.50 504.73 2305.50 513.73 V 726 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 57.6%</title></path>
+<text x="2273.0" y="491.72828571428573" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">57.6</text>
+<rect x="2250.00" y="517.73" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="2256.0" y="523.7282857142857" width="34" height="34"/>
+<text x="1832" y="803" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–70 scale</text>
+</g>
+<g id="benchmark-5" aria-label="LiveCodeBench v6">
+<text x="74" y="851" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">CODE GENERATION</text>
+<text x="74" y="890" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >LiveCodeBench v6</text>
+<text x="611" y="888" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="113" y1="1216.00" x2="603" y2="1216.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="101" y="1221.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="113" y1="1081.50" x2="603" y2="1081.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="101" y="1086.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >50</text>
+<line x1="113" y1="947.00" x2="603" y2="947.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="101" y="952.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >100</text>
+<path d="M 129.50 1216 V 981.56 Q 129.50 972.56 138.50 972.56 H 185.50 Q 194.50 972.56 194.50 981.56 V 1216 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 90.5%</title></path>
+<text x="162.0" y="959.5550000000001" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">90.5</text>
+<rect x="139.00" y="985.56" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="145.0" y="991.5550000000001" width="34" height="34"/>
+<path d="M 227.50 1216 V 987.69 Q 227.50 978.69 236.50 978.69 H 283.50 Q 292.50 978.69 292.50 987.69 V 1216 Z" fill="#B8D895"><title>Nemotron 3.5: 88.2%</title></path>
+<text x="260.0" y="965.6882" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">88.2</text>
+<rect x="237.00" y="991.69" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="243.0" y="997.6882" width="34" height="34"/>
+<path d="M 325.50 1216 V 982.09 Q 325.50 973.09 334.50 973.09 H 381.50 Q 390.50 973.09 390.50 982.09 V 1216 Z" fill="#D4C9ED"><title>Qwen3.8: 90.3%</title></path>
+<text x="358.0" y="960.093" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">90.3</text>
+<rect x="335.00" y="986.09" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="341.0" y="992.093" width="34" height="34"/>
+<path d="M 423.50 1216 V 1008.19 Q 423.50 999.19 432.50 999.19 H 479.50 Q 488.50 999.19 488.50 1008.19 V 1216 Z" fill="#E1CCCE"><title>GLM-5.3: 80.6%</title></path>
+<text x="456.0" y="986.186" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">80.6</text>
+<rect x="433.00" y="1012.19" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="439.0" y="1018.186" width="34" height="34"/>
+<path d="M 521.50 1216 V 983.68 Q 521.50 974.68 530.50 974.68 H 577.50 Q 586.50 974.68 586.50 983.68 V 1216 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 89.7%</title></path>
+<text x="554.0" y="961.6801" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">89.7</text>
+<rect x="531.00" y="987.68" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="537.0" y="993.6801" width="34" height="34"/>
+<text x="113" y="1293" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–100 scale</text>
+</g>
+<g id="benchmark-6" aria-label="SWE-bench Pro">
+<text x="647" y="851" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">SOFTWARE ENGINEERING</text>
+<text x="647" y="890" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >SWE-bench Pro</text>
+<text x="1184" y="888" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="686" y1="1216.00" x2="1176" y2="1216.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="674" y="1221.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="686" y1="1081.50" x2="1176" y2="1081.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="674" y="1086.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >40</text>
+<line x1="686" y1="947.00" x2="1176" y2="947.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="674" y="952.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >80</text>
+<path d="M 702.50 1216 V 1009.46 Q 702.50 1000.46 711.50 1000.46 H 758.50 Q 767.50 1000.46 767.50 1009.46 V 1216 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 64.1%</title></path>
+<text x="735.0" y="987.46375" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">64.1</text>
+<rect x="712.00" y="1013.46" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="718.0" y="1019.46375" width="34" height="34"/>
+<path d="M 800.50 1216 V 1050.89 Q 800.50 1041.89 809.50 1041.89 H 856.50 Q 865.50 1041.89 865.50 1050.89 V 1216 Z" fill="#B8D895"><title>Nemotron 3.5: 51.8%</title></path>
+<text x="833.0" y="1028.88975" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">51.8</text>
+<rect x="810.00" y="1054.89" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="816.0" y="1060.88975" width="34" height="34"/>
+<path d="M 898.50 1216 V 1017.53 Q 898.50 1008.53 907.50 1008.53 H 954.50 Q 963.50 1008.53 963.50 1017.53 V 1216 Z" fill="#D4C9ED"><title>Qwen3.8: 61.7%</title></path>
+<text x="931.0" y="995.53375" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">61.7</text>
+<rect x="908.00" y="1021.53" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="914.0" y="1027.53375" width="34" height="34"/>
+<path d="M 996.50 1216 V 1024.26 Q 996.50 1015.26 1005.50 1015.26 H 1052.50 Q 1061.50 1015.26 1061.50 1024.26 V 1216 Z" fill="#E1CCCE"><title>GLM-5.3: 59.7%</title></path>
+<text x="1029.0" y="1002.25875" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">59.7</text>
+<rect x="1006.00" y="1028.26" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="1012.0" y="1034.25875" width="34" height="34"/>
+<rect x="1094.50" y="1172" width="65" height="44" rx="8" fill="#F9FAFC" stroke="#D7DBE5" stroke-dasharray="4 4"/>
+<text x="1127.0" y="1201" font-size="16" fill="#9DA4B1" font-weight="400" text-anchor="middle" >N/R</text>
+<use xlink:href="#logo-deepseek" x="1111.0" y="1233" width="32" height="32"/>
+<text x="686" y="1293" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–80 scale</text>
+<text x="1176" y="1293" font-size="16" fill="#949CAA" font-weight="400" text-anchor="end" >N/R = not reported</text>
+</g>
+<g id="benchmark-7" aria-label="HLE-Diamond">
+<text x="1220" y="851" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">FRONTIER REASONING</text>
+<text x="1220" y="890" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >HLE-Diamond</text>
+<text x="1757" y="888" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="1259" y1="1216.00" x2="1749" y2="1216.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="1247" y="1221.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="1259" y1="1081.50" x2="1749" y2="1081.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1247" y="1086.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >15</text>
+<line x1="1259" y1="947.00" x2="1749" y2="947.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1247" y="952.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >30</text>
+<path d="M 1275.50 1216 V 1074.36 Q 1275.50 1065.36 1284.50 1065.36 H 1331.50 Q 1340.50 1065.36 1340.50 1074.36 V 1216 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 16.8%</title></path>
+<text x="1308.0" y="1052.36" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">16.8</text>
+<rect x="1285.00" y="1078.36" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="1291.0" y="1084.36" width="34" height="34"/>
+<path d="M 1373.50 1216 V 1146.09 Q 1373.50 1137.09 1382.50 1137.09 H 1429.50 Q 1438.50 1137.09 1438.50 1146.09 V 1216 Z" fill="#B8D895"><title>Nemotron 3.5: 8.8%</title></path>
+<text x="1406.0" y="1124.0933333333332" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">8.8</text>
+<rect x="1383.00" y="1150.09" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="1389.0" y="1156.0933333333332" width="34" height="34"/>
+<path d="M 1471.50 1216 V 1087.81 Q 1471.50 1078.81 1480.50 1078.81 H 1527.50 Q 1536.50 1078.81 1536.50 1087.81 V 1216 Z" fill="#D4C9ED"><title>Qwen3.8: 15.3%</title></path>
+<text x="1504.0" y="1065.81" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">15.3</text>
+<rect x="1481.00" y="1091.81" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="1487.0" y="1097.81" width="34" height="34"/>
+<path d="M 1569.50 1216 V 1061.81 Q 1569.50 1052.81 1578.50 1052.81 H 1625.50 Q 1634.50 1052.81 1634.50 1061.81 V 1216 Z" fill="#E1CCCE"><title>GLM-5.3: 18.2%</title></path>
+<text x="1602.0" y="1039.8066666666666" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">18.2</text>
+<rect x="1579.00" y="1065.81" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="1585.0" y="1071.8066666666666" width="34" height="34"/>
+<path d="M 1667.50 1216 V 998.14 Q 1667.50 989.14 1676.50 989.14 H 1723.50 Q 1732.50 989.14 1732.50 998.14 V 1216 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 25.3%</title></path>
+<text x="1700.0" y="976.1433333333333" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">25.3</text>
+<rect x="1677.00" y="1002.14" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="1683.0" y="1008.1433333333333" width="34" height="34"/>
+<text x="1259" y="1293" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–30 scale</text>
+</g>
+<g id="benchmark-8" aria-label="GDP.pdf">
+<text x="1793" y="851" font-size="15" fill="#8991A2" font-weight="700" text-anchor="start" letter-spacing="1.7">DOCUMENT REASONING</text>
+<text x="1793" y="890" font-size="30" fill="#1A1D25" font-weight="700" text-anchor="start" >GDP.pdf</text>
+<text x="2330" y="888" font-size="16" fill="#9299A7" font-weight="400" text-anchor="end" >Score (%)</text>
+<line x1="1832" y1="1216.00" x2="2322" y2="1216.00" stroke="#CFD4DF" stroke-width="1.3"/>
+<text x="1820" y="1221.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >0</text>
+<line x1="1832" y1="1081.50" x2="2322" y2="1081.50" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1820" y="1086.5" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >10</text>
+<line x1="1832" y1="947.00" x2="2322" y2="947.00" stroke="#ECEEF4" stroke-width="1"/>
+<text x="1820" y="952.0" font-size="15" fill="#A1A7B3" font-weight="400" text-anchor="end" >20</text>
+<path d="M 1848.50 1216 V 1007.11 Q 1848.50 998.11 1857.50 998.11 H 1904.50 Q 1913.50 998.11 1913.50 1007.11 V 1216 Z" fill="url(#agnes-bar)"><title>agnes-2.5-pro-theta: 16.2%</title></path>
+<text x="1881.0" y="985.11" font-size="21" fill="#23398E" font-weight="700" text-anchor="middle" class="value">16.2</text>
+<rect x="1858.00" y="1011.11" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-agnes" x="1864.0" y="1017.11" width="34" height="34"/>
+<path d="M 1946.50 1216 V 1117.40 Q 1946.50 1108.40 1955.50 1108.40 H 2002.50 Q 2011.50 1108.40 2011.50 1117.40 V 1216 Z" fill="#B8D895"><title>Nemotron 3.5: 8.0%</title></path>
+<text x="1979.0" y="1095.4" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">8.0</text>
+<rect x="1956.00" y="1121.40" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-nvidia" x="1962.0" y="1127.4" width="34" height="34"/>
+<path d="M 2044.50 1216 V 1004.42 Q 2044.50 995.42 2053.50 995.42 H 2100.50 Q 2109.50 995.42 2109.50 1004.42 V 1216 Z" fill="#D4C9ED"><title>Qwen3.8: 16.4%</title></path>
+<text x="2077.0" y="982.4200000000001" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">16.4</text>
+<rect x="2054.00" y="1008.42" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-qwen" x="2060.0" y="1014.4200000000001" width="34" height="34"/>
+<path d="M 2142.50 1216 V 1017.87 Q 2142.50 1008.87 2151.50 1008.87 H 2198.50 Q 2207.50 1008.87 2207.50 1017.87 V 1216 Z" fill="#E1CCCE"><title>GLM-5.3: 15.4%</title></path>
+<text x="2175.0" y="995.87" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">15.4</text>
+<rect x="2152.00" y="1021.87" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-zai" x="2158.0" y="1027.87" width="34" height="34"/>
+<path d="M 2240.50 1216 V 993.66 Q 2240.50 984.66 2249.50 984.66 H 2296.50 Q 2305.50 984.66 2305.50 993.66 V 1216 Z" fill="#C8D9F1"><title>DeepSeek V4.1: 17.2%</title></path>
+<text x="2273.0" y="971.66" font-size="21" fill="#303642" font-weight="400" text-anchor="middle" class="value">17.2</text>
+<rect x="2250.00" y="997.66" width="46" height="46" rx="9" fill="white" filter="url(#badge-shadow)"/>
+<use xlink:href="#logo-deepseek" x="2256.0" y="1003.66" width="34" height="34"/>
+<text x="1832" y="1293" font-size="16" fill="#949CAA" font-weight="400" text-anchor="start" >0–20 scale</text>
+</g>
+</svg>
