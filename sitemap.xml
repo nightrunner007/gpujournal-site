@@ -315,6 +315,7 @@
   <url><loc>https://gpujournal.ai/guide/deploy-minimax-h3-image</loc><lastmod>2026-11-13</lastmod></url>
   <url><loc>https://gpujournal.ai/guide/gpu-rental-cost</loc><lastmod>2026-11-14</lastmod></url>
   <url><loc>https://gpujournal.ai/guide/gb200-nvl72-pricing</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://gpujournal.ai/guide/serverless-gpu-inference</loc><lastmod>2026-11-19</lastmod></url>
   <url><loc>https://gpujournal.ai/story/amd-mi450x-launch-nov-12</loc><lastmod>2026-11-12</lastmod></url>
   <url><loc>https://gpujournal.ai/story/inkling-2-small-weights-nov-12</loc><lastmod>2026-11-12</lastmod></url>
   <url><loc>https://gpujournal.ai/story/sglang-consortium-nov-12</loc><lastmod>2026-11-12</lastmod></url>
@@ -342,4 +343,5 @@
   <url><loc>https://gpujournal.ai/model/olala-mini-7a1b</loc><lastmod>2026-11-19</lastmod></url>
   <url><loc>https://gpujournal.ai/model/clairic</loc><lastmod>2026-11-19</lastmod></url>
   <url><loc>https://gpujournal.ai/model/clairic-flash</loc><lastmod>2026-11-19</lastmod></url>
+  <url><loc>https://gpujournal.ai/story/anthropic-ant-first-trade-nov-19</loc><lastmod>2026-11-19</lastmod></url>
 </urlset>
