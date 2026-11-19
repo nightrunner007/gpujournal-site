@@ -14,6 +14,27 @@
 // transform error) falls back to the untouched shell — exactly the
 // behaviour the site had before this function existed.
 
+// Security headers (added 2026-11-19, weekly security scan): the repo's
+// _headers file is not being applied by Pages in production (verified
+// live 2026-11-12 and again 2026-11-19 — only nosniff and Referrer-Policy
+// arrived), so the HTML responses this Function serves carry the same
+// header set explicitly. Static assets excluded by _routes.json still
+// rely on _headers / platform defaults.
+const SEC = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Content-Security-Policy': "frame-ancestors 'self'",
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+function withSec(res) {
+  const h = new Headers(res.headers);
+  for (const k in SEC) h.set(k, SEC[k]);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}
+
 let dataPromise = null;
 
 function loadData(env, origin) {
@@ -40,7 +61,7 @@ export async function onRequest(context) {
 
     const data = await loadData(env, url.origin);
     const entry = data && data.routes ? data.routes[p] : null;
-    if (!entry) return res;
+    if (!entry) return withSec(res);
 
     const setMeta = (rw, selector, value) => {
       if (value) rw.on(selector, { element(e) { e.setAttribute('content', value); } });
@@ -78,8 +99,8 @@ export async function onRequest(context) {
       rw.on('head', { element(e) { e.append(headExtra, { html: true }); } });
     }
 
-    return rw.transform(res);
+    return withSec(rw.transform(res));
   } catch (err) {
-    return res; // never let the injector take the site down
+    return withSec(res); // never let the injector take the site down
   }
 }

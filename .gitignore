@@ -1,0 +1,7 @@
+# Added 2026-11-19 (weekly security scan): guard against a future .env
+# or local tooling state ever being committed to the public repo.
+.env
+.env.*
+!.env.example
+node_modules/
+.wrangler/
