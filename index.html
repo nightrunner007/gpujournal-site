@@ -4942,6 +4942,131 @@ var ARTICLES = [
   honestyNote:"Our reading \u2014 interpretation, not fact. The interesting thing about AWS\u2019s entry is what it declines to be. RunPod Serverless is a meter on GPU time; Lambda GPU is a managed fleet with a Lambda-shaped front door, priced like one \u2014 instance hours plus a percentage. That makes the honest comparison less \u201cwhich serverless is cheaper\u201d and more \u201cwhat is your traffic\u2019s shape.\u201d Spiky and small: rent seconds. Steady and packed: the AWS percentage buys real operational relief, and concurrency does the rest. Steady and simple: the flat hourly instance remains the price both newcomers have to beat, and on today\u2019s verified rates, past two-fifths utilisation, neither beats it.",
   exits:[["Compare prices", "#/board"], ["Price Watch \u2014 every verified move", "#/price-watch"]],
   related:["runpod-batch-inference-pricing", "gpu-rental-cost", "true-cost-of-renting-a-gpu"]
+},
+{
+  slug:"deploy-inkling-2-mini", hubSlug:"model-deployment",
+  title:"Deploy Inkling 2 Mini \u2014 how to run it and what it actually costs",
+  excerpt:"Inkling 2 Mini is the rare new model that is a one-card job. Thinking Machines Lab released the weights on Nov 20, 2026 as a single checkpoint of about 20GB \u2014 a 26.4B-parameter mixture-of-experts whose middle layers loop three times per token \u2014 and the cheapest verified card that a serving framework has actually verified for it rents for $0.69 an hour. This guide works the two honest routes: run the checkpoint exactly as shipped on one 32GB card, or run it dequantized at full precision on an 80GB card \u2014 what each route needs, which serving commands are documented today, and what each costs at prices checked Nov 21, 2026. It also names the cheap cards that look like they fit and, as of today, are not verified to run it.",
+  publishedDate:"2026-11-21", readMinutes:13,
+  cta:[["Compare GPU prices across every provider", "#/board"], ["Inkling 2 Mini in the catalogue \u2014 every card ranked", "#/model/inkling-2-mini"]],
+  ctaClosing:true,
+  tldr:[
+    { label:"Native checkpoint \u2014 cheapest verified", vram:"RTX 5090 \u00b7 32GB", bestFit:"The checkpoint exactly as shipped (NVFP4 / MXFP8, 19.5GB file) on one RTX 5090 at RunPod Community \u2014 the cheapest card that clears the lab's 32GB floor and appears in a framework's verified matrix for this model: SGLang's cookbook verifies this exact card, single GPU, with context capped at 65,536 tokens (32,768 with speculative decoding on) to fit the KV cache.", price:"$0.69/hr \u00b7 $503.70/mo" },
+    { label:"Native checkpoint \u2014 room to breathe", vram:"RTX PRO 6000 \u00b7 96GB", bestFit:"The same shipped precision on a 96GB RTX PRO 6000 at RunPod Community, SGLang-verified on one GPU \u2014 three times the card memory, about six times the KV headroom once the weights are loaded. For long context and bigger batches.", price:"$1.69/hr \u00b7 $1,233.70/mo" },
+    { label:"Full precision \u2014 cheapest memory that fits", vram:"A100 80GB \u00b7 80GB", bestFit:"The checkpoint dequantized to a ~52.8GB BF16 working set on an A100 80GB at Thunder Compute, the cheapest 80GB rental on the board. Two cautions ride with this row: there is no official BF16 download, and no framework lists the A100 for this model \u2014 the framework check is still on you.", price:"$1.09/hr \u00b7 $795.70/mo" },
+    { label:"Full precision \u2014 framework-verified", vram:"H100 PCIe \u00b7 80GB", bestFit:"The same ~52.8GB BF16 working set on an H100 PCIe at RunPod Community \u2014 vLLM verifies the H100 for this model, and its recipe caps context at 262,144 tokens there.", price:"$1.99/hr \u00b7 $1,452.70/mo" },
+    { label:"The tempting rows \u2014 NOT verified for this model today", vram:"RTX A6000 \u00b7 L40S \u00b7 48GB", bestFit:"RTX A6000 at Thunder Compute ($0.35/hr, $255.50/mo) and L40S at RunPod Community ($0.79/hr, $576.70/mo) are real prices for real cards \u2014 but neither vLLM's recipe nor SGLang's verified matrix lists an Ampere or Ada card for this model, and at 48GB both are also too small for the dequantized full-precision load. Cheap is only cheap if it runs; the verification detail is in the serving section.", price:"$0.35 / $0.79/hr" }
+  ],
+  metricTitle:"The short answer",
+  metricBody:"Rent one RTX 5090 and run the checkpoint as shipped. The weights file is 19.53GB (plus a 0.64GB bundled draft head for speculative decoding), the lab's own hardware floor is a GPU with 32GB or more of VRAM, and SGLang's cookbook has a verified single-GPU recipe for exactly this card \u2014 with one honest limit: on 32GB it caps the context at 65,536 tokens (32,768 with speculative decoding on) to fit the KV cache. At RunPod Community's $0.69/hr, checked Nov 21, 2026, that is $503.70 for a 730-hour month. If you need long context or several long sessions at once, step up to the 96GB RTX PRO 6000 at $1.69/hr rather than to a data-centre card: same shipped precision, SGLang-verified on one GPU, and three times the card memory \u2014 about six times the KV headroom once the weights are loaded. If you need the model at full BF16 precision \u2014 for fine-tuning, evaluation against the lab's numbers, or because your stack dequantizes on load anyway \u2014 you are renting an 80GB card and paying $1.09\u2013$1.99/hr, and you should read the full-precision section first: Thinking Machines does not publish a BF16 checkpoint, so that route starts with a conversion, not a download.",
+  datedTables:[
+    { heading:"What you are actually downloading \u2014 model card and repo file listing, read Nov 21, 2026",
+      cols:["The fact", "The detail"],
+      rows:[
+        ["26.4B total parameters, 3.4B active per token", "A 24-layer decoder-only transformer with sparse MoE feed-forward layers: each token routes to 8 of 128 experts. The middle 12 layers (6\u201317) run three times with shared weights, so each token makes 48 layer visits, and the lab counts 5.4B effective active parameters once the extra passes are included."],
+        ["One checkpoint file of 19.53GB", "model-00001-of-00001.safetensors, plus mtp.safetensors at 0.64GB \u2014 the bundled DSpark draft head used for speculative decoding. The whole repo, tokenizers included, is 20.19GB. The card's \u201cabout 20GB\u201d is exact."],
+        ["Mixed precision, as trained", "The routed experts of layers 0\u201319 are NVFP4 and layers 20\u201323 are MXFP8 (the repo config confirms a ModelOpt NVFP4 quantization setup). This is the model's native format, not a post-release squeeze \u2014 there is no higher-precision original to download."],
+        ["Multimodal, 1M-token context", "Text and image in, text out, via a 23-layer vision encoder. Context window up to 1M tokens (the config's maximum position count is 1,048,576)."],
+        ["Licence: Apache 2.0", "Declared on the card \u2014 the details, and one honest footnote, are in the licence table below."]
+      ]
+    },
+    { heading:"Route one: the 20GB checkpoint on a single card (prices checked Nov 21, 2026)",
+      intro:"This is the route the model was built for. The lab lists three supported hardware classes on the card: one NVIDIA DGX Spark, Apple silicon with 32GB or more of memory, and other GPUs with 32GB or more of VRAM recommended. Note the floor is the maker's: the 20.19GB of files would physically squeeze onto a 24GB card, but the lab does not recommend it, and the frameworks' own context caps below show why \u2014 what is left after the weights is what your conversations live in.",
+      cols:["Card", "Cheapest verified rental", "$/hr", "$/month", "Verified for this model?"],
+      rows:[
+        ["RTX 5090 \u2014 32GB", "RunPod Community (Secure: $1.39/hr)", "$0.69", "$503.70", "Yes \u2014 SGLang, single GPU, TP1. Context capped at 65,536 tokens (Balanced) or 32,768 (DSpark) on this card."],
+        ["RTX PRO 6000 \u2014 96GB", "RunPod Community (Nebius: $1.80/hr)", "$1.69", "$1,233.70", "Yes \u2014 SGLang, single GPU, TP1."],
+        ["H100 / H200 \u2014 80GB / 141GB", "H100 PCIe, RunPod Community $1.99/hr \u00b7 H200, RunPod Community $3.59/hr", "$1.99 / $3.59", "$1,452.70 / $2,620.70", "Yes \u2014 vLLM (both cards; it caps context at 262,144 tokens on H100 to fit memory); SGLang lists the H200."],
+        ["RTX A6000 \u2014 48GB", "Thunder Compute", "$0.35", "$255.50", "Not listed by vLLM's recipe or SGLang's matrix as of Nov 21, 2026."],
+        ["L40S \u2014 48GB", "RunPod Community", "$0.79", "$576.70", "Not listed by vLLM's recipe or SGLang's matrix as of Nov 21, 2026."]
+      ],
+      after:"Why the 5090 is the headline: it is the cheapest card on our board that clears the lab's 32GB floor and appears in a framework's verified matrix for this specific model. The A6000 at $0.35/hr is cheaper and bigger on paper \u2014 but \u201cthe lab says 32GB+ GPUs generally\u201d is not the same as \u201ca serving stack has run this looped, NVFP4-native model on Ampere.\u201d Until a framework verifies it, treat the A6000 and L40S rows as an experiment you would be running, not a deployment you are buying."
+    },
+    { heading:"The memory maths: why context, not weights, sets your card",
+      intro:"Worked from the repo's own config, Nov 21, 2026. Inkling 2 Mini keeps 48 KV caches \u2014 one per layer visit, because every pass through the looped core keeps its own keys and values (the vLLM recipe and the Transformers documentation both state this).",
+      cols:["The figure", "How it is derived"],
+      rows:[
+        ["4,096 bytes per token, per cache", "Each cache costs, per token, 8 KV heads \u00d7 128 head dimension \u00d7 2 (keys and values) = 2,048 values, which at BF16 is 4,096 bytes per token per cache."],
+        ["About 206GB \u2014 the impossible bound", "If all 48 caches grew to the full sequence, a 1M-token context would need about 206GB of KV cache \u2014 impossible, and not what happens: 20 of the 24 stored layers are sliding-window layers whose caches stop growing at the config's 1,024-token window. Only the 4 full-attention layers' caches grow with your context."],
+        ["Roughly 17GB to 35GB for one 1M-token sequence", "Depending on how many of those 4 full-attention layers sit inside the looped core (the split is not published), the KV cache for one full 1M-token sequence works out at roughly 17GB to 35GB \u2014 arithmetic under a stated assumption, not a measurement."],
+        ["About 11.8GB left on a 32GB card", "On the RTX 5090 the weights and draft head take 20.19GB of the 32GB, leaving about 11.8GB for KV cache, activations and the runtime \u2014 plan your context around the caps, not around the 1M on the box."]
+      ],
+      after:"The operative numbers are the frameworks' own: vLLM fits about 1.8 concurrent 1M-token requests on one GB200 (192GB), caps H100 and DGX Spark at 262,144 tokens, and SGLang caps the 32GB RTX 5090 at 65,536 (32,768 with the draft head on)."
+    },
+    { heading:"Route two: full precision \u2014 the BF16 working set",
+      intro:"There is no official BF16 checkpoint. The lab ships NVFP4/MXFP8 only, so a \u201cfull-precision deployment\u201d means one of two things, and both start from the same arithmetic: 26.4B parameters \u00d7 2 bytes = 52.8GB of weights (script-computed from the card's parameter count; a community BF16 conversion measures 52.2GB on disk, which corroborates the derivation).",
+      cols:["The route", "What it means"],
+      rows:[
+        ["Transformers dequantizes on load", "The Transformers documentation states plainly that both checkpoints' NVFP4 and MXFP8 layers are dequantized when loading \u2014 so a Transformers deployment carries a ~52.8GB working set even though the download is 20GB. That is the honest way to run it for research, fine-tuning prep and evaluation; it is not the fast serving path (attention runs in eager mode only in this first implementation, contributed to Transformers on Nov 21, 2026)."],
+        ["Community GGUF conversions", "llama.cpp-format conversions include a BF16 build at 52.2GB \u2014 a third-party dequantization, not a lab artifact, and as of today the looped model needs an unmerged llama.cpp pull request (ggml-org/llama.cpp#32695) to load at all. Labelled here as community and unproven for production, because that is what it is."]
+      ],
+      after:"Memory consequence: 52.8GB of weights plus KV cache does not fit a 48GB card at all, and fits an 80GB card with roughly 27GB to spare. The cheapest 80GB rentals on our board, checked Nov 21, 2026: A100 80GB at Thunder Compute, $1.09/hr ($795.70/month), and A100 80GB PCIe at RunPod Community, $1.19/hr ($868.70/month). One caution that belongs with those prices: neither vLLM's recipe (Blackwell, Hopper and DGX Spark) nor SGLang's matrix (B300/GB300, B200/GB200, H200, RTX PRO 6000, RTX 5090, DGX Spark, AMD MI350X/MI355X, TPU7x) lists the A100 for this model \u2014 the A100 rows are the cheapest memory that fits the BF16 working set, with the framework check still on you. The cheapest full-precision home that a framework has verified is the H100: vLLM-verified, $1.99/hr at RunPod Community ($1,452.70/month), context capped at 262,144 tokens in its recipe. Who this route is for: fine-tuners and evaluators who need the weights at full precision, and teams whose existing stack is Transformers-shaped. Who it is not for: anyone serving traffic. The native checkpoint is the model as trained \u2014 serving it dequantized buys you memory bills, not accuracy the lab ever claimed."
+    },
+    { heading:"Serving: what is documented today (framework pages read Nov 21, 2026)",
+      cols:["Framework", "What is documented"],
+      rows:[
+        ["vLLM \u2014 dedicated recipe", "recipes.vllm.ai/thinkingmachines/Inkling-2-Mini. Until support lands in a vLLM release, the recipe specifies the pinned image vllm/vllm-openai:inkling-2-mini. Its documented serve command, with the bundled DSpark speculative decoding enabled: vllm serve thinkingmachines/Inkling-2-Mini --tensor-parallel-size 1 --reasoning-parser inkling --speculative-config '{\"method\":\"dspark\",\"num_speculative_tokens\":7,\"draft_sample_method\":\"probabilistic\"}'. The recipe verifies the model on GB200, B300, GB300, H100, H200 and DGX Spark; TP1 is its recommended shape (\u201cthe most efficient way to serve the model\u201d), with the full 1,048,576-token context on one GB200 and a 262,144-token cap on H100 and DGX Spark. Drop the speculative-config line and you have the plain decode setup."],
+        ["SGLang \u2014 full cookbook", "A full cookbook page with verified launch recipes per platform, using the pinned image lmsysorg/sglang:inkling-2-mini. Its verified matrix is the widest of the three: B300/GB300, B200/GB200, H200, RTX PRO 6000, RTX 5090 and DGX Spark on one GPU each (TP1/EP1), plus AMD MI350X/MI355X and TPU7x images. The recipes pass --reasoning-parser inkling and --tool-call-parser inkling2 explicitly, and --enable-multimodal for image input. On the RTX 5090 its context caps are 65,536 tokens (Balanced) and 32,768 (DSpark)."],
+        ["Hugging Face Transformers \u2014 the research route", "The architecture (Inkling2LoopForConditionalGeneration) was contributed to Transformers on Nov 21, 2026, with official model documentation and a pipeline example: pipeline(\"image-text-to-text\", model=\"thinkingmachines/Inkling-2-Mini\", dtype=torch.bfloat16, device_map=\"auto\"). Proven as a documented route, with the documentation's own caveats attached: the quantized layers are dequantized on load (so budget the ~52.8GB working set, not 20GB), and attention runs in eager mode only. This is the research and integration route, not the throughput route."]
+      ]
+    },
+    { heading:"Named honestly \u2014 listed, community, or not yet verified",
+      cols:["Route", "Status today"],
+      rows:[
+        ["llama.cpp / GGUF", "Listed by the lab for quantized GGUF versions, but the looped architecture loads only via an unmerged pull request (ggml-org/llama.cpp#32695) as of Nov 21, 2026, and the GGUF files themselves are community conversions. Fine for local experiments; not a production serving route today."],
+        ["TokenSpeed and NVIDIA Dynamo", "Named on the lab's card as supported frameworks. We did not verify a model-specific recipe for either first-hand today, so this guide asserts nothing about their setup or hardware."],
+        ["Ollama and MLX builds", "The lab lists Ollama on Apple silicon, and community MLX conversions exist \u2014 desktop routes, outside this guide's rental scope."],
+        ["Ampere and Ada cards (A100 serving, A6000, L40S, RTX 4090)", "No framework verification for this model found today. The 24GB RTX 4090 fails earlier anyway: the lab's floor is 32GB+ and the files alone are 20.19GB."]
+      ]
+    },
+    { heading:"The lab's benchmarks, in the lab's own frame",
+      intro:"Every number in this table is Thinking Machines' own published table from the model card \u2014 the lab's harnesses and settings, not independent results, and not ours. The comparison is against the dense Qwen3.8-27B, the comparison the launch leans on.",
+      cols:["Measure (lab-reported)", "Inkling 2 Mini", "Qwen3.8-27B"],
+      rows:[
+        ["Artificial Analysis Index (v5.0)", "20.1", "20.1 \u2014 a tie"],
+        ["SWE-bench Verified (bash only)", "79.2%", "77.8%"],
+        ["DeepSWE v1.1", "48.2%", "42.2%"],
+        ["Terminal Bench v2.1", "71.6%", "73.0% \u2014 Qwen ahead"],
+        ["AutomationBench-AA v1.0.6", "41.8%", "48.2% \u2014 Qwen ahead"],
+        ["MMMU Pro (vision)", "74.9%", "76.3% \u2014 Qwen ahead"]
+      ],
+      after:"The honest summary of the lab's own framing: a 3.4B-active MoE that ties a dense 27B on the lab's headline index and beats it on the lab's coding benches, while trailing it on several agentic, knowledge-work and vision rows of the same table. The card is also unusually plain about the weak spots \u2014 multi-turn conversation, factual recall bounded by size, and agents that \u201cmay take destructive actions\u2026 without confirmation\u201d in the lab's own words. Budget your own evaluation before believing any row, in either direction."
+    },
+    { heading:"Licence \u2014 Apache 2.0, and the contrast is real",
+      cols:["The point", "The detail"],
+      rows:[
+        ["Apache 2.0, declared on the card", "The card declares Apache 2.0, and the repository metadata agrees. Apache 2.0 is the whole licence: use it commercially, serve it, fine-tune it, with no revenue trigger, no user-count trigger and no separate licence to negotiate. Set that beside the Tencent Hy licences examined elsewhere on this site \u2014 where reselling inference above a $50M revenue line or 100M monthly users needs a separate licence \u2014 and the contrast is exactly as clean as it looks: nothing in the Apache 2.0 text reaches into your business that way."],
+        ["Footnote one: no standalone LICENSE file", "As of Nov 21, 2026 the repo's file listing contains no standalone LICENSE file \u2014 the licence is declared on the card and in the repo metadata; keep a copy of the card with your deployment records."],
+        ["Footnote two: an Acceptable Use Policy link", "The card also links the lab's Model Acceptable Use Policy alongside the licence, as it did for Inkling 2 Small \u2014 a policy link to read, not a licence condition we can quote you chapter and verse on here. Neither footnote changes the headline."]
+      ]
+    },
+    { heading:"Watch-outs before you rent",
+      cols:["Watch-out", "The detail"],
+      rows:[
+        ["Looped-model support is days old", "The card itself warns that \u201csupport for looped models in local runtimes is new, and speed varies by runtime and hardware.\u201d vLLM support lives in a pinned image, not a release; Transformers support was contributed the day this guide was drafted. Pin your images and expect movement."],
+        ["Context on the box is not context on your card", "1M tokens is the model's maximum. The verified caps today: 65,536 on a 32GB 5090 (SGLang), 262,144 on H100 (vLLM), the full 1,048,576 only on a GB200 in vLLM's verified set. Size your card to the context you will actually run."],
+        ["The agent warnings are the lab's, and they are blunt", "The card reports repetitive reasoning loops in debugging, tool use that is less reliable than larger models, and possible destructive file actions without confirmation. Its own advice: sandbox agentic workloads, require confirmation before irreversible actions, and cap output tokens and agent turns."],
+        ["Reasoning effort never fully turns off", "Setting it to minimum does not disable reasoning (card, limitations) \u2014 and with 48 layer visits per token, compute per token is higher than the 3.4B active figure suggests. Do not budget throughput off the active-parameter count alone."],
+        ["Speculative decoding gains are prompt-dependent", "vLLM's recipe notes DSpark acceptance depends on prompts and temperature \u2014 random-token benchmarks accept almost nothing. Benchmark on text that looks like your traffic."],
+        ["The cheap-card trap", "The two cheapest \u226532GB rows on the board (A6000 $0.35/hr, L40S $0.79/hr) are not in any framework's verified matrix for this model today, and both are too small for the dequantized load. Verify before you commit a month to them."]
+      ]
+    },
+    { heading:"Who should run this, and how",
+      cols:["Your workload", "The route"],
+      rows:[
+        ["Coding-agent and tool-use workloads on a budget", "The native route on an RTX 5090 at $0.69/hr. That is the deployment the release was designed for \u2014 one card, the shipped precision, SGLang's verified recipe, sandboxed per the lab's own advice."],
+        ["Long-document and long-session serving", "The RTX PRO 6000 at $1.69/hr. The 96GB is not about the weights; it is about KV cache headroom the 32GB card does not have."],
+        ["Fine-tuning, evaluation, research", "The BF16 route on an 80GB card \u2014 Transformers dequantizes on load, and the varloop research checkpoint (released alongside, loop passes adjustable from the research repo) exists for exactly this audience. Pay the $1.09\u2013$1.99/hr knowing the A100 rows carry a framework check and the H100 row is the verified one."],
+        ["Production serving at volume", "vLLM or SGLang on Hopper or Blackwell, where both frameworks have verified the model \u2014 and run your own benchmark first, because every performance claim available today is the maker's."]
+      ]
+    }
+  ],
+  licenceTitle:"How we check",
+  licenceBody:"Model facts \u2014 26.4B total / 3.4B active / 5.4B effective parameters, 24 layers with the middle 12 looped three times, 8 of 128 experts, NVFP4 experts in layers 0\u201319 and MXFP8 in layers 20\u201323, 1M-token context, the 32GB+ hardware recommendation and the Apache 2.0 declaration \u2014 are from Thinking Machines Lab's Hugging Face model card, read first-hand Nov 21, 2026. Checkpoint sizes (19.53GB main file, 0.64GB DSpark draft, 20.19GB total) are the repository's own file sizes via the Hugging Face API, read the same day. Architecture figures used in the KV maths \u2014 8 KV heads, 128 head dimension, 1,024-token sliding window, 48 caches at one per layer visit \u2014 are from the repo's config.json and the Transformers model documentation, read Nov 21, 2026; the 20 sliding-window / 4 full-attention layer split is from the vLLM recipe. Serving verification is from the frameworks' own pages read the same day: the vLLM recipe (pinned image, serve command, verified hardware, context caps, ~1.8 concurrent 1M-token requests on GB200, DSpark prompt-dependence), the SGLang cookbook (pinned image, verified matrix including RTX 5090 and RTX PRO 6000 at TP1, parser flags, 5090 context caps), and the Transformers documentation (dequantize-on-load, eager attention, pipeline example, contributed Nov 21, 2026). Prices are GPUJournal's Nov 21, 2026 board snapshot: RTX 5090 RunPod Community $0.69/hr and Secure $1.39/hr; RTX PRO 6000 RunPod Community $1.69/hr and Nebius $1.80/hr; RTX A6000 Thunder Compute $0.35/hr; L40S RunPod Community $0.79/hr; A100 80GB Thunder Compute $1.09/hr and RunPod Community PCIe $1.19/hr; H100 PCIe RunPod Community $1.99/hr; H200 RunPod Community $3.59/hr. Monthly figures are hourly \u00d7 730. The BF16 weight figure (52.8GB) is arithmetic \u2014 26.4B \u00d7 2 bytes \u2014 corroborated by a community BF16 GGUF conversion's measured 52.2GB on disk. The KV range (17\u201335GB at 1M tokens) is arithmetic under a stated assumption about the unpublished full-attention layer split, presented as a range for that reason. What is deliberately not claimed. No throughput, latency or tokens-per-dollar figure appears here as our finding \u2014 we ran no benchmarks, and every benchmark number printed is the lab's own table, labelled as such. No serving route is asserted beyond what the framework's own page documents: TokenSpeed and NVIDIA Dynamo are named as lab-listed only, llama.cpp GGUF is labelled community-plus-unmerged-PR, and Ampere/Ada cards are labelled unverified for this model because neither vLLM's recipe nor SGLang's matrix lists them as of Nov 21, 2026. The proposal-stage estimate of \u201c~80GB\u201d for the BF16 route did not survive the arithmetic and is not used: the derived figure is 52.8GB.",
+  honestyTitle:"Our reading",
+  honestyNote:"Our reading \u2014 interpretation, not fact. The interesting thing about Inkling 2 Mini is not the loop; it is the shape of the bill. A frontier-adjacent coding model whose honest deployment is a $0.69-an-hour consumer card changes who gets to experiment: the rental question stops being \u201ccan we afford the cluster\u201d and becomes \u201cis a days-old runtime stable enough to build on.\u201d On today's evidence the weights, the licence and the price are the solid parts. The runtimes are the moving part \u2014 and this guide's verified/unverified split is the map of exactly where the ground is still soft.",
+  exits:[["Compare prices", "#/board"], ["Inkling 2 Mini \u2014 catalogue entry", "#/model/inkling-2-mini"]],
+  related:["deploy-inkling-2-small", "kimi-k3-1-pro-deploy-cost", "gpu-rental-cost"]
 }
 ];
 var FIND_RANKED = {
