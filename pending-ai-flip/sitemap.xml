@@ -235,6 +235,7 @@
 <url><loc>https://gpujournal.ai/model/beam-1-0-501b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/story/amd-helios-running-at-meta</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 <url><loc>https://gpujournal.ai/story/ling-3-1-flash-1019-weights</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://gpujournal.ai/model/ling-3-2-air</loc><lastmod>2026-11-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/ling-3-1-flash-1019</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/lfm3-1-7b</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 <url><loc>https://gpujournal.ai/model/unlimited-ocr-2</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -354,6 +355,7 @@
   <url><loc>https://gpujournal.ai/story/anthropic-ipo-close-day-two-nov-20</loc><lastmod>2026-11-20</lastmod></url>
   <url><loc>https://gpujournal.ai/model/inkling-2-mini</loc><lastmod>2026-11-20</lastmod></url>
   <url><loc>https://gpujournal.ai/story/sk-hynix-mars-sc26-nov-21</loc><lastmod>2026-11-21</lastmod></url>
+  <url><loc>https://gpujournal.ai/story/ling-3-2-air-nov-23</loc></url>
   <url><loc>https://gpujournal.ai/story/aws-ec2-g7-metal-nov-23</loc></url>
   <url><loc>https://gpujournal.ai/story/nvidia-ceo-reinstated-nov-23</loc></url>
   <url><loc>https://gpujournal.ai/story/sarvam-105b-1711-open-weights-nov-22</loc></url>
