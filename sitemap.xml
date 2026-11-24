@@ -361,4 +361,10 @@
   <url><loc>https://gpujournal.ai/story/aws-ec2-g7-metal-nov-23</loc></url>
   <url><loc>https://gpujournal.ai/story/nvidia-ceo-reinstated-nov-23</loc></url>
   <url><loc>https://gpujournal.ai/story/sarvam-105b-1711-open-weights-nov-22</loc></url>
+  <url><loc>https://gpujournal.ai/story/sensenova-u1-6-nov-24</loc></url>
+  <url><loc>https://gpujournal.ai/story/ernie-5-5-flash-preview-nov-24</loc></url>
+  <url><loc>https://gpujournal.ai/story/kolibri-1-1-nov-23</loc></url>
+  <url><loc>https://gpujournal.ai/model/sensenova-u1-6-8b-mot</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://gpujournal.ai/model/ernie-5-5-flash-preview</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://gpujournal.ai/model/kolibri-1-1</loc><lastmod>2026-11-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
