@@ -5485,6 +5485,364 @@ var ARTICLES = [
   honestyNote:"Our reading \u2014 interpretation, not fact. This launch inverts the usual preview pattern. Normally the weights arrive half-served and the frameworks catch up over weeks; here the serving story is the finished part \u2014 a framework cookbook with a verified matrix, a vendor plugin with a day-0 blog post, a speculative-decoding head trained alongside the model \u2014 and it is the checkpoint itself that its maker describes as unfinished. That combination argues for a specific renter posture: spend freely on evaluation, because the deployment risk has been unusually well retired, and commit to nothing the GA release would make you redo. The teams who get this release right will be the ones who can say, on the day the finished weights land, exactly what the model does on their own workloads \u2014 measured on rented hours, not on a contract signed against a preview.",
   exits:[["Compare prices", "#/board"], ["The Base model page — ERNIE 5.5 Flash Base", "#/model/ernie-5-5-flash-base"]],
   related:["deploy-hy4", "deploy-inkling-2-mini", "gpu-rental-cost"]
+},
+{
+  "slug": "deploy-ternary-bonsai-2-5-27b",
+  "hubSlug": "model-deployment",
+  "title": "Deploy Ternary Bonsai 2.5 on one small card — what 6 GB of weights actually costs to run",
+  "excerpt": "PrismML’s Ternary Bonsai 2.5 27B is a 27B agent model whose weights are ternary — every weight is −1, 0 or +1 — so the fastest checkpoint measures 5.99 GB on disk (the maker headlines 5.93 GB) against 53.8 GB for the same model at FP16. That makes the rental question almost absurdly simple: every single card on our board can hold it, so the decision is not which card fits but which card is worth paying for, which of the three file packings your runtime will actually load, and whether the maker’s own speed tables — the only speed figures that exist for this model — justify skipping the ordinary 4-bit build of the base model instead. This guide works the arithmetic, prices the honest single-card routes, and prints the traps: the fastest file needs PrismML’s own llama.cpp fork, and the file that runs on stock llama.cpp will silently produce garbage on an old build.",
+  "publishedDate": "2026-11-25",
+  "readMinutes": 19,
+  "cta": [
+    [
+      "Compare GPU prices across every provider",
+      "#/board"
+    ],
+    [
+      "The model page for Ternary Bonsai 2.5 27B",
+      "#/model/ternary-bonsai-2-5-27b"
+    ]
+  ],
+  "ctaClosing": true,
+  "tldr": [
+    {
+      "label": "RTX 4090 · 24 GB — cheapest honest route",
+      "vram": "RunPod Community · RTX 4090",
+      "bestFit": "Fits, with at least 14 GB to spare against the 8–10 GB working set worked out below. The maker’s tables put it at 112 tok/s plain and 204 tok/s with the MTP head. RunPod Community · RTX 4090 — $0.34/hr, $248.20/mo.",
+      "price": "$0.34/hr · $248.20/mo"
+    },
+    {
+      "label": "RTX A6000 · 48 GB",
+      "vram": "Thunder Compute · RTX A6000",
+      "bestFit": "Fits. Not in the maker’s speed tables — capacity is certain, speed is unmeasured by anyone. Thunder Compute · RTX A6000 — $0.35/hr, $255.50/mo.",
+      "price": "$0.35/hr · $255.50/mo"
+    },
+    {
+      "label": "RTX 5090 · 32 GB",
+      "vram": "RunPod Community · RTX 5090",
+      "bestFit": "Fits. 163 tok/s plain and 305 tok/s with the MTP head — the fastest small card in the maker’s tables; on those tables it decodes about 1.45× faster than the RTX 4090 plain and about 1.5× with MTP, for about twice the money. RunPod Community · RTX 5090 — $0.69/hr, $503.70/mo.",
+      "price": "$0.69/hr · $503.70/mo"
+    },
+    {
+      "label": "L40S · 48 GB",
+      "vram": "RunPod Community · L40S",
+      "bestFit": "Fits. 95 tok/s plain in the maker’s table; no MTP figure is published for this card. RunPod Community · L40S — $0.79/hr, $576.70/mo.",
+      "price": "$0.79/hr · $576.70/mo"
+    },
+    {
+      "label": "A100 80GB",
+      "vram": "Thunder Compute · A100 80GB",
+      "bestFit": "Fits. 107 tok/s plain and 171 tok/s with the MTP head, on the maker’s tables. Thunder Compute · A100 80GB — $1.09/hr, $795.70/mo.",
+      "price": "$1.09/hr · $795.70/mo"
+    },
+    {
+      "label": "RTX PRO 6000 · 96 GB",
+      "vram": "RunPod Community · RTX PRO 6000",
+      "bestFit": "Fits. 158 tok/s plain and 277 tok/s with the MTP head, on the maker’s tables. RunPod Community · RTX PRO 6000 — $1.69/hr, $1,233.70/mo.",
+      "price": "$1.69/hr · $1,233.70/mo"
+    }
+  ],
+  "metricTitle": "The short answer",
+  "metricBody": "Rent the RTX 4090 on RunPod Community at $0.34 an hour, $248.20 a month (checked Nov 25, 2026), download the PTQ1_0 file (5.99 GB measured), and run it in PrismML’s llama.cpp fork — the only runtime that loads the fast packings today. PrismML’s own table puts that card at 112 tokens/s plain and 204 tokens/s with the built-in MTP draft head. If you refuse third-party forks on principle, the fallback is the Q2_0 file (7.67 GB) on stock llama.cpp — but only on build b11556 or newer; older stock builds load it without a warning and produce garbage. And if your workload is ordinary chat rather than tool-calling agents, read the Q4 section before renting anything: the maker’s own benchmarks say the ternary model’s edge is specifically agentic, and a normal Q4_K_M build of the base model (16.46 GB) fits the same 24 GB card. “Fits” in the table above is judged against the working set worked out in this guide — about 8–10 GB total at the maker’s own 32K-context quickstart shape on one request slot — not against the 5.99 GB file alone. Every card on the board fits; the six rows are the cheapest single-card offers, ranked by price, not by value.",
+  "datedTables": [
+    {
+      "heading": "What you are actually downloading — the model card and file listing, read Nov 25, 2026",
+      "intro": "From the repository’s model card and file listing — sizes measured from the repository’s own file list through the Hugging Face API, not quoted from the announcement.",
+      "cols": [
+        "The fact",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "27.36B total parameters",
+          "A ternary release of Qwen3.8-27B: 24.35B language parameters (64 blocks) + 2.54B embedding/lm-head + a 0.47B vision tower. The GGUF language file itself carries 26,895,998,464 parameters (the repository’s GGUF metadata); the vision tower ships as a separate optional file and is never loaded for text work. Architecture: hybrid attention (about 75% linear / 25% full attention), SwiGLU MLP, RoPE, RMSNorm; context 262,144 tokens."
+        ],
+        [
+          "PTQ1_0 — the fast, small packing: 5.99 GB (5.58 GiB)",
+          "PrismML llama.cpp fork only; upstream merge under review. With the MTP head built in: 6.23 GB (5.81 GiB), fork only."
+        ],
+        [
+          "PQ2_0: 7.25 GB (6.76 GiB)",
+          "PrismML llama.cpp fork; the packing benchmarked on Apple Metal. With the MTP head: 7.49 GB (6.98 GiB)."
+        ],
+        [
+          "Q2_0 — the stock-compatible packing: 7.67 GB (7.15 GiB)",
+          "Stock llama.cpp, build b11556 or newer. With the MTP head: 7.91 GB (7.37 GiB)."
+        ],
+        [
+          "Vision projector (mmproj), optional: 0.63 GB (Q8_0) / 0.93 GB (BF16)",
+          "Loaded only when an image arrives."
+        ],
+        [
+          "One honest discrepancy, printed rather than smoothed over",
+          "The card headlines the PTQ1_0 file as “5.93 GB”. The file in the repository measures 5,993,834,848 bytes — 5.99 GB, about 1% larger. Nothing in this guide plans from the headline; every fit judgement uses the measured file."
+        ],
+        [
+          "The MTP head costs 0.24 GB",
+          "The PTQ1_0 file grows from 5.99 GB to 6.23 GB with it built in — one extra draft layer, made by PrismML. What it buys is in the speed section."
+        ],
+        [
+          "Reasoning is on by default",
+          "The model thinks before answering, at xhigh effort by default (medium for shorter traces; low is not supported and behaves like xhigh). The maker’s sampling for thinking mode: temperature 1.0, top_p 0.95, top_k 20 — and pass --min-p 0, because llama.cpp defaults to 0.05."
+        ],
+        [
+          "Licence: Apache 2.0",
+          "Declared in the repository metadata, stated in the card’s licence section, and the repository carries the full Apache 2.0 licence text as its LICENSE file. The scope note is in the licence section below."
+        ]
+      ]
+    },
+    {
+      "heading": "The 6 GB arithmetic: how 27B fits in 6 GB",
+      "intro": "Worked from the format description on the model card and the measured file, Nov 25, 2026.",
+      "cols": [
+        "The step",
+        "The maths"
+      ],
+      "rows": [
+        [
+          "A ternary weight carries log₂3 ≈ 1.585 bits of information",
+          "It is one of three values, {−1, 0, +1}. That is the floor, not the file."
+        ],
+        [
+          "The scales add 0.125 bits per weight",
+          "Weights are stored in groups of 128 with one shared FP16 scale per group (“Ternary g128”): 16 ÷ 128 = 0.125 bits per weight. Floor plus scales: 1.71 bits per weight before any packing overhead."
+        ],
+        [
+          "The maker states 1.76; the measured file works out at 1.78 bits per parameter",
+          "The maker states 1.76 bits per weight for the PTQ1_0 packing (“dense trits”); the measured file is 5,993,834,848 bytes × 8 ÷ 26,895,998,464 parameters = 1.78 — the small remainder is GGUF metadata and the tensors that are not ternary. Claim, format maths and file all land within 0.07 bits of each other."
+        ],
+        [
+          "The rotation costs nothing",
+          "Each matrix is stored in a blockwise Hadamard-rotated basis, folded into the weights offline; the runtime applies the matching transform to activations. It costs no extra bits and no extra weight traffic — but it is why the runtime needs Hadamard (FWHT) kernels, which is the root of the fork situation in the serving section."
+        ],
+        [
+          "Against FP16: 8.97× smaller",
+          "The same language model at 16 bits is 26,895,998,464 × 2 bytes = 53.79 GB (the maker’s 53.8 GB). 53.79 ÷ 5.99 = 8.97× — the maker’s “~9× smaller” checks out against the measured file."
+        ],
+        [
+          "Why the other packings are bigger",
+          "PQ2_0 spends a full 2-bit slot on every trit (7.25 GB), and Q2_0 is llama.cpp’s standard 2-bit type (7.67 GB). Same weights, three storage layouts — the differences are layout and kernel speed, not model quality."
+        ]
+      ]
+    },
+    {
+      "heading": "The file is not the footprint: the working set",
+      "intro": "Weights are the floor, never the whole budget. KV cache, activations and the runtime’s buffers eat from what is left, and PrismML’s own card carries the one measured datapoint that exists: in its known-issues section, a community report on an RTX 3080 10 GB measured about 9.5 GB of total GPU memory with the server’s default four request slots, and about 7.8 GB after limiting it to one slot (-np 1), desktop usage included. The maker’s quickstart runs at a 32,768-token context.",
+      "cols": [
+        "The judgement",
+        "The basis"
+      ],
+      "rows": [
+        [
+          "Plan on roughly 8–10 GB total",
+          "For the PTQ1_0 file at a 32K context on one request slot — the measured 7.8 GB, plus margin for your own desktop/driver overhead. Against that band, every card in the TL;DR table (24 GB and up) fits with at least 14 GB to spare."
+        ],
+        [
+          "The full 262K context costs more KV room, and nobody publishes the number",
+          "The hybrid backbone helps — only about a quarter of the 64 blocks keep a full token-by-token KV cache, the rest are linear-attention layers — but neither PrismML nor the runtime publishes a per-token KV figure for this model, so this guide does not invent one. llama.cpp prints the cache size it allocates at load; raise -c in steps and read it. Even a several-fold KV growth over the 32K band stays inside a 24 GB card, but treat 262K on a small card as “verify at load”, not as promised."
+        ],
+        [
+          "Serving more than one user at once is a different shape",
+          "The maker’s server guidance for limited VRAM is one slot (-np 1); the default four slots share a unified KV cache and pushed a 10 GB card to about 9.5 GB. No primary source publishes a sustained multi-user throughput figure for this model, so this guide prints none: what is priced here is a single-agent, single-slot deployment, which is what the model is built for."
+        ]
+      ]
+    },
+    {
+      "heading": "Serving reality: one runtime family, and it is not vLLM",
+      "intro": "This checkpoint exists only as GGUF and MLX packs — PrismML’s own download documentation lists no safetensors release, and that single fact decides the serving table. Proven below means the maker’s card or the framework’s own documentation names this model, its files or its architecture; everything else is printed as what it is.",
+      "cols": [
+        "The route",
+        "The record"
+      ],
+      "rows": [
+        [
+          "PrismML llama.cpp fork (CUDA, Metal, CPU, SYCL) — Proven, the reference route",
+          "The only runtime that loads PTQ1_0 and PQ2_0. The card’s tested commands, pinned binaries and presets live in the maker’s Bonsai-demo repository, which the card calls “the source of truth for running these models”."
+        ],
+        [
+          "Stock llama.cpp, build b11556 or newer — Proven, Q2_0 file only",
+          "Upstream merged Bonsai 27B-family support (ggml-org/llama.cpp#29600) and the FWHT kernels it needs. On an H200 the maker measures stock llama.cpp decoding the Q2_0 file at 109 tok/s against 150 on the PrismML runtime — stock works, the fork is faster. Trap: older stock builds load Q2_0 with no warning and produce garbage. Check llama-cli --version first; the same applies to apps that bundle their own llama.cpp."
+        ],
+        [
+          "MLX (the -mlx-2bit pack) — Proven, Apple Silicon only",
+          "A text-only MLX build exported from the PQ2_0 file, with a bundled loader for the Hadamard transforms; the maker measures it on an M5 Pro at 21.7 tok/s decode against 30.2 for llama.cpp on the same machine. Not a rental route — no provider on our board rents Apple Silicon — but it is the documented route if the “small card” is a Mac."
+        ],
+        [
+          "vLLM — Not available for this checkpoint",
+          "There is no safetensors release for vLLM to load, and vLLM’s own GGUF support is documented as highly experimental and now lives in an out-of-tree plugin; neither vLLM nor the plugin names this model or its qwen35 hybrid-attention architecture. Do not plan a vLLM deployment around this model today."
+        ],
+        [
+          "SGLang — Not available for this checkpoint",
+          "No SGLang documentation names this model, and there is no safetensors or documented GGUF route for it. Same conclusion as vLLM, for the same reason."
+        ],
+        [
+          "Transformers — Not available",
+          "The release ships GGUF and MLX packs only; there is no Transformers-format checkpoint to load."
+        ],
+        [
+          "The reference route, in the maker’s own commands",
+          "hf download prism-ml/Ternary-Bonsai-2.5-27B-GGUF Ternary-Bonsai-2.5-27B-PTQ1_0.gguf --local-dir . — then: ./bin/llama-cli -m Ternary-Bonsai-2.5-27B-PTQ1_0.gguf -ngl 99 -fa on -c 32768 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0 -p “Explain quantum computing in simple terms.” -n 16384. From the model card’s quickstart, read Nov 25, 2026. -ngl 99 offloads every layer; -c sets the context, up to 262144; -n 16384 leaves room for the thinking trace — the card warns that a small cap ends generation mid-thought. For the server, tool calling and the MTP variants, the card defers to the Bonsai-demo repository’s run scripts; on a small card add -np 1 to the server command. Swap the file for Q2_0 and the binary for stock llama.cpp b11556+ if you take the stock route."
+        ]
+      ]
+    },
+    {
+      "heading": "Speed: the maker’s tables, and the MTP head",
+      "intro": "Every figure in this section is PrismML’s own published measurement, on PrismML’s runtime, and GPUJournal has not re-run any of them. There are two tables on the card and the maker is explicit that they must not be read against each other: the plain table is llama-bench (synthetic tokens, tg128 decode, batch 1, flash attention on), while the MTP table times llama-server on 36 real prompts (chat, agents and tool calls, documents, code, reasoning), each ratio comparing two runs on one machine. That is why the same card shows different “plain” numbers in the two tables — an RTX 5090 is 163 tok/s in one and 174 in the other. MTP is multi-token prediction — PrismML’s term, defined on the card: the -mtp.gguf variants carry one extra layer, a draft head built by PrismML, that guesses the next few tokens; with speculative decoding the full model checks all the guesses in one pass and keeps only the tokens it would have produced itself. The maker’s check on an H200 puts the mean KL divergence between drafting on and off at 5.2 × 10⁻⁵ — output-equivalent up to the rounding noise of checking several tokens at once, on the maker’s measurement (not yet checked on Metal, SYCL or the NPU, the card notes). The cost is prefill: the head makes its own pass over the prompt, slowing prefill by 9–23% on NVIDIA GPUs at the released settings.",
+      "cols": [
+        "The card",
+        "The maker’s figures"
+      ],
+      "rows": [
+        [
+          "RTX 4090",
+          "Plain (llama-bench tg128, PTQ1_0): 112 tok/s decode, 3,452 tok/s prefill. MTP table (llama-server): 111 tok/s off, 204 tok/s on — 1.83×."
+        ],
+        [
+          "RTX 5090",
+          "Plain: 163 tok/s decode, 4,198 tok/s prefill. MTP: 174 off, 305 on — 1.75×."
+        ],
+        [
+          "L40S",
+          "Plain: 95 tok/s decode, 3,018 tok/s prefill. No MTP row — the maker did not publish one — so the TL;DR prints its plain figure only."
+        ],
+        [
+          "A100",
+          "Plain: 107 tok/s decode, 1,405 tok/s prefill. MTP: 105 off, 171 on — 1.63×."
+        ],
+        [
+          "RTX PRO 6000",
+          "Plain: 158 tok/s decode, 4,283 tok/s prefill. MTP: 158 off, 277 on — 1.76×."
+        ],
+        [
+          "H100 / H200 (for scale)",
+          "Plain: 186 / 189 tok/s decode, 2,987 / 2,962 tok/s prefill. MTP: 184 → 282 (1.53×) / 194 → 296 (1.53×)."
+        ],
+        [
+          "Reading the MTP table",
+          "llama-server, 36 real prompts, PTQ1_0, released build, drafting setting “3, 0.1” (tokens drafted per pass, minimum draft probability; the RTX 4090 row ran at “3, 0”). The card also prints a “+kernels” column that is a few percent higher — those kernels are still in testing, not in the released build, so this guide does not use those numbers anywhere. The maker’s summary range: MTP speeds decode by 1.5–1.8× on NVIDIA GPUs. Drafting pays only when the head guesses right, which depends on the text; agent and tool-call prompts are the workload the head was built and measured on."
+        ]
+      ]
+    },
+    {
+      "heading": "When the ordinary Q4 build of the base model is the better buy",
+      "intro": "The honest alternative is not another ternary file — it is the base model, Qwen3.8-27B, in a normal 4-bit GGUF. The canonical Unsloth UD-Q4_K_M build measures 16.46 GB (16,464,440,224 bytes, recorded byte-exact in a community repository that byte-matches the canonical build; treat the last decimal as community-recorded, not Qwen-published). That is 2.75× the PTQ1_0 file — and it still fits a 24 GB card, which is why this section exists. Choose by workload, using the maker’s own published evaluation of its model against the conventional low-bit builds of the same base (all figures PrismML’s, thinking mode, from the model card).",
+      "cols": [
+        "The build (maker’s table)",
+        "The figures"
+      ],
+      "rows": [
+        [
+          "Bonsai 2.5 PTQ1_0 (1.76 bpw) — 5.99 GB measured",
+          "Tool calling (5-benchmark average) 77.2 · agentic coding (3-benchmark average) 54.2 · general capability (16-benchmark average) 82.1."
+        ],
+        [
+          "Qwen3.8 FP16 — 53.8 GB",
+          "Tool calling 77.7 · agentic coding 60.5 · general capability 84.3."
+        ],
+        [
+          "GSQ-RCO IQ3_XXS (3.00 bpw) — 10.1 GB",
+          "Tool calling 75.3 · agentic coding 55.5 · general capability 81.7."
+        ],
+        [
+          "Unsloth UD-IQ2_XS (2.27 bpw) — 7.6 GB",
+          "Tool calling 75.3 · agentic coding 47.8 · general capability 77.5."
+        ],
+        [
+          "Take the ternary build when the work is agentic",
+          "On the maker’s own numbers it matches FP16 on tool calling (77.2 against 77.7) at one ninth of the file, and keeps 90% of FP16 on agentic coding (54.2 against 60.5; DeepSWE 27.0 against 30.1, SWE-bench Verified 75.6 against 80.6). No conventional build under 10 GB is close on tool calling. It is also the only build here that leaves a 24 GB card mostly empty — room for a long context, a second slot, or a second model."
+        ],
+        [
+          "Take Q4_K_M when the work is ordinary chat, summarising or drafting",
+          "Three reasons. First, runtime freedom: a Q4_K_M file loads in every stock llama.cpp build, Ollama and LM Studio, with no fork and no version trap — the ternary fast files load in exactly one fork today. Second, the maker’s table has no Q4 row: the conventional builds Bonsai 2.5 beats are 2–3 bit builds, and nothing in the maker’s published evidence says the ternary file beats a competent 4-bit build outside the agentic benchmarks it leads on. Third, general capability is where the ternary model’s gap to FP16 actually sits (82.1 against 84.3, with math the widest single gap at 3.1 points, on the maker’s averages) — if your workload lives there, the extra 10.5 GB of Q4 weights is the conservative buy, at the same RTX 4090 money."
+        ],
+        [
+          "Either way, the card money is the same",
+          "Both files fit the RTX 4090 at $0.34/hr; the Q4 build leaves roughly 5–7 GB of a 24 GB card for KV at a working context, the ternary build leaves about 16 GB. The choice is quality profile and runtime, not price — which is exactly why the ternary headline (“27B in 6 GB!”) should not make the decision for you."
+        ]
+      ]
+    },
+    {
+      "heading": "Honest negatives",
+      "intro": "The draft’s warning box, carried in full.",
+      "cols": [
+        "The negative",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "The fast file needs the maker’s fork",
+          "PTQ1_0 and PQ2_0 are rejected by stock llama.cpp as unknown types. PTQ1_0 is under upstream review (the card cites the open upstream PRs); until it lands, the fastest route depends on PrismML-Eng’s llama.cpp fork and its release cadence. The maker’s own demo repository is the pinned, tested path — follow it, not a random fork build."
+        ],
+        [
+          "The stock route has a silent-failure trap",
+          "Stock llama.cpp older than b11556 loads the Q2_0 file without any warning and produces garbage (the card’s words). Any app that bundles its own llama.cpp — desktop chat apps included — needs an engine built from b11556 or newer. Version-check before you debug the model."
+        ],
+        [
+          "Every speed figure here is the maker’s",
+          "PrismML measured its own model on its own runtime; GPUJournal has not independently re-run a single number, and no third party had published a replication by Nov 25, 2026. The two tables also use different methods and disagree with each other by up to ~7% on the same card’s plain decode — read each table on its own terms, as the maker instructs."
+        ],
+        [
+          "The headline size is the maker’s rounding, not the file",
+          "“5.93 GB” is the card’s number; the file measures 5.99 GB. Immaterial to every fit in this guide, printed because this guide plans from measurements."
+        ],
+        [
+          "No multi-user serving story is documented",
+          "The priced shape is one agent, one slot. The card’s server material is about presets and flags, not sustained concurrent throughput, and no primary source publishes tokens/s under batch load for this model. If you need to serve a team, that measurement does not exist yet — you would be making it."
+        ],
+        [
+          "The L40S is half-documented, and the RTX A6000 is unmeasured",
+          "The L40S appears in the maker’s plain-decoding table (95 tok/s) but has no MTP row, so its with-head speed is unpublished by anyone. The RTX A6000 does not appear in the maker’s tables at all: it fits, it is cheap, and its speed on this model is unmeasured."
+        ],
+        [
+          "Thinking is not optional decoration",
+          "The model reasons at xhigh by default and a small generation cap ends output mid-thought; agent loops should budget the trace tokens, and low effort silently behaves like xhigh."
+        ]
+      ]
+    },
+    {
+      "heading": "The licence — Apache 2.0",
+      "intro": "From the repository itself, read Nov 25, 2026.",
+      "cols": [
+        "The fact",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "Apache 2.0, verified three ways",
+          "The repository metadata declares license: apache-2.0; the model card’s licence section states “Released under Apache 2.0”; and the repository carries the full Apache 2.0 text as its LICENSE file (10,174 bytes)."
+        ],
+        [
+          "NOTICE and provenance",
+          "The repository also carries a NOTICE.txt with upstream attribution — the base model is Qwen’s Qwen3.8-27B — and the provenance of the MTP draft head included in the -mtp variants. There is no custom licence, no non-commercial clause and no separate terms file in the repository: what the metadata says is what the repo contains. As always, the licence covers the weights as released by PrismML; your obligations for the base model’s own terms are yours to check if your use goes beyond running these files."
+        ]
+      ]
+    }
+  ],
+  "licenceTitle": "How we check",
+  "licenceBody": "Model facts are from PrismML’s Ternary-Bonsai-2.5-27B-GGUF model card and the repository file listing via the Hugging Face API (revision 28a7093cc25bc151cc2b284c5570f12ce343fdcf), read first-hand Nov 25, 2026: parameters, architecture, packings, commands, known issues, benchmark and speed tables, licence. Every checkpoint file was measured byte-exact from that listing, which is why this guide plans from 5.99 GB where the card headlines 5.93 GB. PrismML’s download documentation (docs.prismml.com) gives the repository inventory for the 27B — GGUF, GGUF-MTP and MLX packs, no safetensors release — and that single fact decides the serving table; vLLM’s documented characterisation of its own GGUF support (highly experimental, now in an out-of-tree plugin) was checked the same day. The Q4 comparison size — the canonical Unsloth UD-Q4_K_M build of Qwen3.8-27B, 16,464,440,224 bytes — is recorded byte-exact in the fraQtl Hi-Fi repository’s byte-matched comparison table: a community record, labelled as such wherever it is used. Prices are GPUJournal’s board snapshot of Nov 25, 2026 (87 offers, check_type corroboration; its source line names TensorDock and nafnaf.ai as carried): RTX 4090 RunPod Community $0.34, RTX A6000 Thunder Compute $0.35, RTX 5090 RunPod Community $0.69, L40S RunPod Community $0.79, A100 80GB Thunder Compute $1.09, RTX PRO 6000 RunPod Community $1.69 — monthly = hourly × 730, computed exactly. TensorDock’s RTX 4090 figure in the snapshot is a carried Managed Containers page figure and is not used in the table; the table’s RTX 4090 row is RunPod Community, corroborated Nov 25. What is deliberately not claimed: no speed figure appears here as our finding — every decode and prefill number is PrismML’s own published measurement, labelled the maker’s, with its method; no per-token KV figure is derived, because no primary source publishes one; no sustained multi-user throughput is stated, because none exists in a primary source.",
+  "exits": [
+    [
+      "Ternary Bonsai 2.5 27B — the model page",
+      "#/model/ternary-bonsai-2-5-27b"
+    ],
+    [
+      "The release story — Ternary Bonsai 2.5 27B",
+      "#/story/ternary-bonsai-2-5-27b-nov-24"
+    ],
+    [
+      "Compare GPU prices",
+      "#/board"
+    ],
+    [
+      "All news",
+      "#/news"
+    ]
+  ],
+  "related": [
+    "deploy-ernie-55-flash-preview",
+    "deploy-hy4",
+    "gpu-rental-cost"
+  ]
 }
 ];
 var FIND_RANKED = {
