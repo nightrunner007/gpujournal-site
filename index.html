@@ -5843,6 +5843,672 @@ var ARTICLES = [
     "deploy-hy4",
     "gpu-rental-cost"
   ]
+},
+{
+  "slug": "deploy-hy4-flash",
+  "hubSlug": "model-deployment",
+  "title": "Deploy Hy4 Flash — the FP8 setup on two H200s, costed",
+  "excerpt": "Tencent's Hy4 Flash is a 220B-parameter mixture-of-experts model that activates only about 12B parameters per token — but memory is always the full 220.3B, because every parameter has to sit in GPU memory whether a given token uses it or not. At FP8 the weights occupy about 220GB, which fits two H200s with room to spare; at BF16 they occupy about 440GB and need four. On the cheapest verified H200 rate on our board, checked Nov 25, 2026, the FP8 pair costs $7.18 an hour. This guide shows the memory maths, the serving routes Tencent actually documents — both written for tensor-parallel 8, so the two-GPU run is a memory fit, not a published recipe — what each setup costs across every H200 offer on the board, and the licence clause, §10.2 of the Tencent Hy License, that a commercial hoster needs to read before the download finishes.",
+  "publishedDate": "2026-11-25",
+  "readMinutes": 17,
+  "cta": [
+    [
+      "Compare GPU prices across every provider",
+      "#/board"
+    ],
+    [
+      "The model page for Hy4 Flash",
+      "#/model/hy4-flash"
+    ]
+  ],
+  "ctaClosing": true,
+  "tldr": [
+    {
+      "label": "FP8 — 2 × H200 (282GB; weights ≈220GB)",
+      "vram": "RunPod Community · 2 × H200",
+      "bestFit": "The cheapest verified FP8 setup, at RunPod Community's $3.59/GPU/hr. A memory fit, not a published recipe: both of Tencent's serving recipes are tensor-parallel 8. RunPod Community · 2 × H200 — $7.18/hr, $5,241.40/mo.",
+      "price": "$7.18/hr · $5,241.40/mo"
+    },
+    {
+      "label": "FP8 — 2 × H200",
+      "vram": "Hyperstack · 2 × H200",
+      "bestFit": "The same memory-feasible shape at Hyperstack's $3.99/GPU/hr. Hyperstack · 2 × H200 — $7.98/hr, $5,825.40/mo.",
+      "price": "$7.98/hr · $5,825.40/mo"
+    },
+    {
+      "label": "BF16 — 4 × H200 (564GB; weights ≈440GB)",
+      "vram": "RunPod Community · 4 × H200",
+      "bestFit": "Full precision at RunPod Community's $3.59/GPU/hr. Three H200s give 423GB, less than the ≈440GB of weights — four cards is the floor. RunPod Community · 4 × H200 — $14.36/hr, $10,482.80/mo.",
+      "price": "$14.36/hr · $10,482.80/mo"
+    },
+    {
+      "label": "BF16 — 4 × H200",
+      "vram": "Hyperstack · 4 × H200",
+      "bestFit": "Full precision at Hyperstack's $3.99/GPU/hr. Hyperstack · 4 × H200 — $15.96/hr, $11,650.80/mo.",
+      "price": "$15.96/hr · $11,650.80/mo"
+    },
+    {
+      "label": "FP8, the shape Tencent's own recipe uses — 8 × H200 (tensor-parallel 8)",
+      "vram": "RunPod Community · 8 × H200",
+      "bestFit": "The maker-documented shape: the only serving recipes Tencent publishes, for vLLM and for SGLang, are both written for tensor-parallel 8. At RunPod Community's $3.59/GPU/hr. RunPod Community · 8 × H200 — $28.72/hr, $20,965.60/mo.",
+      "price": "$28.72/hr · $20,965.60/mo"
+    }
+  ],
+  "metricTitle": "The short answer",
+  "metricBody": "If you want the cheapest defensible Hy4 Flash deployment today, rent two H200s and run the FP8 checkpoint: $7.18 an hour at RunPod Community's verified $3.59 per GPU (checked Nov 25, 2026), $5,241.40 for an always-on month. The FP8 checkpoint is a separate repo (tencent/Hy4-flash-FP8) and it is the checkpoint both of Tencent's serving recipes point at — FP8 is not a compromise you make to save money here, it is the maker's own production build. If you need full BF16 precision — for evaluation work, fine-tuning headroom, or because your pipeline distrusts 8-bit weights — the same model needs four H200s and the cheapest verified total doubles to $14.36 an hour. There is no single-GPU route in Tencent's documentation at either precision, and on the H200 this guide prices, even FP8 needs two cards; nor is there a smaller official quantisation beyond a GGUF build Tencent provides, in its own words, “for end-to-end testing purposes.” And before any of that matters commercially: Hy4 Flash is not Apache 2.0. It ships under the Tencent Hy License, whose §10.2 requires a separate written licence from Tencent if you run it as a model-as-a-service business past either of two size triggers. Most self-hosters never trip it. An API reseller at scale trips it on day one. Read the TL;DR table's last row before you budget on the first one: the two-H200 FP8 setup is a memory fit — the weights provably fit in 282GB, with about 62GB left for KV cache and runtime overhead — but nobody's published recipe yet documents a two-GPU run. Treat $7.18/hr as the floor the memory maths allows and $28.72/hr as the price of the shape the maker actually documents, until a two-GPU recipe is proven. Monthly figures are the hourly total × 730 hours, always-on.",
+  "datedTables": [
+    {
+      "heading": "The memory maths — the card's component table (Tencent's model card, read Nov 18, 2026)",
+      "intro": "Everything in this section is arithmetic on figures from Tencent's own model card. Two things in the table surprise people. First, nearly a third of the model — 63.5B parameters — is Engram embedding tables, not transformer layers; they still occupy memory in full. Second, the “12B active” headline (the card's table: 11.3B text + 0.43B vision activated per token) describes compute per token, not memory. Memory is always the full 220.3B. Sizes are decimal gigabytes at exactly 1 or 2 bytes per parameter, before framework overhead, activation memory and KV cache — which is why the setups keep headroom rather than filling cards to the byte.",
+      "cols": [
+        "Component (card's table)",
+        "Parameters · at FP8 (1 byte/param) · at BF16 (2 bytes/param)"
+      ],
+      "rows": [
+        [
+          "Language backbone (42 layers: 1 dense + 41 MoE)",
+          "155.5B parameters — ≈155.5GB at FP8, ≈311GB at BF16."
+        ],
+        [
+          "Engram N-gram embedding tables",
+          "63.5B parameters — ≈63.5GB at FP8, ≈127GB at BF16."
+        ],
+        [
+          "Vision encoder (SigLIP2)",
+          "0.43B parameters — ≈0.4GB at FP8, ≈0.9GB at BF16."
+        ],
+        [
+          "DFly2 speculative-decoding drafter",
+          "0.85B parameters — ≈0.9GB at FP8, ≈1.7GB at BF16."
+        ],
+        [
+          "Total",
+          "220.3B parameters — ≈220GB at FP8, ≈440GB at BF16."
+        ]
+      ]
+    },
+    {
+      "heading": "What fits where — and the 1M context and its KV cache",
+      "cols": [
+        "The shape",
+        "The working"
+      ],
+      "rows": [
+        [
+          "FP8 on 2 × H200",
+          "An H200 carries 141GB, so two cards give 282GB against ≈220GB of weights — about 62GB of headroom for KV cache and runtime. This is the cheapest memory-feasible shape."
+        ],
+        [
+          "BF16 on 4 × H200",
+          "Three H200s give 423GB, which is less than ≈440GB of weights — so four cards (564GB) is the floor at full precision, with about 124GB of headroom."
+        ],
+        [
+          "FP8 on H100 SXM (80GB)",
+          "Weights alone need three cards (240GB) and leave almost nothing for cache; four cards (320GB) is the practical floor — 4 × $2.69 at RunPod Community = $10.76/hr (checked Nov 25, 2026), which is more than the two-H200 setup. The H200 is simply the right card for this model."
+        ],
+        [
+          "The 1M context and its KV cache — smaller than you fear",
+          "A 1M-token context usually means a KV cache that eats the GPU. Hy4 Flash is built to avoid exactly that, and the card's configuration lets you check the claim yourself. Its attention is Multi-head Latent Attention with a compressed KV of 512 dimensions plus a 64-dimension RoPE key — 576 values per token per layer. Only 12 of its 42 layers are sparse full-context layers; the other 30 are sliding-window layers that cache just 512 tokens each. The arithmetic, assuming a BF16 cache and that the sparse layers cache the compressed latent for every position: 12 layers × 576 values × 2 bytes ≈ 13.8KB per token, so a full 1,048,576-token sequence costs about 14.5GB of KV cache per sequence; the 30 sliding-window layers add under 20MB. Halve it if the cache is held at FP8. The DFly2 drafter adds no KV of its own — the card states it shares the target model's cache. Tencent's own version of this claim is that the design cuts KV cache to 1/24 of Hy3's and 1/6 of Hy4's; that comparison is the publisher's, but the per-token arithmetic above is derivable from the published configuration, with the assumptions stated. Per-sequence is the operative phrase: a serving node running many long-context sessions in parallel multiplies that 14.5GB by the number of concurrent full-length sequences, and that — not the weights — is what will cap your batch size on the two-H200 setup."
+        ]
+      ]
+    },
+    {
+      "heading": "The serving route, as it actually stands (verified from primary sources, checked Nov 18, 2026)",
+      "cols": [
+        "Route",
+        "What is documented"
+      ],
+      "rows": [
+        [
+          "vLLM serves it today — through Tencent's pinned image, not the stock release",
+          "The model card's Deployment section gives an official prebuilt image, vllm/vllm-openai:hy4-flash, serving the FP8 checkpoint with tensor-parallel 8, the FLASHMLA_SPARSE attention backend, DFly2 speculative decoding (5 speculative tokens), and Tencent's hy_v4 tool-call and reasoning parsers. The card also links an official Hy4 Flash recipe on vLLM's recipe site. But vLLM's own supported-models list, checked the same day, names the HYV4 architecture against Hy4-preview only — Hy4 Flash does not appear in the stock release's model list yet. So the honest statement is: a maker-maintained vLLM build serves it now; mainline vLLM support is not yet listed."
+        ],
+        [
+          "SGLang is the second documented route",
+          "Also via a pinned image (lmsysorg/sglang:hy4-flash, x86 and Arm), also tensor-parallel 8, with DFly speculative decoding. The card links an SGLang cookbook for the model."
+        ],
+        [
+          "Transformers support is written but not merged",
+          "The card tells you to install Transformers from a specific pull request (PR 50903) “until then” — its words are that support “will be merged into the transformers main branch soon.” A plain pip install transformers does not run this model today."
+        ],
+        [
+          "Both recipes are tensor-parallel 8",
+          "Neither Tencent recipe documents 2, 4 or any other GPU count. Changing the tensor-parallel size to fit two H200s is the obvious experiment, and it may work — but no source we read documents it, so this guide does not present the two-GPU run as a proven recipe. It presents it as what it is: memory-feasible, recipe-unproven."
+        ],
+        [
+          "Practical settings from the card",
+          "Reasoning runs in two modes, reasoning_effort “high” (default, thinking on) and “no_think”; Tencent recommends temperature 0.9 and top_p 1.0. The base repo (tencent/Hy4-flash-Base) is a pre-trained checkpoint, not a chat model — deploy the instruct or FP8 repo, not the base, unless pre-training is your job."
+        ],
+        [
+          "On speed, this guide prints no throughput figure of its own",
+          "Nobody independent has measured one yet. The only number in circulation is Tencent's: the card says that combining megakernels, 4-bit quantisation and DFly2 “pushes decoding speed past 150 tokens/s.” Note the conditions — that claim belongs to a 4-bit configuration, not to the FP8 build this guide costs, and it is the publisher's own figure, unverified by any third party as of Nov 18, 2026. Budget on the rental totals, not on that number."
+        ]
+      ]
+    },
+    {
+      "heading": "Every H200 route, costed — our Nov 25, 2026 snapshot (87 offers)",
+      "intro": "The TL;DR table shows the cheapest rows. This one shows every H200 offer in the snapshot at the two setup sizes this guide recommends, so the spread is visible rather than summarised. All rates are verified on-demand per-GPU prices, checked Nov 25, 2026. Rows whose per-GPU figure is a division of an 8-GPU node or VM are marked — at those providers you cannot necessarily buy two GPUs at that division, and the totals are comparison arithmetic, not a listed two-GPU product.",
+      "cols": [
+        "Provider",
+        "Per GPU/hr · FP8 setup (2 × H200) · BF16 setup (4 × H200) · shape"
+      ],
+      "rows": [
+        [
+          "RunPod Community",
+          "$3.59/GPU/hr — FP8: $7.18/hr · $5,241.40/mo — BF16: $14.36/hr · $10,482.80/mo — per-GPU on-demand."
+        ],
+        [
+          "Hyperstack",
+          "$3.99/GPU/hr — FP8: $7.98/hr · $5,825.40/mo — BF16: $15.96/hr · $11,650.80/mo — per-GPU on-demand."
+        ],
+        [
+          "RunPod Secure",
+          "$5.29/GPU/hr — FP8: $10.58/hr · $7,723.40/mo — BF16: $21.16/hr · $15,446.80/mo — per-GPU on-demand."
+        ],
+        [
+          "Nebius",
+          "$5.40/GPU/hr — FP8: $10.80/hr · $7,884.00/mo — BF16: $21.60/hr · $15,768.00/mo — per-GPU on-demand, excl. VAT."
+        ],
+        [
+          "CoreWeave",
+          "$6.31/GPU/hr — FP8: $12.62/hr · $9,212.60/mo — BF16: $25.24/hr · $18,425.20/mo — division of an 8-GPU node at $50.44/node/hr."
+        ],
+        [
+          "Verda",
+          "$7.184/GPU/hr — FP8: $14.368/hr · $10,488.64/mo — BF16: $28.736/hr · $20,977.28/mo — per-GPU on-demand."
+        ],
+        [
+          "Oracle OCI",
+          "$10.00/GPU/hr — FP8: $20.00/hr · $14,600.00/mo — BF16: $40.00/hr · $29,200.00/mo — division of an 8-GPU node at $80.00/node/hr."
+        ],
+        [
+          "Microsoft Azure",
+          "$10.60/GPU/hr — FP8: $21.20/hr · $15,476.00/mo — BF16: $42.40/hr · $30,952.00/mo — division of an 8-GPU VM at $84.80/VM/hr (East US 2 meter)."
+        ]
+      ],
+      "after": "The spread is the story: the same two-H200 FP8 setup costs $7.18 an hour at the cheapest verified offer and $21.20 at the most expensive division — nearly three times — before storage, data transfer and the rest of a serving bill, none of which are in any figure in this guide. And the eight-GPU shape Tencent's recipes document costs $28.72 an hour even at the cheapest rate (8 × $3.59, RunPod Community, checked Nov 25, 2026; $20,965.60 for a 730-hour month). Which of those two numbers is your real budget line depends on the tensor-parallel question in the serving section, and it is worth resolving on a one-hour rental before it is worth resolving in a spreadsheet."
+    },
+    {
+      "heading": "The licence: read §10 before you build on it (Tencent Hy License, Version 1.0)",
+      "cols": [
+        "The point",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "Not Apache 2.0",
+          "Hy4 Flash is released under the Tencent Hy License, Version 1.0. The licence file, read in the model repo on Nov 18, 2026, says in its own header that it is derived from the Apache License 2.0 “with modifications, mainly the additional commercial terms for large Model-as-a-Service businesses in Section 10” — and that it “is not the Apache License, Version 2.0.” This is a change from Hy4 preview, which shipped under plain Apache 2.0."
+        ],
+        [
+          "§10.1 — what “MaaS” means",
+          "“MaaS means giving third parties remote access to model inference or fine-tuning (e.g., via API), allowing them to submit inputs or specify parameters or training data.” — §10.1, with two carve-outs: end-user products where the model's capabilities are confined to specific features or workflows without general-purpose model access, and merely relaying requests to an independently operated third-party model service."
+        ],
+        [
+          "§10.2 — the triggers",
+          "“If You operate a MaaS business, You must obtain a separate written license… (a) if Your aggregate worldwide gross revenue exceeds US$50 million… in any consecutive 12-month period, whether or not such revenue is derived from the Work…; or (b) before using the Work… in or for any product or service provided by You that has more than 100 million monthly active users in any calendar month.” — §10.2, summarised only in the connective wording; the triggers are quoted exactly."
+        ],
+        [
+          "The revenue trigger is your whole company's revenue, not your model revenue",
+          "§10.2(a) counts aggregate worldwide gross revenue “whether or not such revenue is derived from the Work.” A company with $60M of unrelated revenue that exposes Hy4 Flash through a public API needs Tencent's written licence before it starts — or must stop using the weights. The licence says the separate licence can be granted “including by email,” and names its contact: hy_partners@tencent.com (§10.4)."
+        ],
+        [
+          "Internal use is fully exempt",
+          "§10.3: §10.2 “does not apply to Your use of the Work… solely for internal purposes, provided that neither the Work, any Derivative Works, nor their outputs are made available to third parties.” Run it for your own team, your own research, your own back office — §10 never engages."
+        ],
+        [
+          "A product feature is not MaaS; an API is",
+          "Under §10.1's carve-out, a product that uses the model inside confined features — a document assistant inside your own app, say — is not MaaS even at scale, though the 100M-MAU trigger in §10.2(b) is written separately and applies to “any product or service,” so a feature-confined product past 100M monthly users should still take advice before assuming it is clear. Selling general-purpose inference or fine-tuning access is MaaS by definition."
+        ],
+        [
+          "The clause travels with the weights",
+          "Section 4 of the licence provides that any licence terms you pass on for the Work or a derivative must not “remove, limit, or conflict with Section 10,” and that §10 “shall continue to apply to every recipient.” Fine-tunes, quantisations and merges are all defined as Derivative Works. You cannot launder the trigger away by re-releasing a fine-tune."
+        ],
+        [
+          "Below both triggers, the licence is permissive in practice",
+          "An independent hoster under $50M revenue and under 100M MAU may run a paid API on these weights without a separate licence, on the licence's own text. That is a genuinely open door for small and mid-size inference businesses — with a ceiling built into it. This section is a plain-English reading of the licence text, not legal advice. The triggers are quoted from the Tencent Hy License v1.0 file in the tencent/Hy4-flash repo, read Nov 18, 2026; if your business sits anywhere near either line, read the file itself and take advice before you build on the weights."
+        ]
+      ]
+    },
+    {
+      "heading": "Watch-outs before you commit",
+      "cols": [
+        "Watch-out",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "Every benchmark is Tencent's own",
+          "The numbers circulating for this model — a 42.1 score on Tencent's internal WorkIndex benchmark, a blind test of 85 of Tencent's own WorkBuddy users scoring satisfaction 2.79/4 against Claude Haiku 5.5's 2.81/4, cost-per-task comparisons against Tencent's own API prices — were all produced by the publisher. No independent evaluation existed when we checked on Nov 18, 2026. Treat the quality claims as unverified until an outside evaluator publishes; the cost and memory figures in this guide do not depend on them."
+        ],
+        [
+          "You are pinned to Tencent's framework builds",
+          "The working vLLM and SGLang routes are model-specific prebuilt images maintained for this launch. Fixes and features arrive on the image maintainer's schedule, not the frameworks'. Mainline vLLM lists Hy4-preview, not Hy4 Flash (checked Nov 18, 2026), and Transformers support sits in an unmerged pull request. Expect launch-month friction and pin your image versions."
+        ],
+        [
+          "The two-GPU recipe gap is the budget risk",
+          "The gap between the memory-feasible setup ($7.18/hr) and the maker-documented shape ($28.72/hr) is a factor of four. Do not sign a month of two-GPU capacity on the assumption that tensor-parallel 2 works until you have run the pinned image at that size yourself."
+        ],
+        [
+          "Community capacity is community capacity",
+          "The cheapest rate in this guide, RunPod Community at $3.59/GPU/hr, is marketplace capacity: availability varies by region and hour, and a two-GPU pair in the same place is not guaranteed to be there when you scale. The board's H200 page shows the current spread; re-check before a long run."
+        ],
+        [
+          "Do not download the wrong repo",
+          "Three repos landed within minutes of each other on Nov 17, 2026: the instruct model, the FP8 build, and a pre-trained base that does not follow chat instructions. Production serving wants the FP8 repo; chat evaluation wants the instruct repo; the base is for fine-tuners."
+        ],
+        [
+          "The Engram tables are not optional",
+          "63.5B of the 220.3B parameters are N-gram embedding tables. Any plan that budgets memory from the “155.5B backbone” figure alone under-budgets by nearly 30% — the tables load in full alongside the backbone."
+        ]
+      ]
+    }
+  ],
+  "licenceTitle": "How we check",
+  "licenceBody": "Model facts — parameter counts, architecture, context length, sampling recommendations, framework recipes — are from Tencent's Hy4 Flash model card on Hugging Face, read first-hand on Nov 18, 2026; the licence summary and quotations are from the Tencent Hy License v1.0 file in the same repository, read the same day. vLLM's supported-models list was read on Nov 18, 2026 and names HYV4 against tencent/Hy4-preview and tencent/Hy4-preview-FP8 only. Prices are GPUJournal's Nov 25, 2026 board snapshot: 87 offers read from providers' own published pages and banked by date; H200 offers in it are RunPod Community $3.59, Hyperstack $3.99, RunPod Secure $5.29, Nebius $5.40 (excl. VAT), CoreWeave $6.31 (normalised from an 8-GPU node at $50.44/node/hr), Verda $7.184, Oracle OCI $10.00 (8-GPU node at $80.00/node/hr) and Microsoft Azure $10.60 (8-GPU VM at $84.80/VM/hr, East US 2). Setup totals and monthly figures are arithmetic on those verified rates (× 730 hours for a month), labelled wherever a per-GPU division is extended to a shape the provider does not list at that size. Weights sizes are arithmetic on the card's parameter table at 1 byte (FP8) and 2 bytes (BF16) per parameter. The KV-cache figure is arithmetic on the card's published attention configuration (MLA kv_lora_rank 512, RoPE head dimension 64, 12 sparse layers, 30 sliding-window layers at 512 tokens), with its assumptions stated in the text; it excludes indexer state, framework padding and activation memory. What is deliberately not claimed. No throughput, latency or tokens-per-dollar figure appears in this guide as our finding: the only speed claim in circulation is Tencent's own (past 150 tokens/s, under a 4-bit configuration with megakernels and DFly2), printed above as the publisher's claim with its conditions, and no independent benchmark of Hy4 Flash existed when we checked on Nov 18, 2026. Tencent Cloud's own API prices for this model circulate in secondary reporting in RMB and via third-party routers; they are not printed here because we did not verify a USD list price on Tencent's own pages for this guide. No two-GPU serving run is claimed as proven: the recipes Tencent publishes specify tensor-parallel 8.",
+  "honestyTitle": "Our reading",
+  "honestyNote": "Our reading — interpretation, not fact. Hy4 Flash is priced by its maker to be served, and the serving maths is genuinely friendly: a 220B-class model whose FP8 weights fit a two-GPU rental at $7.18 an hour, with a KV design that makes its 1M context cheap to hold, is a different economic object from the 220B models that needed a full node. But the two honest asterisks are both Tencent-shaped. The framework support is a pair of pinned images and an unmerged pull request, and the licence quietly converts “open weights” into “open below $50M of company revenue” for anyone selling inference. Neither is a reason to walk away. Both are reasons to read §10 before the download finishes, and to test the two-GPU run before the month-long rental starts.",
+  "exits": [
+    [
+      "Compare prices",
+      "#/board"
+    ],
+    [
+      "Hy4 Flash — catalogue entry",
+      "#/model/hy4-flash"
+    ]
+  ],
+  "related": [
+    "deploy-hy4",
+    "deploy-ternary-bonsai-2-5-27b",
+    "gpu-rental-cost"
+  ]
+},
+{
+  "slug": "deploy-sarvam-105b-1711",
+  "hubSlug": "model-deployment",
+  "title": "Deploy Sarvam-105B-1711 on one RTX PRO 6000 — and the $0.15/Mtok break-even",
+  "excerpt": "Sarvam's 105B checkpoint is the rare open-weight release whose pitch is a single workstation card: the NVFP4 build measures 70.15GB on disk and is documented by its maker to run on one 96GB RTX PRO 6000, at $1.69 an hour on the cheapest verified row of our board (checked Nov 25, 2026). In the same announcement, Sarvam cut its hosted price to a blended $0.15 per million tokens — and this guide works the honest break-even from Sarvam's own published throughput table. The answer is stark: at the throughput Sarvam itself measures on this card, the break-even volume is about 57 times what the card can produce in a month. You rent this card for control, not for savings — and the guide shows the arithmetic that proves it, both ways.",
+  "publishedDate": "2026-11-25",
+  "readMinutes": 24,
+  "cta": [
+    [
+      "Compare GPU prices across every provider",
+      "#/board"
+    ],
+    [
+      "The release story — Sarvam-105B-1711 open weights",
+      "#/story/sarvam-105b-1711-open-weights-nov-22"
+    ]
+  ],
+  "ctaClosing": true,
+  "tldr": [
+    {
+      "label": "Self-host NVFP4 — 1 × RTX PRO 6000",
+      "vram": "RunPod Community · RTX PRO 6000",
+      "bestFit": "Break-even at 8.22 billion tokens/month — a sustained 3,130 tok/s, around the clock, all month. Sarvam's own model card measures this card's peak aggregate throughput at 54.9 tok/s, so the break-even volume is ~57× the most the card can produce in a month (~144M tokens). On cost alone, this route never wins — it is a control and on-premises purchase. RunPod Community · RTX PRO 6000 — $1.69/hr, $1,233.70/mo.",
+      "price": "$1.69/hr · $1,233.70/mo"
+    },
+    {
+      "label": "Sarvam hosted API",
+      "vram": "Sarvam Token Factory",
+      "bestFit": "100M tokens/month costs $15; 1 billion costs $150; the self-host card's whole month costs the same as 8.22 billion API tokens. “Blended” is Sarvam's own 3 input : 1 output mix of its Token Factory rates (₹10 in / ₹25 out per million). Those rates are marked introductory, through the end of 2026, on Sarvam's pricing page — the $0.15 has an expiry date on its inputs.",
+      "price": "$0.15 per million tokens, blended"
+    },
+    {
+      "label": "Self-host BF16 — 2 × H200",
+      "vram": "RunPod Community · 2 × H200",
+      "bestFit": "Break-even at 34.94 billion tokens/month — a sustained 13,296 tok/s. Full precision, and the maker's documented shape (tensor parallel 2). But Sarvam publishes no throughput table for the BF16 build, so this break-even is a volume you must hit, not a rate anyone has demonstrated. The NVFP4 build is the deployment this checkpoint is documented around. RunPod Community · 2 × H200 — $7.18/hr, $5,241.40/mo.",
+      "price": "$7.18/hr · $5,241.40/mo"
+    }
+  ],
+  "metricTitle": "The short answer",
+  "metricBody": "Download sarvamai/sarvam-105b-1711 (the NVFP4 build, 70.15GB measured), serve it on one RTX PRO 6000 with the vLLM commands Sarvam prints on the model card — tested by the maker on vLLM 0.33.0, tensor parallel 1 — and the cheapest verified way to rent that card on our board, checked Nov 25, 2026, is RunPod Community at $1.69 an hour, $1,233.70 for a 730-hour month. Then make the hosting decision with open eyes: Sarvam sells the same model, hosted, at a blended $0.15 per million tokens, and at that price the rented card only pays for itself above 8.22 billion tokens a month — a volume Sarvam's own throughput table says this card cannot reach. Self-host because the weights must sit on your premises, under your control, in your jurisdiction. Do not self-host this checkpoint on this card to save money. The rest of this guide is the working behind those sentences. Monthly figures are the hourly rate × 730 hours, computed exactly. All throughput figures in this guide are Sarvam's own published measurements, labelled vendor-reported; we ran no benchmarks.",
+  "datedTables": [
+    {
+      "heading": "What you are actually downloading — model cards, repository configs and file listings, read Nov 23, 2026",
+      "intro": "Sizes measured from the repositories' own file lists, not the announcement's rounded figures.",
+      "cols": [
+        "The fact",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "105B total parameters, 10.3B active per token",
+          "The maker's figures, stated on both cards. The architecture, from the repo config: 32 layers — the first dense, the other 31 mixture-of-experts with 128 routed experts, 8 firing per token, plus 1 shared expert per layer. Attention is multi-head latent attention (MLA) with a 512-rank latent KV, the DeepSeek pattern. Our own check of the config's expert maths accounts for ~103B of the 105B before attention and routers, so the maker's headline is consistent with the shipped config."
+        ],
+        [
+          "The NVFP4 build (sarvamai/sarvam-105b-1711) measures 70.15GB on disk",
+          "64.64GB of main weights in 4 shards, plus the 5.51GB DSpark draft model the repo ships alongside. The announcement's “65 GB” is the same total read in GiB (65.33 GiB); the guide works in the measured GB figures. It is a mixed-precision build, per the repo's quantization config: the routed experts — the bulk of the model — are NVFP4 (4-bit), while attention, the shared experts and the first layer's dense MLP are MXFP8 (8-bit), and the routers and language-model head stay in BF16."
+        ],
+        [
+          "The BF16 build (sarvamai/sarvam-105b-1711-bf16) measures 218.23GB",
+          "212.07GB of main weights in 43 shards, plus a 6.16GB DSpark draft. A naive 105B × 2 bytes gives 210GB, so the measured file is the honest planning figure."
+        ],
+        [
+          "Context: 163,840 tokens",
+          "Declared in the config (max_position_embeddings), extended from a 4,096 base by YaRN rope scaling. Note the gap between the box and the recipes: Sarvam's own serving commands and its own benchmark setup both run the model at 131,072 tokens."
+        ],
+        [
+          "DSpark is in both repos",
+          "A draft model for speculative decoding (5 draft tokens in the maker's published throughput runs). It is part of the download and part of the documented serving recipe, not an optional extra you fetch elsewhere."
+        ],
+        [
+          "What the checkpoint is for, in the maker's framing",
+          "A “Flash-Lite” model for high-volume conversational, voice-agent and agentic work, post-trained from the February Sarvam 105B for tool calling, instruction following, agentic tasks and Indian languages. Thinking is on by default (temperature 1.0 recommended with it, 0.6 without)."
+        ],
+        [
+          "Licence: Apache 2.0",
+          "Declared in both repos' metadata — with one nuance printed in the licence section below. There is no revenue or user-count gate of the kind the Tencent Hy licence imposes; the contrast is real and worth having in writing."
+        ]
+      ]
+    },
+    {
+      "heading": "The one-card route: the memory maths — worked from the measured checkpoint and the repo config, Nov 23, 2026",
+      "intro": "The card is an RTX PRO 6000 Blackwell with 96GB — the capacity Sarvam's own card names for its throughput test.",
+      "cols": [
+        "The figure",
+        "The working"
+      ],
+      "rows": [
+        [
+          "Weights: 70.15GB",
+          "64.64GB main + 5.51GB DSpark draft. On a 96GB card that leaves 25.85GB of raw headroom for KV cache, activations and the runtime."
+        ],
+        [
+          "Inside the maker's own recipe budget",
+          "Sarvam's serving commands set --gpu-memory-utilization 0.92, a budget of 88.32GB on this card. After the 70.15GB of weights, 18.17GB remains inside that budget for KV cache and working room. That is the number to plan with — not the 96 on the box."
+        ],
+        [
+          "KV cache, worked from the config",
+          "MLA stores a compressed latent per token — kv_lora_rank 512 plus the 64-dimension RoPE key, 576 values per layer per token, across 32 layers. In the FP8 KV format the recipe specifies (--kv-cache-dtype fp8_e4m3), that is 18,432 bytes per token: about 0.92GB per 50,000-token sequence, 2.42GB per sequence at the recipe's 131,072-token setting, and 3.02GB at the full 163,840 the config declares. Eight concurrent 50k-context sequences — the top of Sarvam's published test on this card — carry about 7.37GB of KV, comfortably inside the 18.17GB. At BF16 KV precision every one of those figures doubles."
+        ],
+        [
+          "What does not fit on this card: the BF16 build",
+          "218.23GB against 96GB is not a tuning problem. Full precision is a two-card job (later sections)."
+        ]
+      ]
+    },
+    {
+      "heading": "What the card costs — the full board (Nov 25, 2026 board snapshot)",
+      "intro": "Every figure below is from our Nov 25, 2026 board snapshot, for the full RTX PRO 6000 Blackwell — the card Sarvam's documentation names. One variant warning before the table: the board also carries an RTX PRO 6000 Max-Q at nafnaf.ai ($0.752/hr). The Max-Q is a different, power-limited variant of the card, that board figure is carried rather than re-verified, and Sarvam's fit and throughput claims are for the full card. It is not in this table, and it should not be rented against this guide's numbers.",
+      "cols": [
+        "Provider",
+        "$/hr · $/month · note"
+      ],
+      "rows": [
+        [
+          "RunPod Community",
+          "$1.69/hr · $1,233.70/mo — cheapest verified full-card offer on the board; the rate the break-even is worked at."
+        ],
+        [
+          "Nebius",
+          "$1.80/hr · $1,314.00/mo — excludes VAT, per the board record."
+        ],
+        [
+          "CoreWeave",
+          "$2.50/hr · $1,825.00/mo — board record lists a High-Memory variant; per-GPU normalised from an 8-GPU node at $20.00/node/hr."
+        ],
+        [
+          "RunPod Secure",
+          "$2.69/hr · $1,963.70/mo."
+        ],
+        [
+          "Verda",
+          "$3.041/hr · $2,219.93/mo — Verda's Nov 25 rate (it rose from $3.011 on Nov 24)."
+        ],
+        [
+          "Oracle OCI",
+          "$4.50/hr · $3,285.00/mo — sold as an 8-GPU node at $36.00/node/hr; per-GPU figure is the board's normalisation."
+        ],
+        [
+          "Google Cloud",
+          "$5.17/hr · $3,777.69/mo — a 1-GPU VM at Google's exact published $5.1749195/hr; the one row here that is natively a single card."
+        ]
+      ],
+      "after": "The spread matters to the break-even: the same card costs $1,233.70 a month at the cheapest verified row and $3,777.69 at the dearest — a 3.06× swing decided entirely by provider. Every break-even figure in this guide uses the cheapest row; dearer rows move the line further out, never closer."
+    },
+    {
+      "heading": "Serving: what is documented today, and what is not",
+      "cols": [
+        "Route",
+        "Status today"
+      ],
+      "rows": [
+        [
+          "vLLM — proven, documented by the maker, with exact commands",
+          "Both model cards carry a “vLLM hosting” section, “Tested with vLLM 0.33.0”, with the environment the maker specifies and two serve commands (with and without DSpark speculative decoding). vLLM's own documentation also carries a Sarvam MLA implementation (the SarvamMLAForCausalLM architecture in its supported-models documentation), and the cards' commands still pass --trust-remote-code — the repos ship their own modelling code, and the documented route uses it. The environment block, reproduced exactly: “export VLLM_USE_V2_MODEL_RUNNER=1 ; export VLLM_USE_BREAKABLE_CUDAGRAPH=1 ; export VLLM_ENFORCE_STRICT_TOOL_CALLING=0 ; export FLASH_ATTENTION_CUTE_DSL_CACHE_ENABLED=1” (The card additionally defines a CAPTURE_SIZES list of cudagraph capture sizes, referenced by the compilation config in the command below — copy it from the card's hosting section along with the command.) The DSpark command — the configuration Sarvam's published throughput tables were measured in — reproduced exactly: “MODEL_DIR=\"$PWD/models/sarvam-105b-1711\" ; hf download sarvamai/sarvam-105b-1711 --local-dir \"$MODEL_DIR\" ; vllm serve \"$MODEL_DIR\" --trust-remote-code --served-model-name sarvam-105b --tensor-parallel-size 1 --max-model-len 131072 --max-num-seqs 256 --max-num-batched-tokens 8192 --gpu-memory-utilization 0.92 --kv-cache-dtype fp8_e4m3 --enable-auto-tool-choice --tool-call-parser glm45 --reasoning-parser glm45 --enable-prompt-tokens-details --speculative-config '{\"method\":\"dspark\",\"model\":\"'\"$MODEL_DIR\"'/dspark\",\"num_speculative_tokens\":5,\"draft_sample_method\":\"probabilistic\",\"rejection_sample_method\":\"block\"}' --compilation-config '{\"use_inductor_graph_partition\":false,\"pass_config\":{\"fuse_rope_kvcache_cat_mla\":true},\"cudagraph_capture_sizes\":'\"$CAPTURE_SIZES\"',\"max_cudagraph_capture_size\":8192}'” The no-DSpark variant on the card drops the --kv-cache-dtype and --speculative-config lines and serves the repo directly (vllm serve sarvamai/sarvam-105b-1711); everything else is identical. Read the recipe's own settings as the maker's intent: one GPU (--tensor-parallel-size 1), a 131,072-token window rather than the config's 163,840, FP8 KV cache, and 256 maximum sequences — a ceiling the memory maths, not the flag, will govern in practice."
+        ],
+        [
+          "SGLang — not documented for this checkpoint",
+          "Neither -1711 card mentions it, and SGLang's own documentation carries no Sarvam entry that we could find today (checked Nov 23, 2026). An SGLang section exists on the card of the older, March 2026 base-model FP8 release — a different checkpoint. For -1711, SGLang is unproven: nobody documents the route."
+        ],
+        [
+          "Transformers — not documented for this checkpoint",
+          "The repos declare the transformers library and ship their own modelling code (custom_code, loaded via --trust-remote-code in the vLLM route). But neither card documents a Transformers serving recipe — the cards' only usage example is an OpenAI client talking to the vLLM server. Loading the weights in Transformers is an experiment you run, not a route the maker documents."
+        ],
+        [
+          "Community quantisations",
+          "Community quantisations of the base and -1711 models exist on Hugging Face (FP8, AWQ and GGUF builds by third parties, and a GGUF repo under Sarvam's own account for the base model). None is the maker's documented -1711 route; the two official -1711 repos are the NVFP4 and BF16 builds this guide covers."
+        ]
+      ]
+    },
+    {
+      "heading": "The hosted price, verified from Sarvam's own pages",
+      "intro": "The $0.15 figure is Sarvam's own, from its Nov 22, 2026 announcement: “Our inference optimisations have also cut its blended price by two-thirds, from $0.44 to $0.15 per million tokens.” Three things about it that the headline hides, all from Sarvam's own material read Nov 23, 2026.",
+      "cols": [
+        "The point",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "“Blended” has a definition, and it is a mix",
+          "The announcement's own pricing footnote: blended prices are computed at 3 input tokens : 1 output token, from Token Factory list prices. A workload that generates more output than that mix — long reasoning traces, for instance, with thinking on by default — blends dearer than $0.15; an input-heavy workload blends cheaper. Reasoning tokens are billed as output, per the pricing page."
+        ],
+        [
+          "The underlying rate card is in rupees, and it is a split, not a blend",
+          "Sarvam's API pricing page lists Sarvam 105B at ₹10 per million input tokens, ₹0.25 per million cached input, ₹25 per million output, the same on every plan, excluding GST. Our arithmetic on the maker's own footnote (₹10/₹25 at the 3:1 blend, converted at the ₹90-per-dollar rate the announcement itself uses) gives ₹13.75 blended, or $0.1528 — the announced $0.15, confirmed as arithmetic."
+        ],
+        [
+          "The rates are introductory, with a stated horizon",
+          "The pricing page marks the Sarvam 105B rates “Introductory pricing … through the end of 2026.” The $0.44 is the previous blended figure as Sarvam states it in the announcement; Sarvam's current pricing page does not print it. When the introductory rates lapse, the break-even in the next section moves — in self-hosting's favour — by whatever the new blend is."
+        ],
+        [
+          "Rate limits are part of the hosted offer",
+          "The pricing page lists the Sarvam-105B models at 60 requests/minute on pay-as-you-go, 200 on Pro, 300 on Growth. High-volume self-hosters are sometimes really buying their way out of a rate limit, not out of a per-token price — a legitimate reason, but a different one from cost."
+        ]
+      ]
+    },
+    {
+      "heading": "The break-even, worked honestly",
+      "intro": "Method and assumptions, stated before the numbers. Self-host cost is the card's rent for a 730-hour month, run around the clock — the only way renting competes with a per-token price. The API side is Sarvam's blended $0.15 per million tokens at the maker's 3:1 input:output mix. Break-even volume = monthly rent ÷ $0.15, in tokens. Required sustained throughput = that volume ÷ the 2,628,000 seconds in the month — the rate the card would have to average, day and night, with no idle second. Where a throughput is Sarvam's published measurement, it is labelled vendor-reported with its test conditions; where a throughput is an assumption, the table says so in its heading. Electricity, storage, and your own operations time are excluded on the self-host side; API-side extras (GST for Indian entities, per the pricing page) are excluded on the other. Both exclusions favour neither side enough to change the conclusion, which is not close.",
+      "cols": [
+        "The line",
+        "The working"
+      ],
+      "rows": [
+        [
+          "The headline line",
+          "At the cheapest verified card rate ($1.69/hr, $1,233.70/month), break-even against $0.15 per million tokens is 8.22 billion tokens a month. Producing them in a 730-hour month means sustaining 3,130 tokens per second — every second, all month."
+        ],
+        [
+          "What the card actually does — Sarvam's own throughput table",
+          "Sarvam's model card publishes its own throughput table for this checkpoint on one RTX PRO 6000 Blackwell (96GB), measured with DSpark speculative decoding, FP8 KV cache, thinking on, at 50,000-token context — the maker's numbers, vendor-reported. At 1 concurrent user: 30.9 tok/s total throughput, 61.8 tok/s per user, time to first token p50 8.1 s. At 4 users: 43.9 tok/s total, 14.4 per user, 8.5 s. At 8 users: 54.9 tok/s total, 12.2 per user, 19.5 s."
+        ],
+        [
+          "The peak, run flat out for a month",
+          "Take the table's peak — 54.9 tok/s aggregate at 8 concurrent users — and run it flat out for a month: 144.3 million tokens. That volume on the API costs $21.64. The rented card costs $1,233.70 for the same month, an effective $8.55 per million tokens — 57 times the API price. The break-even volume (8.22 billion) is ~57× the maximum the card can produce at its maker's measured rate. There is no utilisation trick that closes a gap of that shape: the card would need to be 57 cards."
+        ],
+        [
+          "One discrepancy, printed",
+          "Sarvam's announcement says the model on this card reaches “99 tokens per second per user.” The model card's own published table for this checkpoint peaks at 61.8 tok/s per user, at a single user. The guide works from the card's table — it is the checkpoint's own documentation, with its test conditions printed — and treats the 99 as an announcement headline the card's table does not reproduce."
+        ],
+        [
+          "Sensitivity — assumed 100 tok/s sustained",
+          "263M tokens/month; self-host cost $4.69 per million tokens; 31× dearer than the $0.15 API. (Assumed throughput, not a measurement.)"
+        ],
+        [
+          "Sensitivity — assumed 250 tok/s sustained",
+          "657M tokens/month; $1.88 per million tokens; 12.5× dearer. (Assumption.)"
+        ],
+        [
+          "Sensitivity — assumed 500 tok/s sustained",
+          "1,314M tokens/month; $0.94 per million tokens; 6× dearer. (Assumption.)"
+        ],
+        [
+          "Sensitivity — assumed 1,000 tok/s sustained",
+          "2,628M tokens/month; $0.47 per million tokens; 3× dearer. (Assumption.)"
+        ],
+        [
+          "Sensitivity — assumed 2,000 tok/s sustained",
+          "5,256M tokens/month; $0.23 per million tokens; 1.6× dearer. (Assumption.)"
+        ],
+        [
+          "Sensitivity — 3,130 tok/s sustained",
+          "8,226M tokens/month; $0.15 per million tokens; break-even. (Assumption — the required rate, from the break-even arithmetic.)"
+        ],
+        [
+          "Sensitivity — assumed 5,000 tok/s sustained",
+          "13,140M tokens/month; $0.094 per million tokens; self-host wins. (Assumption.)"
+        ],
+        [
+          "The “buy a bigger card” answer, for completeness",
+          "Sarvam's card also tables this checkpoint on one B200 at 128k context: peak aggregate 7,490 tok/s at 128 concurrent users (5,354 at 64 users — the announcement's “about 6,000 across 64” is its rounding of this table). At the board's cheapest verified B200 (RunPod Community, $5.98/hr, $4,365.40/month), running at that measured peak all month yields 19.68 billion tokens at an effective $0.222 per million — closer, and still above $0.15. Even the maker's best measured serving rate, on the maker's best card, at the cheapest verified rent, does not beat the maker's own hosted price. That is what a two-thirds price cut does to a break-even."
+        ],
+        [
+          "Where the API side wins, in one view",
+          "100M tokens/month is $15 on the API; 500M is $75; a billion is $150; five billion is $750 — still less than the card's rent. If your monthly volume has three zeros in the millions column or fewer, this section was short for you."
+        ]
+      ]
+    },
+    {
+      "heading": "The BF16 route: full precision, two cards",
+      "intro": "The BF16 build is the same checkpoint at full precision, and Sarvam documents its serving shape on its card: the same vLLM recipe at tensor parallel 2. The memory arithmetic decides the node: 218.23GB of weights splits to 109.11GB per GPU at TP2, and inside the recipe's 0.92 utilisation budget a card must offer at least ~118.6GB — which is why the sensible node is 2 × H200 (141GB each): budget 129.72GB per GPU, weights 109.11GB, room left for the BF16 KV cache (36,864 bytes per token from the config — 4.83GB per 131,072-token sequence before it is split across the pair). The honest negatives: two RTX PRO 6000s total 192GB, less than the 218.23GB of weights — the one-card story does not stretch to two of the same card; a single B200 (192GB) does not hold it either; and three 80GB cards pass the raw arithmetic (72.74GB per GPU against a 73.6GB budget) with no headroom worth the name and no documented recipe — arithmetic, not a route. Who is this route for? Workloads where the NVFP4 quantisation itself is the question — evaluation against the BF16 reference, research on the checkpoint, or a quality bar the 4-bit build demonstrably misses on your own tests. Sarvam's own benchmark table puts the two builds within a point or two of each other almost everywhere (its runs, its harness — see the watch-outs). What the BF16 route is not is a throughput play: Sarvam publishes no BF16 throughput table, so nobody can honestly quote you its tokens per second, and its break-even is a volume target, not a demonstrated rate.",
+      "cols": [
+        "BF16 node — 2 × H200",
+        "Per-GPU $/hr · node $/hr · node $/month · note"
+      ],
+      "rows": [
+        [
+          "RunPod Community",
+          "$3.59/GPU/hr · $7.18/hr node · $5,241.40/mo — cheapest verified H200 on the board. Break-even vs the API: 34.94B tokens/month, a sustained 13,296 tok/s."
+        ],
+        [
+          "Hyperstack",
+          "$3.99/GPU/hr · $7.98/hr node · $5,825.40/mo — break-even: 38.84B tokens/month, a sustained 14,778 tok/s."
+        ],
+        [
+          "RunPod Secure",
+          "$5.29/GPU/hr · $10.58/hr node · $7,723.40/mo."
+        ]
+      ]
+    },
+    {
+      "heading": "Licence — Apache 2.0, with the file caveat stated",
+      "cols": [
+        "The point",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "Apache 2.0, declared in both repos' metadata",
+          "Both -1711 repos declare Apache License 2.0 in their Hugging Face metadata (license: apache-2.0 on each card). Read plainly, that is the permissive grant renters hope for: use, modify and serve commercially, with no revenue threshold, no user-count trigger and no separate written licence of the kind §10 of the Tencent Hy License imposes on Hy4. If you have read this desk's Hy4 guide, the contrast is the point — Sarvam's licence paperwork is one line; Tencent's is a gate in the decision path."
+        ],
+        [
+          "The caveat, stated because this desk states caveats",
+          "Neither repo contains a standalone LICENSE file as of Nov 23, 2026 — the grant lives in the cards' metadata, and the repos' file lists (checked file by file for this guide) hold no licence text. That is common practice on Hugging Face and the metadata declaration is unambiguous, but a compliance team that wants the licence as a file in the repo will not find one today; the metadata declaration and the announcement are what exist. We report what is there, not what would be tidier."
+        ]
+      ]
+    },
+    {
+      "heading": "Watch-outs before you rent",
+      "cols": [
+        "Watch-out",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "The announcement's 99 tok/s per user is not what the card's table shows",
+          "Sarvam's blog says the NVFP4 build on one RTX PRO 6000 reaches 99 tokens per second per user; the model card's own throughput table for this checkpoint — DSpark, FP8 KV, 50k context, thinking on — peaks at 61.8 tok/s per user (one user) and 54.9 tok/s in aggregate (eight users). Plan capacity from the table. If your workload is a single interactive user at short context, your mileage will differ from both — measure before the monthly commitment."
+        ],
+        [
+          "First-token latency on this card is slow in the maker's own test",
+          "Time to first token at p50 is 8.1 seconds at 50k context (one user), rising to 19.5 seconds at eight users. That is a long-context prefill figure, and voice or chat products feel first-token latency directly. The workload Sarvam aims this checkpoint at is exactly the latency-sensitive kind — test at your real prompt lengths."
+        ],
+        [
+          "The $0.15 rests on introductory rates",
+          "Sarvam's pricing page marks the ₹10/₹25 rates introductory through the end of 2026. Every break-even in this guide is computed at today's announced blend; if the rates reset in January, the lines move — rerun the one-line arithmetic (monthly rent ÷ new blended price) before renewing anything."
+        ],
+        [
+          "The blend is a mix assumption",
+          "$0.15 assumes 3 input tokens per output token. Thinking is on by default in this checkpoint and reasoning tokens bill as output on the API — a reasoning-heavy workload blends above $0.15, which quietly improves the self-host comparison. Know your own mix before using either side's headline."
+        ],
+        [
+          "Max-Q is not this card",
+          "The board's cheapest “PRO 6000” row is the Max-Q variant at a carried, unverified $0.752/hr. Sarvam's fit claim, throughput table and this guide's memory maths are for the full RTX PRO 6000 Blackwell. A power-limited variant will serve slower, and its price was not re-verified today."
+        ],
+        [
+          "Every benchmark on the cards is Sarvam's own",
+          "The cards say so themselves (“All scores are from our own runs”), on Sarvam's harness, against Sarvam's chosen comparison set. The NVFP4-versus-BF16 closeness and the Flash-Lite comparisons are the maker's evidence. No independent evaluation of -1711 exists yet."
+        ],
+        [
+          "You are serving on a tested-at version, with remote code",
+          "The documented route is vLLM 0.33.0 as tested by the maker, with --trust-remote-code and four environment variables set. Pin the version; expect the ground to move as vLLM's native Sarvam support matures."
+        ],
+        [
+          "The download is part of the deployment",
+          "70.15GB for the NVFP4 build (218.23GB for BF16) has to land on the rented machine before anything serves. On an hourly rental, staging time is billed time."
+        ]
+      ]
+    },
+    {
+      "heading": "Who should run this, and how",
+      "cols": [
+        "Your case",
+        "The route"
+      ],
+      "rows": [
+        [
+          "Regulated and on-premises operators — the maker's own named case",
+          "Banks, government departments and strategic sectors that cannot send traffic to a hosted API. For you the break-even section is not the decision; the weights on your hardware are. Rent the one card, serve with the card's recipe, and treat the $1,233.70 a month as the price of custody."
+        ],
+        [
+          "Data-residency and control cases",
+          "Indian-language production traffic that must stay in-jurisdiction or inside your own stack, fine-tuning and evaluation work on the weights themselves, and anyone who needs the model behind their own rate limits rather than Sarvam's 60-requests-a-minute pay-as-you-go ceiling."
+        ],
+        [
+          "Everyone choosing on cost",
+          "The API. At $0.15 blended, volumes under several billion tokens a month are not a contest — a billion tokens is $150, against $1,233.70 for the card before you serve anything. Spend the difference on the product."
+        ],
+        [
+          "Full-precision evaluators",
+          "The BF16 build on 2 × H200 at $7.18/hr — rented by the hour for the evaluation, not by the month for production, until your own tests show the NVFP4 build missing something that matters."
+        ],
+        [
+          "Throughput buyers",
+          "Nobody, yet, on this checkpoint — on any single card. Sarvam's own tables make the hosted API the cheapest tokens Sarvam sells, on Sarvam's own hardware numbers. Revisit when the introductory API rates lapse at the end of 2026, or when an independent serving benchmark for -1711 exists."
+        ]
+      ]
+    }
+  ],
+  "licenceTitle": "How we check",
+  "licenceBody": "Model facts — 105B total parameters and 10.3B active per token (the maker's figures), 32 layers (1 dense, 31 MoE), 128 routed experts plus 1 shared with top-8 firing, MLA attention with kv_lora_rank 512 and a 64-dimension RoPE key, 163,840-token declared context — are from the config.json files and model cards of sarvamai/sarvam-105b-1711 and sarvamai/sarvam-105b-1711-bf16 on Hugging Face, read first-hand Nov 23, 2026; the config-derived expert maths (~103B before attention and routers) is our consistency check on the maker's 105B, not a recount. Checkpoint sizes are measured, not quoted: the safetensors file sizes in each repo's listing (Hugging Face API) sum to 70.15GB for the NVFP4 build (64.64GB main weights in 4 shards + 5.51GB DSpark draft; 65.33 GiB in binary units, which is the announcement's “65 GB”) and 218.23GB for the BF16 build (212.07GB in 43 shards + 6.16GB DSpark; 203.24 GiB). The quantization split (routed experts NVFP4; attention, shared experts and layer-0 dense MLP MXFP8; routers and lm_head unquantised) is from the NVFP4 repo's quantization_config. KV figures are arithmetic from the config: (512 + 64) values × 32 layers = 18,432 bytes per token at FP8, 36,864 at BF16. Serving verification: the model cards' “vLLM hosting” sections (tested with vLLM 0.33.0; environment block and DSpark command reproduced verbatim; the BF16 card's shape is tensor parallel 2), vLLM's supported-models documentation (a Sarvam MLA implementation, SarvamMLAForCausalLM, is listed), and SGLang's documentation, in which no Sarvam entry could be found today — SGLang is therefore labelled undocumented for this checkpoint, as is any Transformers serving recipe (the repos ship custom modelling code but document no Transformers route). Throughput figures are Sarvam's published tables from the NVFP4 model card (DSpark, FP8 KV cache, thinking on, prefix cache cleared per level, reasoning prompts): RTX PRO 6000 at 50k context — 30.9 / 43.9 / 54.9 tok/s aggregate at 1 / 4 / 8 users; B200 at 128k context — 5,354 tok/s at 64 users, 7,490 at 128. All are vendor-reported; we ran no benchmarks. The announcement's “99 tokens per second per user” for the PRO 6000 appears in Sarvam's blog (Nov 22, 2026) and is not reproduced in the card's table; the guide says so where it matters. Hosted pricing: the announcement's blended $0.44 → $0.15 per million tokens and its blend definition (3 input : 1 output, Token Factory list prices, ₹90 per dollar) are Sarvam's; the underlying rates — ₹10 input / ₹0.25 cached input / ₹25 output per million tokens, introductory through the end of 2026, GST excluded, reasoning billed as output, 60/200/300 requests-per-minute limits by plan — are from Sarvam's own API pricing page (docs.sarvam.ai), read Nov 23, 2026; the blend arithmetic (₹13.75 → $0.1528) is ours, computed from those figures. The licence is Apache 2.0 as declared in both repos' Hugging Face metadata; neither repo contains a standalone LICENSE file as of Nov 23, 2026, and the guide says so. Rental prices are GPUJournal's Nov 25, 2026 board snapshot: RTX PRO 6000 — RunPod Community $1.69, Nebius $1.80 (excl. VAT), CoreWeave $2.50 (High-Memory variant, normalised from $20.00/node/hr), RunPod Secure $2.69, Verda $3.041, Oracle OCI $4.50 (from an 8-GPU node at $36.00/node/hr), Google Cloud $5.1749195 (1-GPU VM); H200 — RunPod Community $3.59, Hyperstack $3.99, RunPod Secure $5.29. The RTX PRO 6000 Max-Q row (nafnaf.ai, $0.752) is a different variant whose board figure is carried, not re-verified, and is excluded from every table. Monthly figures are hourly × 730; break-even volumes are monthly rent ÷ $0.15; required sustained rates are those volumes ÷ 2,628,000 seconds; effective self-host $/Mtok at a given throughput is monthly rent ÷ (throughput × 2,628,000 ÷ 1,000,000). All computed by script. What is deliberately not claimed. No throughput figure appears here as our measurement — every rate is Sarvam's published table (vendor-reported, conditions printed) or a labelled assumption in the sensitivity table. No serving route is asserted beyond the cards' own vLLM documentation: SGLang and Transformers are labelled undocumented for this checkpoint, and community quantisations are named as community work. No BF16 throughput is quoted, because Sarvam publishes none. The $0.44 previous blended price is Sarvam's statement in its announcement; it is not printed on Sarvam's current pricing page and we do not present it as independently verified. Where our own Nov 22 story's rounded figures differ from the measurements in this guide — the NVFP4 size (story: 65GB; measured: 70.15GB, the same total in GiB), the BF16 size (story: about 198GB; measured main weights: 212.07GB, 197.50 GiB), the B200 rate at 64 users (story: about 6,000 tok/s, the announcement's rounding; the card's table: 5,354) — the measured and tabled figures in this guide are the ones to use, and the differences are unit and rounding differences in the maker's own material, recorded in the audit note.",
+  "honestyTitle": "Our reading",
+  "honestyNote": "Our reading — interpretation, not fact. This release is two announcements wearing one coat: a genuinely useful one-card deployment, and a hosted price cut so deep it undercuts the deployment it arrived with. Both can be true, and for Sarvam both are useful — the weights prove the model is open, the API price is where the volume goes. For a renter, the discipline is to keep the two decisions separate: custody is a reason to rent the card; cost, at $0.15 a million, is not. A guide that printed the one-card route without the maker's own throughput table would have sold you the coat without mentioning the weather.",
+  "exits": [
+    [
+      "Compare prices",
+      "#/board"
+    ],
+    [
+      "The release story — Sarvam-105B-1711 open weights",
+      "#/story/sarvam-105b-1711-open-weights-nov-22"
+    ]
+  ],
+  "related": [
+    "deploy-ternary-bonsai-2-5-27b",
+    "deploy-hy4-flash",
+    "gpu-rental-cost"
+  ]
 }
 ];
 var FIND_RANKED = {
