@@ -6531,6 +6531,278 @@ var ARTICLES = [
     "deploy-hy4-flash",
     "gpu-rental-cost"
   ]
+},
+{
+  "slug": "deploy-soma-1x-lite",
+  "hubSlug": "model-deployment",
+  "title": "Deploy Soma-1X Lite — paper records to structured data on one small card, priced",
+  "excerpt": "Amini’s Soma-1X Lite does one job: it takes a page — a typed form, a handwritten letter, a table, a faded scan — and returns the page as structured data, one labelled block per element with its position on the page, tables as HTML and maths as LaTeX. It is a 2.21-billion-parameter vision-language model whose whole weights file measures 4.43 GB, so the rental question is not whether it fits — every card on our board holds it several times over — but which serving route actually runs it today, what a page costs on the one throughput figure the maker publishes, and where the traps are: the model only answers properly with its own trained prompts and thinking switched off, the card prints no context length, and the 4-bit quantisations people usually reach for do not exist because the maker’s own tests found they degraded the layout detection. This guide works the arithmetic and prices the honest single-card routes.",
+  "publishedDate": "2026-11-25",
+  "readMinutes": 17,
+  "cta": [
+    [
+      "Compare GPU prices across every provider",
+      "#/board"
+    ],
+    [
+      "The model page for Soma-1X Lite",
+      "#/model/soma-1x-lite"
+    ]
+  ],
+  "ctaClosing": true,
+  "tldr": [
+    {
+      "label": "RTX 4090 · 24 GB — cheapest honest route",
+      "vram": "RunPod Community · RTX 4090",
+      "bestFit": "Fits — the default buy for a digitisation workstation or a single-stream parsing job. No pages-per-hour figure exists for this card — see the cost section before quoting one. RunPod Community · RTX 4090 — $0.34/hr, $248.20/mo.",
+      "price": "$0.34/hr · $248.20/mo"
+    },
+    {
+      "label": "RTX A6000 · 48 GB",
+      "vram": "Thunder Compute · RTX A6000",
+      "bestFit": "Fits. One cent more than the 4090 for twice the memory — the room is batch headroom for many pages in flight at once, not fit. Thunder Compute · RTX A6000 — $0.35/hr, $255.50/mo.",
+      "price": "$0.35/hr · $255.50/mo"
+    },
+    {
+      "label": "RTX 5090 · 32 GB",
+      "vram": "RunPod Community · RTX 5090",
+      "bestFit": "Fits. The newer card if your pipeline is decode-bound; nobody has published a Soma throughput figure for it. RunPod Community · RTX 5090 — $0.69/hr, $503.70/mo.",
+      "price": "$0.69/hr · $503.70/mo"
+    },
+    {
+      "label": "L40S · 48 GB",
+      "vram": "RunPod Community · L40S",
+      "bestFit": "Fits. The datacentre-shaped option at the same memory as the A6000. RunPod Community · L40S — $0.79/hr, $576.70/mo.",
+      "price": "$0.79/hr · $576.70/mo"
+    },
+    {
+      "label": "RTX PRO 6000 · 96 GB — the maker’s benchmark card",
+      "vram": "RunPod Community · RTX PRO 6000",
+      "bestFit": "Fits. The only card with a published throughput claim: Amini’s up to 15,000 pages/hour, which at this price is about $0.11 per 1,000 pages — our arithmetic on the maker’s unverified figure. RunPod Community · RTX PRO 6000 — $1.69/hr, $1,233.70/mo.",
+      "price": "$1.69/hr · $1,233.70/mo"
+    }
+  ],
+  "metricTitle": "The short answer",
+  "metricBody": "Rent the RTX 4090 on RunPod Community at $0.34 an hour, $248.20 a month (checked Nov 25, 2026) and serve the BF16 weights with vLLM — the maker’s own card ships a vllm serve command and the architecture is on vLLM’s supported list — or run it in Transformers with the maker’s quickstart code if a notebook-shaped job is all you need. Feed it the repository’s own system_prompt.txt and user_prompt.txt, and switch thinking off: with thinking on, the answer lands in the wrong field or comes back empty. If the job is a national-scale archive and you are buying on cost per page, the only defensible number anyone publishes is Amini’s own — up to 15,000 pages an hour on an RTX PRO 6000 — and at our board’s best verified price for that card (RunPod Community, $1.69 an hour) that works out at about $0.11 per 1,000 pages, about $113 per million pages, against the roughly $0.22 per 1,000 Amini quotes from an AWS rate. Both figures rest on the maker’s throughput claim, which nobody has independently re-run; treat them as the claim’s arithmetic, not as a measurement. Monthly = hourly × 730, computed exactly. “Fits” in the table above is judged against the working set worked out in this guide — roughly 6–8 GB all-in at the maker’s own 32K serving shape — not against the 4.43 GB file alone. Every card on the board fits this model; the five rows are the cheapest single-card offers, ranked by price. The one figure that should drive a bigger purchase is throughput, and the only throughput claim that exists is the maker’s, on the most expensive card in the table.",
+  "datedTables": [
+    {
+      "heading": "What you are actually downloading — the model card, config and file listing, read Nov 25, 2026",
+      "intro": "From the repository’s model card, config and file listing — sizes measured from the repository’s own file list through the Hugging Face API, not quoted from the announcement.",
+      "cols": [
+        "The fact",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "A vision-language fine-tune of Qwen3.5-2B, 2,213,241,664 parameters at BF16",
+          "Trained by Amini with supervised fine-tuning followed by reinforcement learning (RLVR/GRPO) on document parsing. Architecture Qwen3_5ForConditionalGeneration: a 24-layer text tower (hidden size 2,048) with hybrid attention — 18 linear-attention layers and a full-attention layer every fourth (6 in total, 8 query heads, 2 KV heads, head dimension 256) — in front of a 24-layer vision tower (hidden size 1,024, 16-pixel patches). Embeddings tied."
+        ],
+        [
+          "One weights file: model.safetensors measures 4,426,558,864 bytes — 4.43 GB (4.12 GiB)",
+          "The parameter count cross-checks exactly: 2,213,241,664 × 2 bytes = 4,426,483,328, with the remaining 75,536 bytes the file’s header. The tokenizer is a separate 19,989,339-byte file; the processor and chat template ship alongside."
+        ],
+        [
+          "One honest discrepancy, printed rather than smoothed over",
+          "Our own Nov 25 story and catalogue entry record this file as 4,455,280,241 bytes (4.46 GB), read earlier the same day. The repository was modified again at 21:35 UTC on Nov 25 — after those reads — and the file in the repository tonight measures 4.43 GB, about 0.65% smaller. (The story and catalogue figures were corrected the same day, Nov 25, 2026.) Nothing in this guide plans from the earlier figure; every fit judgement uses the measured 4.43 GB."
+        ],
+        [
+          "The job it does",
+          "Input is one document image (PDF pages are rendered to images first — the card’s own snippet uses PyMuPDF at a 1,792-pixel long edge). Output is one <block> per page element in reading order, each with a semantic label (text, heading, caption, footnote, page header/footer, annotation, image, chart, diagram, map, stamp, signature, table, equation) and a position box on a 0–1000 grid; tables come out as HTML and mathematics as LaTeX. It is a document parser, not a chatbot: the shipped chat template itself redirects non-document requests back to documents."
+        ],
+        [
+          "Thirteen languages listed",
+          "English, French, Spanish, Swahili, Yoruba, Hausa, Wolof, Lingala, Xhosa, Afrikaans, Kinyarwanda, Chichewa and Sango. The African-language coverage is the point of the model, not a footnote: the maker’s transcription evaluation is over ten African languages (see the quality section)."
+        ],
+        [
+          "Context — the card does not state one, so read the config carefully",
+          "The model card prints no context length. The config’s ceiling is max_position_embeddings 262,144, but the maker’s own serving examples — the vLLM command on the card and the GGUF repository’s llama.cpp and Ollama setups — all cap the working context at 32,768. This guide prices and plans at 32K, the maker’s own shape, and treats 262K as an unproven config ceiling, not a working context."
+        ],
+        [
+          "The prompts are part of the model",
+          "The repository ships the exact system_prompt.txt (4,897 bytes) and user_prompt.txt (50 bytes) the model was trained with, and every one of the maker’s code paths loads them. Generation is greedy in the maker’s examples (temperature 0, do_sample=False) with up to 16,384 new tokens per page, and thinking is disabled everywhere (enable_thinking=False)."
+        ],
+        [
+          "Licence: Apache 2.0",
+          "Declared in the repository metadata and stated in both repositories’ licence sections. One gap worth printing: neither repository carries a standalone LICENSE file; the licence section links out to the Apache text instead. The scope note is in the licence section below."
+        ]
+      ]
+    },
+    {
+      "heading": "The working set: why 4.43 GB of weights is a 6–8 GB job",
+      "intro": "Weights are the floor, never the whole budget — but this is a small model with a hybrid backbone, and the arithmetic is unusually kind. Worked from the config, Nov 25, 2026.",
+      "cols": [
+        "The step",
+        "The maths"
+      ],
+      "rows": [
+        [
+          "Weights: 4.43 GB at BF16",
+          "The measured file. The GGUF route is smaller still — see the serving section."
+        ],
+        [
+          "KV cache is small by construction: 12,288 bytes, about 12 KB per token",
+          "Only the 6 full-attention layers keep a token-by-token cache; the 18 linear-attention layers carry a fixed-size state per sequence instead of one that grows with context. Per token, the full-attention cache is 6 layers × 2 KV heads × 256 head dimension × 2 (keys and values) × 2 bytes = 12,288 bytes. At the maker’s 32,768-token serving cap that is 0.40 GB per sequence; even at the config’s 262,144 ceiling it is 3.22 GB per sequence. The config publishes no size for the linear-attention state, so this guide does not invent one — it is fixed per sequence rather than per token, and the planning band carries a general allowance for it."
+        ],
+        [
+          "A page is a bounded input: at most about 3,100 image tokens",
+          "At the maker’s own render size (1,792-pixel long edge), a page costs at most about 3,100 image tokens (a 56 × 56 grid at one token per 32 × 32 pixels, from the vision tower’s 16-pixel patches and 2 × 2 merge) — derived from the config and the card’s PDF snippet, not measured. The output side is the bigger budget: the maker’s examples allow up to 16,384 generated tokens for one dense page."
+        ],
+        [
+          "Plan on roughly 6–8 GB total",
+          "For the BF16 model at the maker’s 32K shape, one stream: 4.43 GB of weights, up to ~0.4 GB of KV per sequence at that cap, plus the vision encoder’s activations and runtime buffers inside the band. Against that, the cheapest card in the TL;DR table (24 GB) fits with at least 16 GB to spare — which is batch headroom: at the 32K cap, each additional page in flight costs at most ~0.4 GB of KV, so a 24 GB card has room for dozens of concurrent pages before memory, not compute, becomes the limit. Nobody publishes a measured concurrency figure for this model; that sentence is arithmetic, not a benchmark."
+        ]
+      ]
+    },
+    {
+      "heading": "Serving reality: four documented routes, one of them an hour old",
+      "intro": "Unusually for a release-day model, every major route is documented somewhere primary. Proven below means the maker’s card or the framework’s own documentation names this model, its files or its architecture; the one route that is proven only at family level is printed as exactly that.",
+      "cols": [
+        "The route",
+        "The record"
+      ],
+      "rows": [
+        [
+          "Transformers — Proven, the reference route",
+          "The repository’s library is Transformers, the card’s quickstart loads Qwen3_5ForConditionalGeneration directly, and the config records the stack it was saved with: transformers_version 5.21.0. That version is a real watch-out — this is a Transformers 5.x architecture (qwen3_5); older 4.x installs do not know the model type. Install current, as the card’s own pip install -U line does."
+        ],
+        [
+          "vLLM — Proven, the serving route",
+          "The card ships a complete vllm serve command (BF16, tensor parallel 1, --max-model-len 32768, thinking disabled via chat-template kwargs), and vLLM’s own supported-models documentation lists Qwen3_5ForConditionalGeneration as natively supported. Same version warning as Transformers, sharper: containers pinned to an old Transformers are documented failing on this architecture family, so use a current vLLM rather than a stale vendor image. The maker’s command, verbatim: vllm serve AminiTech/Soma-1X-lite --served-model-name soma-1x-lite --dtype bfloat16 --tensor-parallel-size 1 --max-model-len 32768 --gpu-memory-utilization 0.90 --default-chat-template-kwargs '{\"enable_thinking\": false}'"
+        ],
+        [
+          "SGLang — Supported by architecture, Soma not named",
+          "SGLang’s Qwen3.5 documentation covers the family and lists the dense 2B (Qwen/Qwen3.5-2B) among its available models, hybrid attention and all — but it names the base model, not Soma, and it requires SGLang installed from the main branch. Expect it to work because the architecture is registered; do not treat it as maker-tested."
+        ],
+        [
+          "llama.cpp / Ollama (GGUF) — Proven, the local route, published hours after the weights",
+          "Amini’s own GGUF repository (created Nov 25, 2026, 21:31 UTC) ships two builds plus the vision encoder the document files need: Q8_0 at 2.01 GB — the maker’s recommended build — and BF16 at 3.78 GB, with the mmproj vision file at 0.67 GB required alongside either. The card’s llama.cpp command needs a recent build with Qwen3.5 support; the same files run on CPU. The maker states both builds produced near-identical output to the Transformers original in its checks — and that 4-bit quantisations degraded layout detection in its tests and are deliberately not provided. There is no official Q4 for this model; if a community Q4 appears, it is exactly the build class the maker measured failing."
+        ],
+        [
+          "However you serve it",
+          "Load the repository’s system_prompt.txt and user_prompt.txt — every maker code path does — and keep thinking off. The GGUF card’s warning is the sharpest statement of why: in Ollama, leave thinking on and the parse lands in the thinking field while the message content comes back empty."
+        ]
+      ]
+    },
+    {
+      "heading": "What a page costs: the maker’s one number, and its limits",
+      "intro": "Amini publishes exactly one throughput figure for this model, and the whole cost story hangs off it, printed here with its provenance intact: up to 15,000 pages per hour on a single NVIDIA RTX PRO 6000, from Amini’s launch post and press release (Nov 25, 2026), where the maker prices it at about $0.22 per 1,000 pages using an AWS on-demand rate of about $3.36 an hour for that card. The maker’s arithmetic checks out (3.36 ÷ 15 = $0.224). GPUJournal has not re-run the throughput figure, and no third party had published a replication by Nov 25, 2026. The per-page figures are our arithmetic on Amini’s unverified “up to 15,000 pages/hour” claim — hourly price ÷ 15. “Up to” is the maker’s own wording: a dense handwritten page and a clean typed page are not the same job, and the claim’s page mix is Amini’s, not stated per page type.",
+      "cols": [
+        "RTX PRO 6000 route",
+        "The cost (prices checked Nov 25, 2026)"
+      ],
+      "rows": [
+        [
+          "RunPod Community — our board’s best verified price for the card: $1.69/hr",
+          "About $0.11 per 1,000 pages; about $113 per 1M pages."
+        ],
+        [
+          "Nebius: $1.80/hr",
+          "About $0.12 per 1,000 pages; about $120 per 1M pages."
+        ],
+        [
+          "RunPod Secure: $2.69/hr",
+          "About $0.18 per 1,000 pages; about $179 per 1M pages."
+        ],
+        [
+          "Amini’s own AWS-based estimate: about $3.36/hr",
+          "About $0.22 per 1,000 pages; about $224 per 1M pages."
+        ],
+        [
+          "Run continuously at the claimed rate",
+          "One PRO 6000 clears about 10.95 million pages a month; at RunPod Community money that is the $1,233.70 monthly row in the TL;DR buying roughly eleven million parsed pages — again, the claim’s arithmetic, not a measurement."
+        ],
+        [
+          "Why the cheap cards carry no per-page figure",
+          "The 15,000 pages/hour claim is for the RTX PRO 6000 specifically. A 2B model will parse pages on an RTX 4090 — it fits trivially — but nobody, maker included, has published a pages-per-hour figure for it, and this guide does not move the PRO 6000 number across cards. If your job is a fixed archive on a deadline, the PRO 6000 row is the only one that can be planned against a published rate; if your job is a steady trickle of pages, the 4090 at $0.34 an hour is the rational buy and its per-page cost is simply unmeasured."
+        ],
+        [
+          "There is no hosted API price to compare against",
+          "As of Nov 25, 2026, Amini publishes no per-page API price for Soma-1X Lite, and no Hugging Face inference provider serves it. The honest comparison is the one above: the maker’s self-host estimate against our board’s prices for the same card. Anyone quoting you a hosted Soma price today is quoting the wider Amini platform, not this open model — check which one the quote is for."
+        ]
+      ]
+    },
+    {
+      "heading": "Quality: the maker’s benchmarks, printed as the maker’s",
+      "intro": "Every figure in this section is Amini’s own published evaluation, read from the model card on Nov 25, 2026; GPUJournal has not re-run any of them, and no independent replication existed by publication. They are printed because they are the only quality record that exists for a release-day model — and because the African-language table is the part of the record no rival publishes at all.",
+      "cols": [
+        "The claim",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "olmOCR-Bench: 84.7 overall",
+          "The maker’s reported evaluation; open-weight comparison scores are sourced by the maker from the public leaderboard, and the API-model scores on its chart are drawn from third-party published evaluations — the chart is a comparison the maker assembled, not a single head-to-head run."
+        ],
+        [
+          "OmniParse-Bench: 84.37 overall, 86.53 with the maker’s multi-pass harness",
+          "The largest gain is on tables (+5.0). The harness is the maker’s inference wrapper, not a different model — budget the extra passes if you plan to use it."
+        ],
+        [
+          "African-language transcription: 2.90% mean character error rate",
+          "Across ten African languages on 435 held-out document pages (the maker’s internal test set), the lowest of the five open-weight document models the maker evaluated, and best in seven of the ten languages. The character-retention detail is the figure that matters for archive work: Hausa hooked letters retained 93% (rivals 0–60%), Yoruba dots-below 99% (rivals 31–69%), Lingala open vowels 87% (rivals 0.2–25%) — the maker’s table, printed as such."
+        ],
+        [
+          "What the card does not claim",
+          "No general reasoning, writing or coding scores, because that is not the model’s job; and no throughput figure for any card but the RTX PRO 6000. The absences are part of the record."
+        ]
+      ]
+    },
+    {
+      "heading": "Watch-outs before you commit",
+      "intro": "The honest negatives, from the draft as audited.",
+      "cols": [
+        "The watch-out",
+        "The detail"
+      ],
+      "rows": [
+        [
+          "Every performance number here is the maker’s",
+          "Benchmarks, character error rates and the 15,000 pages/hour throughput are Amini’s own evaluations, published on release day and not independently replicated by Nov 25, 2026. The per-page costs in this guide are arithmetic on the throughput claim, labelled as such wherever they appear."
+        ],
+        [
+          "The weights file changed size on release day",
+          "The repository was modified at 21:35 UTC on Nov 25, after our story’s read; the file measures 4.43 GB tonight against the 4.46 GB recorded this afternoon. Immaterial to every fit in this guide, printed because this guide plans from measurements — and because a release-day repository can move again; re-check the file size when you download."
+        ],
+        [
+          "The card states no context length",
+          "The 262,144 in the config is a positional ceiling, not a promise: every serving example the maker ships caps at 32,768. A document page does not need more — a page is a few thousand image tokens — but anyone planning to feed the model long multi-page context is outside the documented shape."
+        ],
+        [
+          "Thinking must be off, and the failure is silent",
+          "Leave it on in Ollama and the parse arrives in the thinking field with empty content; the model was trained to parse with its shipped prompts and thinking disabled. Use the repository’s prompt files verbatim — paraphrasing the system prompt is debugging a model you did not train."
+        ],
+        [
+          "There is no 4-bit build, on purpose",
+          "The maker tested lower-bit quantisations, found layout detection degraded, and withheld them. The Q8_0 GGUF (2.01 GB plus the 0.67 GB vision file) is the small-file route; a future community Q4 is unendorsed by the only party that has measured the difference."
+        ],
+        [
+          "The stack is young",
+          "The architecture needs Transformers 5.x-era tooling; pinned vendor containers are documented failing on this model family. And the config carries one MTP (multi-token prediction) layer, but no card documents a speculative-decoding route for it — this guide prices none."
+        ],
+        [
+          "A parser is not a digitisation programme",
+          "The model reads a page; scanning, storage, search, access control and human review of low-confidence reads are still yours to build. Its output preserves positions precisely so a reviewer can check a block against the page — plan the review step, especially for records with legal weight."
+        ]
+      ]
+    }
+  ],
+  "licenceTitle": "How we check",
+  "licenceBody": "Model facts are from Amini’s Hugging Face repositories AminiTech/Soma-1X-lite (model card, config.json and repository file listing via the Hugging Face API, revision 8f320903089dcc088eb8c87f08f5ea164339992b, last modified Nov 25, 2026 21:35 UTC) and AminiTech/Soma-1X-lite-GGUF (created Nov 25, 2026 21:31 UTC) — parameters, architecture, files, prompts, commands, benchmarks, licence — read first-hand Nov 25, 2026. Checkpoint size is measured, not quoted: model.safetensors is 4,426,558,864 bytes (4.43 GB), cross-checked exactly against 2,213,241,664 BF16 parameters (params × 2 + the 75,536-byte safetensors header = the file). Our Nov 25 story and catalogue entry first recorded 4,455,280,241 bytes (4.46 GB) from afternoon reads; the repository was modified again at 21:35 UTC and both were corrected to the measured figure the same day. GGUF sizes are measured from that repository’s listing: Q8_0 2,012,011,264 bytes (2.01 GB), BF16 3,775,707,904 bytes (3.78 GB), mmproj F16 668,227,104 bytes (0.67 GB). KV arithmetic is from the config: only 6 of the 24 layers are full-attention (2 KV heads × 256 head dimension), so the cache is 12,288 bytes per token — 0.40 GB at the maker’s 32,768-token serving cap, 3.22 GB at the config’s 262,144 ceiling; the config publishes no linear-attention state size, so the 6–8 GB working-set band carries a stated general allowance and is labelled planning, not measurement. Serving verification: the model card’s own Transformers quickstart and vllm serve command; vLLM’s supported-models documentation (Qwen3_5ForConditionalGeneration listed as natively supported, checked Nov 25, 2026); SGLang’s Qwen3.5 documentation (the family including the dense 2B listed, Soma not named, main-branch install required — labelled at exactly that strength); the GGUF repository’s llama.cpp and Ollama instructions. Throughput and benchmarks are Amini’s published claims (model card and the maker’s Nov 25, 2026 launch post): up to 15,000 pages/hour on one RTX PRO 6000 and the maker’s AWS-based estimate of about $0.22 per 1,000 pages at about $3.36/hr (the maker’s arithmetic verified: 3.36 ÷ 15 = $0.224); the per-page costs in this guide are our arithmetic on that claim (hourly ÷ 15) and are never extrapolated to any other card. No hosted API price exists to compare: the Hugging Face API shows no inference-provider mapping for the repo and Amini publishes no per-page API price for this open model, and the guide says so instead of inventing one. The licence is Apache License 2.0 as declared in both repositories’ Hugging Face metadata and licence sections (verified Nov 25, 2026); neither repository carries a standalone LICENSE file — the declaration is metadata and a linked reference to the Apache text, and the guide prints that gap. The base model, Qwen/Qwen3.5-2B, is a fine-tune parent rather than a separate download here; the weights as released by Amini are the Apache 2.0 artefact. As always, the licence covers the weights as released; what your institution may do with the records you parse through it is a question about the records, not the model. Rental prices are GPUJournal’s Nov 25, 2026 board snapshot (87 offers, corroboration check), read with price-history/corrections.md (the corrections touch Verda figures in the Nov 24 snapshot only; no figure used in this guide is affected): RTX 4090 RunPod Community $0.34, RTX A6000 Thunder Compute $0.35, RTX 5090 RunPod Community $0.69, L40S RunPod Community $0.79, RTX PRO 6000 RunPod Community $1.69, Nebius $1.80, RunPod Secure $2.69. Monthly figures are hourly × 730; all computed by script. None of the guide’s rows come from the snapshot’s carried exceptions (TensorDock, nafnaf).",
+  "exits": [
+    [
+      "Compare prices",
+      "#/board"
+    ],
+    [
+      "The model page for Soma-1X Lite",
+      "#/model/soma-1x-lite"
+    ]
+  ],
+  "related": [
+    "deploy-ternary-bonsai-2-5-27b",
+    "deploy-sarvam-105b-1711",
+    "gpu-rental-cost"
+  ]
 }
 ];
 var FIND_RANKED = {
