@@ -384,4 +384,8 @@
   <url><loc>https://gpujournal.ai/story/verda-first-cut-nov-26</loc></url>
   <url><loc>https://gpujournal.ai/story/ming-image-0-2-design-nov-26</loc></url>
   <url><loc>https://gpujournal.ai/model/ming-image-0-2-design</loc><lastmod>2026-11-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://gpujournal.ai/story/patram-1-5-nov-26</loc></url>
+  <url><loc>https://gpujournal.ai/story/nemotron-3-5-parse-open-data-nov-26</loc></url>
+  <url><loc>https://gpujournal.ai/model/patram-1-5</loc><lastmod>2026-11-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://gpujournal.ai/model/nemotron-3-5-parse</loc><lastmod>2026-11-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
